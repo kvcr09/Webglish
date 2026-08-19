@@ -1,8 +1,8 @@
-# Sistema de Monitoreo Ambiental Escolar
+# Webglish
 
 ## Integrantes del Equipo
-* Estudiante A - Grado 11-1 (Desarrollador Front-end)
-* Estudiante B - Grado 11-1 (Técnico en Hardware)
+* Karle Castro y Janna Rodríguez: Desarrollador Front-end y Documentador
+* Luis Saavedra y Jesús Álvarez: Técnico en Hardware y Gestión de Datos
 
 ## Descripción General
 Portal web oficial del proyecto de grado enfocado en el registro y visualización en tiempo real de datos de temperatura y humedad en las aulas de clase.
