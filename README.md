@@ -28,3 +28,6 @@ Implementaremos una red de sensores DHT11 conectados a microcontroladores para m
 
 ## Estado del Proyecto
 **Fase 1:** Estructuración de la plataforma web, integración de componentes visuales, definición de estilos y publicación del repositorio base.
+
+### Autor
+**Karle Castro R** kcastro@mail.colsam.edu.co
