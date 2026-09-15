@@ -13,13 +13,6 @@ Las altas temperaturas en los salones de la institución afectan la atención y 
 ## Objetivo General
 Diseñar e implementar un prototipo funcional de monitoreo ambiental basado en hardware libre y desarrollo web para la comunidad educativa.
 
-## Solución Técnica y Requerimientos
-Implementaremos una red de sensores DHT11 conectados a microcontroladores para medir variables ambientales y enviarlas a la interfaz web.
-* **Sensor:** DHT11 (Temperatura y Humedad)
-* **Hardware:** Microcontrolador ESP32 / Arduino con conexión Wi-Fi
-* **Frontend:** Aplicación web en React.js desarrollada con Vite
-* **Estilos:** CSS3 personalizado con la paleta institucional
-
 ## Tecnologías Utilizadas
 * React.js
 * Vite
