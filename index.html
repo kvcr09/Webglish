@@ -317,8 +317,9 @@
         </div>
     </div>
 
-    <!-- Script para alternar visibilidad de la contraseña -->
+    <!-- Script para funciones interactivas -->
     <script>
+        // Función para el ojito de la contraseña
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             if (passwordInput.type === 'password') {
@@ -326,6 +327,20 @@
             } else {
                 passwordInput.type = 'password';
             }
+        }
+
+        // Función para abrir la ventana emergente de Google
+        function openGooglePopup() {
+            const width = 500;
+            const height = 600;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            window.open(
+                'https://accounts.google.com/o/oauth2/v2/auth', 
+                'GoogleSignIn', 
+                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+            );
         }
     </script>
 </body>
