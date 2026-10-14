@@ -1,4 +1,4 @@
-# Webglish 
+# Webglish
 
 ## Integrantes del Equipo
 * Karle Castro y Janna Rodríguez: Desarrollador Front-end y Documentador
