@@ -3,47 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webglish</title>
+    <title>Beyond</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            background-color: #f0f4f8; /* Color de fondo */
-            color: #333333;           /* Color del texto */
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
+            background-color: #FBF5DE; /* Color Crema */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-        h1 {
-            color: #2b6cb0;          /* Color del título */
+
+        /* Tarjeta principal contenedor */
+        .card-container {
+            background-color: #FFFFFF;
+            width: 100%;
+            max-width: 900px;
+            border-radius: 24px;
+            padding: 30px 40px 40px 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
-        /* Estilos para los botones de navegación */
-        .contenedor-botones {
-            margin-top: 30px;
+
+        /* Barra de navegación */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
         }
-        .boton {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 8px;
-            background-color: #2b6cb0; /* Color del botón */
-            color: white;              /* Color del texto */
-            text-decoration: none;     /* Quita el subrayado */
-            border-radius: 6px;        /* Bordes redondeados */
+
+        .logo {
+            font-size: 22px;
             font-weight: bold;
-            transition: background-color 0.3s;
+            color: #03658C; /* Azul Intenso */
         }
-        .boton:hover {
-            background-color: #1a4971; /* Color al pasar el cursor */
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #03658C; /* Azul Intenso */
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+        }
+
+        /* Indicador rojo bajo Explore */
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #DC3C22; /* Rojo Vibrante */
+            border-radius: 50%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-icon {
+            color: #03658C;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .signup-link {
+            text-decoration: none;
+            color: #03658C;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Disposición principal de 2 columnas */
+        .main-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        /* Sección del Formulario (Lado Izquierdo) */
+        .login-card {
+            background-color: #FBF5DE; /* Color Crema */
+            border-radius: 20px;
+            padding: 35px 30px;
+            width: 320px;
+            flex-shrink: 0;
+        }
+
+        .header-form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header-form h2 {
+            color: #03658C; /* Azul Intenso */
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #FFFFFF;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #03658C;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .google-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #03658C;
+            margin-bottom: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .forgot-pass {
+            font-size: 11px;
+            color: #03658C;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #EAC8A6; /* Arena Suave */
+            border: none;
+            border-radius: 12px;
+            color: #03658C;
+            font-size: 13px;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: #03658C;
+            opacity: 0.7;
+        }
+
+        .submit-btn {
+            width: 100px;
+            padding: 10px;
+            background-color: #DC3C22; /* Rojo Vibrante */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .signup-text {
+            text-align: center;
+            font-size: 11px;
+            color: #03658C;
+            font-weight: 600;
+        }
+
+        .signup-text a {
+            color: #03658C;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* Sección de la Ilustración (Lado Derecho) */
+        .illustration-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .illustration-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .login-card {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>¡Bienvenidos a Webglish!</h1>
-    <p>Esta es mi nueva página web.</p>
 
-    <!-- Botones para ir a las subpáginas -->
-    <div class="contenedor-botones">
-        <a href="nosotros.html" class="boton">Sobre Nosotros</a>
-        <a href="cursos.html" class="boton">Ver Cursos</a>
-        <a href="contacto.html" class="boton">Contacto</a>
+    <div class="card-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div class="logo">Beyond.</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Explore</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Features</a></li>
+                <li><a href="#">Pricing</a></li>
+            </ul>
+            <div class="nav-actions">
+                <span class="search-icon">&#128065;</span>
+                <a href="#" class="signup-link">Sign up</a>
+            </div>
+        </nav>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <!-- Formulario de inicio de sesión -->
+            <div class="login-card">
+                <div class="header-form">
+                    <h2>Sign in</h2>
+                    <button class="google-btn">
+                        Sign with
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <form>
+                    <div class="form-group">
+                        <label for="email">Username or email address</label>
+                        <input type="text" id="email" class="input-field" value="Omar@beyond.com">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="password">Password</label>
+                            <a href="#" class="forgot-pass">Forget password ?</a>
+                        </div>
+                        <input type="password" id="password" class="input-field" value="123456">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Sign in</button>
+                </form>
+
+                <p class="signup-text">
+                    Don't have account ? <a href="#">Sign up</a>
+                </p>
+            </div>
+
+            <!-- Ilustración del elefante -->
+            <div class="illustration-container">
+                <img src="https://illustrations.puchu.pub/assets/images/illustrations/elephant-paper-plane.png" alt="Elefante en avión de papel" onerror="this.src='https://via.placeholder.com/400x300/03658C/FFFFFF?text=Ilustracion+Elefante'">
+            </div>
+        </div>
     </div>
+
 </body>
 </html>
