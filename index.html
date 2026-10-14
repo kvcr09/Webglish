@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webglish</title>
     <style>
         body {
@@ -14,10 +15,35 @@
         h1 {
             color: #2b6cb0;          /* Color del título */
         }
+        /* Estilos para los botones de navegación */
+        .contenedor-botones {
+            margin-top: 30px;
+        }
+        .boton {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 8px;
+            background-color: #2b6cb0; /* Color del botón */
+            color: white;              /* Color del texto */
+            text-decoration: none;     /* Quita el subrayado */
+            border-radius: 6px;        /* Bordes redondeados */
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .boton:hover {
+            background-color: #1a4971; /* Color al pasar el cursor */
+        }
     </style>
 </head>
 <body>
     <h1>¡Bienvenidos a Webglish!</h1>
     <p>Esta es mi nueva página web.</p>
+
+    <!-- Botones para ir a las subpáginas -->
+    <div class="contenedor-botones">
+        <a href="nosotros.html" class="boton">Sobre Nosotros</a>
+        <a href="cursos.html" class="boton">Ver Cursos</a>
+        <a href="contacto.html" class="boton">Contacto</a>
+    </div>
 </body>
 </html>
