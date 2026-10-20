@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webglish - Dashboard</title>
+    <title>Webglish</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,61 +12,59 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
-            background-color: #FBF5DE; /* Color Crema */
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        /* Ocupa todo el alto y ancho del navegador sin scrollbar externa */
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #EAC8A6; /* Arena Suave como fondo base */
         }
 
+        /* Contenedor principal a pantalla completa */
         .dashboard-container {
             background-color: #EAC8A6; /* Arena Suave */
-            width: 100%;
-            max-width: 1100px;
-            border-radius: 24px;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            min-height: 650px;
         }
 
-        /* Sidebar Izquierda */
+        /* Sidebar Izquierda a pantalla completa */
         .sidebar {
-            width: 220px;
+            width: 250px;
             background-color: #F5DEC2;
-            padding: 25px 20px;
+            padding: 30px 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             flex-shrink: 0;
+            height: 100vh;
         }
 
         .brand-logo {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
             color: #03658C; /* Azul Intenso */
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .user-profile {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .user-avatar {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #03658C;
         }
 
         .user-info .user-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: #03658C;
         }
@@ -80,19 +78,19 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .nav-item a {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             color: #03658C;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 14px;
             transition: 0.2s;
         }
 
@@ -102,22 +100,24 @@
 
         .logout-link {
             margin-top: auto;
-            color: #DC3C22;
+            color: #DC3C22; /* Rojo Vibrante */
             text-decoration: none;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* Panel Principal */
+        /* Panel Principal a pantalla completa con scroll interno si se necesita */
         .main-panel {
             flex-grow: 1;
-            padding: 25px 30px;
+            padding: 35px 40px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         /* Encabezado */
@@ -128,118 +128,118 @@
         }
 
         .welcome-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 800;
             color: #03658C;
             text-transform: uppercase;
         }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         .search-bar {
             background-color: #FBF5DE;
-            padding: 8px 16px;
+            padding: 10px 18px;
             border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 200px;
+            gap: 10px;
+            width: 240px;
         }
 
         .search-bar input {
             border: none;
             background: transparent;
             outline: none;
-            font-size: 12px;
+            font-size: 13px;
             color: #03658C;
             width: 100%;
         }
 
-        /* Grid */
+        /* Grid adaptado al alto de la pantalla */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            gap: 25px;
+            flex-grow: 1;
         }
 
         .cards-column {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .two-cards-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         .card {
             background-color: #FBF5DE;
-            border-radius: 18px;
-            padding: 16px 20px;
+            border-radius: 20px;
+            padding: 20px 24px;
         }
 
         .card-title {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 700;
             color: #03658C;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .teacher-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #03658C;
         }
 
-        /* Estadísticas */
+        /* Columna de Estadísticas */
         .right-stats-card {
             background-color: #FBF5DE;
-            border-radius: 18px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 15px;
+            gap: 20px;
         }
 
         .stat-box {
             background-color: #EAC8A6;
-            border-radius: 14px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .stat-circle {
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 800;
-            color: #DC3C22;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 13px;
             color: #03658C;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
     </style>
 </head>
 <body>
 
     <div class="dashboard-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Izquierda -->
         <aside class="sidebar">
             <div>
                 <div class="brand-logo">Webglish</div>
                 <div class="user-profile">
-                    <img src="https://via.placeholder.com/40/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
+                    <img src="https://via.placeholder.com/44/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
                     <div class="user-info">
                         <div class="user-name" id="profileName">Cargando...</div>
                         <div class="user-role">Student</div>
@@ -248,10 +248,10 @@
 
                 <ul class="nav-menu">
                     <li class="nav-item active"><a href="#">Inicio</a></li>
-                    <li class="nav-item"><a href="#">Mis examenes</a></li>
-                    <li class="nav-item"><a href="#">Mis estadisticas</a></li>
+                    <li class="nav-item"><a href="#">Mis exámenes</a></li>
+                    <li class="nav-item"><a href="#">Mis estadísticas</a></li>
                     <li class="nav-item"><a href="#">Sobre nosotros</a></li>
-                    <li class="nav-item"><a href="#">Configuracion</a></li>
+                    <li class="nav-item"><a href="#">Configuración</a></li>
                 </ul>
             </div>
 
@@ -261,17 +261,15 @@
         <!-- Panel Principal -->
         <main class="main-panel">
             <header class="top-header">
-                <!-- Nombre personalizado recuperado del registro -->
                 <h1 class="welcome-title" id="greetingTitle">HELLO, USER!</h1>
-                <div class="header-actions">
-                    <div class="search-bar">
-                        <span>🔍</span>
-                        <input type="text" placeholder="Search">
-                    </div>
+                <div class="search-bar">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search">
                 </div>
             </header>
 
             <div class="dashboard-grid">
+                <!-- Columna Izquierda -->
                 <div class="cards-column">
                     <div class="two-cards-row">
                         <div class="card">
@@ -288,10 +286,10 @@
 
                         <div class="card">
                             <div class="card-title">Upcoming Events</div>
-                            <div style="font-size:11px; margin-bottom: 8px;">
+                            <div style="font-size:12px; margin-bottom: 10px; color: #03658C;">
                                 <strong>Robot Race</strong><br>22 May 2026 - 03:00
                             </div>
-                            <div style="font-size:11px;">
+                            <div style="font-size:12px; color: #03658C;">
                                 <strong>Minecraft Tools</strong><br>15 May 2026 - 17:00
                             </div>
                         </div>
@@ -299,16 +297,16 @@
 
                     <div class="card">
                         <div class="card-title">My Schedule</div>
-                        <p style="font-size: 12px; color: #03658C;">📅 Clases programadas para esta semana</p>
+                        <p style="font-size: 13px; color: #03658C;">📅 Clases programadas para esta semana</p>
                     </div>
 
                     <div class="card">
                         <div class="card-title">My Projects</div>
-                        <p style="font-size: 12px; color: #03658C;">🤖 Homework 15 - Robotics & Coding</p>
+                        <p style="font-size: 13px; color: #03658C;">🤖 Homework 15 - Robotics & Coding</p>
                     </div>
                 </div>
 
-                <!-- Estadísticas a la derecha -->
+                <!-- Columna Derecha -->
                 <div class="right-stats-card">
                     <div class="stat-box">
                         <div class="stat-label">Attendance</div>
@@ -320,25 +318,4 @@
                     </div>
                     <div class="stat-box">
                         <div class="stat-label">Rating</div>
-                        <div class="stat-circle" style="color: #EAC8A6;">75%</div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const savedName = localStorage.getItem('webglish_userName');
-            
-            if (savedName && savedName.trim() !== "") {
-                document.getElementById('greetingTitle').textContent = `HELLO, ${savedName.toUpperCase()}!`;
-                document.getElementById('profileName').textContent = savedName;
-            } else {
-                document.getElementById('greetingTitle').textContent = 'HELLO, STUDENT!';
-                document.getElementById('profileName').textContent = 'Student';
-            }
-        });
-    </script>
-</body>
-</html>
+                        <div class="stat-circle" style="color: #03658C;">75%</div>
