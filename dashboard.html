@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #FBF5DE; /* Crema de fondo principal */
+            background-color: #FBF5DE; /* Color Crema */
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -111,7 +111,7 @@
             gap: 8px;
         }
 
-        /* Contenido Principal */
+        /* Panel Principal */
         .main-panel {
             flex-grow: 1;
             padding: 25px 30px;
@@ -159,7 +159,7 @@
             width: 100%;
         }
 
-        /* Grid de Secciones */
+        /* Grid */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -191,7 +191,6 @@
             margin-bottom: 12px;
         }
 
-        /* Modulo Profesores */
         .teacher-item {
             display: flex;
             align-items: center;
@@ -200,7 +199,7 @@
             font-size: 12px;
         }
 
-        /* Modulo Lateral Derecho */
+        /* Estadísticas */
         .right-stats-card {
             background-color: #FBF5DE;
             border-radius: 18px;
@@ -235,7 +234,7 @@
 <body>
 
     <div class="dashboard-container">
-        <!-- Barra de navegación izquierda -->
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div>
                 <div class="brand-logo">Webglish</div>
@@ -262,7 +261,7 @@
         <!-- Panel Principal -->
         <main class="main-panel">
             <header class="top-header">
-                <!-- Saludo dinámico con el nombre del usuario -->
+                <!-- Nombre personalizado recuperado del registro -->
                 <h1 class="welcome-title" id="greetingTitle">HELLO, USER!</h1>
                 <div class="header-actions">
                     <div class="search-bar">
@@ -273,7 +272,6 @@
             </header>
 
             <div class="dashboard-grid">
-                <!-- Columna Izquierda -->
                 <div class="cards-column">
                     <div class="two-cards-row">
                         <div class="card">
@@ -310,7 +308,7 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha de Estadísticas -->
+                <!-- Estadísticas a la derecha -->
                 <div class="right-stats-card">
                     <div class="stat-box">
                         <div class="stat-label">Attendance</div>
@@ -329,14 +327,11 @@
         </main>
     </div>
 
-    <!-- Script para inyectar el nombre guardado -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Obtiene el nombre guardado en signup.html
             const savedName = localStorage.getItem('webglish_userName');
             
             if (savedName && savedName.trim() !== "") {
-                const firstName = savedName.trim().split(" ")[0]; // Extrae el primer nombre
                 document.getElementById('greetingTitle').textContent = `HELLO, ${savedName.toUpperCase()}!`;
                 document.getElementById('profileName').textContent = savedName;
             } else {
