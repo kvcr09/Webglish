@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #FBF5DE; /* Crema de fondo principal */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            background-color: #EAC8A6; /* Arena Suave */
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 24px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            min-height: 650px;
+        }
+
+        /* Sidebar Izquierda */
+        .sidebar {
+            width: 220px;
+            background-color: #F5DEC2;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #03658C; /* Azul Intenso */
+            margin-bottom: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #03658C;
+        }
+
+        .user-info .user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #03658C;
+        }
+
+        .user-info .user-role {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            color: #03658C;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-item.active a {
+            background-color: #EAC8A6;
+        }
+
+        .logout-link {
+            margin-top: auto;
+            color: #DC3C22;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Contenido Principal */
+        .main-panel {
+            flex-grow: 1;
+            padding: 25px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Encabezado */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #03658C;
+            text-transform: uppercase;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-bar {
+            background-color: #FBF5DE;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 200px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 12px;
+            color: #03658C;
+            width: 100%;
+        }
+
+        /* Grid de Secciones */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .cards-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .two-cards-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background-color: #FBF5DE;
+            border-radius: 18px;
+            padding: 16px 20px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #03658C;
+            margin-bottom: 12px;
+        }
+
+        /* Modulo Profesores */
+        .teacher-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        /* Modulo Lateral Derecho */
+        .right-stats-card {
+            background-color: #FBF5DE;
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background-color: #EAC8A6;
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-circle {
+            font-size: 22px;
+            font-weight: 800;
+            color: #DC3C22;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #03658C;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Barra de navegación izquierda -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand-logo">Webglish</div>
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
+                    <div class="user-info">
+                        <div class="user-name" id="profileName">Cargando...</div>
+                        <div class="user-role">Student</div>
+                    </div>
+                </div>
+
+                <ul class="nav-menu">
+                    <li class="nav-item active"><a href="#">Inicio</a></li>
+                    <li class="nav-item"><a href="#">Mis examenes</a></li>
+                    <li class="nav-item"><a href="#">Mis estadisticas</a></li>
+                    <li class="nav-item"><a href="#">Sobre nosotros</a></li>
+                    <li class="nav-item"><a href="#">Configuracion</a></li>
+                </ul>
+            </div>
+
+            <a href="index.html" class="logout-link" onclick="localStorage.removeItem('webglish_userName')">Log out</a>
+        </aside>
+
+        <!-- Panel Principal -->
+        <main class="main-panel">
+            <header class="top-header">
+                <!-- Saludo dinámico con el nombre del usuario -->
+                <h1 class="welcome-title" id="greetingTitle">HELLO, USER!</h1>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Search">
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Columna Izquierda -->
+                <div class="cards-column">
+                    <div class="two-cards-row">
+                        <div class="card">
+                            <div class="card-title">Linked Teachers</div>
+                            <div class="teacher-item">
+                                <div><strong>Olivia Miller</strong><br><small>mentor</small></div>
+                                <span>💬</span>
+                            </div>
+                            <div class="teacher-item">
+                                <div><strong>Liam Garcia</strong><br><small>teacher</small></div>
+                                <span>💬</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">Upcoming Events</div>
+                            <div style="font-size:11px; margin-bottom: 8px;">
+                                <strong>Robot Race</strong><br>22 May 2026 - 03:00
+                            </div>
+                            <div style="font-size:11px;">
+                                <strong>Minecraft Tools</strong><br>15 May 2026 - 17:00
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">My Schedule</div>
+                        <p style="font-size: 12px; color: #03658C;">📅 Clases programadas para esta semana</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">My Projects</div>
+                        <p style="font-size: 12px; color: #03658C;">🤖 Homework 15 - Robotics & Coding</p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha de Estadísticas -->
+                <div class="right-stats-card">
+                    <div class="stat-box">
+                        <div class="stat-label">Attendance</div>
+                        <div class="stat-circle" style="color: #DC3C22;">60%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Homework</div>
+                        <div class="stat-circle" style="color: #03658C;">90%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Rating</div>
+                        <div class="stat-circle" style="color: #EAC8A6;">75%</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script para inyectar el nombre guardado -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Obtiene el nombre guardado en signup.html
+            const savedName = localStorage.getItem('webglish_userName');
+            
+            if (savedName && savedName.trim() !== "") {
+                const firstName = savedName.trim().split(" ")[0]; // Extrae el primer nombre
+                document.getElementById('greetingTitle').textContent = `HELLO, ${savedName.toUpperCase()}!`;
+                document.getElementById('profileName').textContent = savedName;
+            } else {
+                document.getElementById('greetingTitle').textContent = 'HELLO, STUDENT!';
+                document.getElementById('profileName').textContent = 'Student';
+            }
+        });
+    </script>
+</body>
+</html>
