@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webglish</title>
+    <title>Webglish - Beyond</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #FBF5DE; /* Color Crema */
+            background-color: #FBF5DE; /* Crema */
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -21,7 +21,6 @@
             padding: 20px;
         }
 
-        /* Tarjeta principal contenedor */
         .card-container {
             background-color: #FFFFFF;
             width: 100%;
@@ -31,7 +30,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-        /* Barra de navegación */
         .navbar {
             display: flex;
             align-items: center;
@@ -42,35 +40,7 @@
         .logo {
             font-size: 22px;
             font-weight: bold;
-            color: #03658C; /* Azul Intenso */
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #03658C; /* Azul Intenso */
-            font-weight: 600;
-            font-size: 14px;
-            position: relative;
-        }
-
-        /* Indicador rojo bajo Explore */
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background-color: #DC3C22; /* Rojo Vibrante */
-            border-radius: 50%;
+            color: #03658C;
         }
 
         .nav-actions {
@@ -79,31 +49,24 @@
             gap: 20px;
         }
 
-        .search-icon {
-            color: #03658C;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .signup-link {
+        .signin-link {
             text-decoration: none;
             color: #03658C;
             font-weight: 600;
             font-size: 14px;
+            cursor: pointer;
         }
 
-        /* Disposición principal de 2 columnas */
         .main-content {
             display: flex;
             gap: 40px;
             align-items: center;
         }
 
-        /* Sección del Formulario (Lado Izquierdo) */
         .login-card {
-            background-color: #FBF5DE; /* Color Crema */
+            background-color: #FBF5DE;
             border-radius: 20px;
-            padding: 35px 30px;
+            padding: 30px 25px;
             width: 320px;
             flex-shrink: 0;
         }
@@ -112,12 +75,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .header-form h2 {
-            color: #03658C; /* Azul Intenso */
-            font-size: 28px;
+            color: #03658C;
+            font-size: 26px;
             font-weight: 700;
         }
 
@@ -142,7 +105,7 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
@@ -150,26 +113,13 @@
             font-size: 12px;
             font-weight: 600;
             color: #03658C;
-            margin-bottom: 8px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .forgot-pass {
-            font-size: 11px;
-            color: #03658C;
-            text-decoration: none;
-            font-weight: 600;
+            margin-bottom: 6px;
         }
 
         .input-field {
             width: 100%;
-            padding: 12px 16px;
-            background-color: #EAC8A6; /* Arena Suave */
+            padding: 10px 14px;
+            background-color: #EAC8A6;
             border: none;
             border-radius: 12px;
             color: #03658C;
@@ -178,7 +128,6 @@
             outline: none;
         }
 
-        /* Contenedor relativo para la contraseña con ojito */
         .password-wrapper {
             position: relative;
             display: flex;
@@ -198,10 +147,18 @@
             user-select: none;
         }
 
+        .error-message {
+            display: none;
+            color: #DC3C22;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
         .submit-btn {
             width: 100px;
             padding: 10px;
-            background-color: #DC3C22; /* Rojo Vibrante */
+            background-color: #DC3C22;
             color: white;
             border: none;
             border-radius: 12px;
@@ -209,23 +166,23 @@
             font-size: 13px;
             cursor: pointer;
             margin-top: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
-        .signup-text {
+        .login-text {
             text-align: center;
             font-size: 11px;
             color: #03658C;
             font-weight: 600;
         }
 
-        .signup-text a {
+        .login-text span {
             color: #03658C;
             font-weight: 700;
-            text-decoration: none;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
-        /* Sección de la Ilustración (Lado Derecho) */
         .illustration-container {
             flex-grow: 1;
             display: flex;
@@ -238,13 +195,46 @@
             height: auto;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            .login-card {
-                width: 100%;
-            }
+        /* Modal para Iniciar Sesión */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(3, 101, 140, 0.4);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background-color: #FBF5DE;
+            border-radius: 20px;
+            padding: 35px 30px;
+            width: 330px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #03658C;
+            cursor: pointer;
+        }
+
+        .modal-card h2 {
+            color: #03658C;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -255,17 +245,16 @@
         <nav class="navbar">
             <div class="logo">Webglish</div>
             <div class="nav-actions">
-                <span class="search-icon">&#128061;</span>
-                <a href="#" class="signup-link">Sign up</a>
+                <span class="signin-link" onclick="openLoginModal()">Sign in</span>
             </div>
         </nav>
 
         <!-- Contenido principal -->
         <div class="main-content">
-            <!-- Formulario de inicio de sesión -->
+            <!-- FORMULARIO PRINCIPAL: SIGN UP (REGISTRO) -->
             <div class="login-card">
                 <div class="header-form">
-                    <h2>Sign in</h2>
+                    <h2>Sign up</h2>
                     <button class="google-btn" type="button" onclick="openGooglePopup()">
                         Sign with
                         <svg class="google-icon" viewBox="0 0 24 24">
@@ -277,42 +266,72 @@
                     </button>
                 </div>
 
-                <form>
+                <form onsubmit="registerUser(event)">
                     <div class="form-group">
-                        <label for="email">Username or email address</label>
-                        <input type="text" id="email" class="input-field" value="Omar@beyond.com">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="input-field" placeholder="Sophia Tompson" required>
                     </div>
 
                     <div class="form-group">
-                        <div class="label-row">
-                            <label for="password">Password</label>
-                            <a href="#" class="forgot-pass">Forget password ?</a>
-                        </div>
+                        <label for="reg-email">Email address</label>
+                        <input type="email" id="reg-email" class="input-field" placeholder="correo@ejemplo.com" required oninput="hideEmailError()">
+                        <div class="error-message" id="emailError">Este correo ya está registrado.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
                         <div class="password-wrapper">
-                            <input type="password" id="password" class="input-field" value="123456">
-                            <span class="toggle-password" onclick="togglePasswordVisibility()">&#128065;</span>
+                            <input type="password" id="reg-password" class="input-field" placeholder="••••••••" required>
+                            <span class="toggle-password" onclick="togglePasswordVisibility('reg-password')">&#128065;</span>
                         </div>
                     </div>
 
-                    <button type="submit" class="submit-btn">Sign in</button>
+                    <button type="submit" class="submit-btn">Sign up</button>
                 </form>
 
-                <p class="signup-text">
-                    Don't have account? <a href="#">Sign up</a>
+                <p class="login-text">
+                    Already have an account ? <span onclick="openLoginModal()">Sign in</span>
                 </p>
             </div>
 
             <!-- Ilustración del elefante -->
             <div class="illustration-container">
-                <img src="https://illustrations.puchu.pub/assets/images/illustrations/elephant-paper-plane.png" alt="Elefante en avión de papel" onerror="this.src='https://via.placeholder.com/400x300/03658C/FFFFFF?text=Ilustracion+Elefante'">
+                <img src="https://illustrations.puchu.pub/assets/images/illustrations/elephant-paper-plane.png" 
+                     alt="Elefante en avión de papel" 
+                     onerror="this.onerror=null; this.src='https://cdn.pixabay.com/photo/2021/01/29/08/10/musician-5960112_1280.png';"
+                     style="max-width: 100%; height: auto;">
             </div>
         </div>
     </div>
 
-    <!-- Script para funciones interactivas -->
+    <!-- MODAL DE INICIO DE SESIÓN -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2>Sign In</h2>
+            
+            <form onsubmit="loginUser(event)">
+                <div class="form-group">
+                    <label for="login-email">Email address</label>
+                    <input type="email" id="login-email" class="input-field" placeholder="correo@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" class="input-field" placeholder="••••••••" required>
+                        <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">&#128065;</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" style="width: 100%; margin-top: 10px;">Sign in</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
+        function togglePasswordVisibility(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
             } else {
@@ -327,10 +346,68 @@
             const top = (screen.height - height) / 2;
             
             window.open(
-                'https://accounts.google.com/o/oauth2/v2/auth', 
+                'https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fwww.google.com&flowName=GlifWebSignIn&flowEntry=ServiceLogin', 
                 'GoogleSignIn', 
                 `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
             );
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function hideEmailError() {
+            document.getElementById('emailError').style.display = 'none';
+        }
+
+        // REGISTRO Y VALIDACIÓN DE CORREO DUPLICADO
+        function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+
+            let users = JSON.parse(localStorage.getItem('webglish_users')) || [];
+
+            // Verificar si el correo ya existe
+            const emailExists = users.some(user => user.email === email);
+
+            if (emailExists) {
+                document.getElementById('emailError').style.display = 'block';
+                return;
+            }
+
+            // Guardar usuario
+            const newUser = { name: name, email: email, password: password };
+            users.push(newUser);
+            localStorage.setItem('webglish_users', JSON.stringify(users));
+
+            // Guardar nombre activo y REDIRIGIR AL DASHBOARD
+            localStorage.setItem('webglish_userName', name);
+            window.location.href = 'dashboard.html';
+        }
+
+        // INICIAR SESIÓN
+        function loginUser(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            
+            let users = JSON.parse(localStorage.getItem('webglish_users')) || [];
+            const userFound = users.find(u => u.email === email);
+
+            if (userFound) {
+                localStorage.setItem('webglish_userName', userFound.name);
+            } else {
+                const defaultName = email.split('@')[0];
+                localStorage.setItem('webglish_userName', defaultName);
+            }
+
+            window.location.href = 'dashboard.html';
         }
     </script>
 </body>
