@@ -1,0 +1,29 @@
+<form onsubmit="saveUserAndRedirect(event)">
+    <div class="form-group">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" class="input-field" placeholder="Tu nombre" required>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" class="input-field" placeholder="correo@ejemplo.com" required>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+    </div>
+
+    <button type="submit" class="submit-btn">Sign up</button>
+</form>
+
+<script>
+    function saveUserAndRedirect(event) {
+        event.preventDefault();
+        const nameInput = document.getElementById('fullname').value;
+        // Guarda el nombre ingresado
+        localStorage.setItem('webglish_userName', nameInput);
+        // Redirige al Dashboard
+        window.location.href = 'dashboard.html';
+    }
+</script>
