@@ -72,28 +72,27 @@
             color: #666;
         }
 
-        /* Contenedor del menú lateral */
+        /* Menú e Indicador Animado Rojo */
         .nav-menu {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            position: relative; /* Importante para fijar la posición del fondo */
+            position: relative;
         }
 
-        /* El fondo rojo animado */
         .nav-indicator {
             position: absolute;
-            background-color: #DC3C22; /* Rojo de tu paleta */
+            background-color: #DC3C22; /* Fondo Rojo */
             border-radius: 14px;
-            transition: top 0.3s ease, height 0.3s ease, width 0.3s ease;
-            z-index: 1; /* Se dibuja detrás del texto */
+            transition: all 0.3s ease;
+            z-index: 1;
             pointer-events: none;
         }
 
         .nav-item {
             position: relative;
-            z-index: 2; /* El texto queda por encima */
+            z-index: 2;
         }
 
         .nav-item a {
@@ -109,7 +108,6 @@
             white-space: nowrap;
         }
 
-        /* Cuando está activo, la letra cambia a blanco sobre el fondo rojo */
         .nav-item.active a {
             color: #FFFFFF !important;
             background-color: transparent !important;
@@ -147,12 +145,11 @@
             text-transform: uppercase;
         }
 
-        /* Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 2.2fr 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
-            flex-grow: 1;
+            align-items: start;
         }
 
         .cards-column {
@@ -186,23 +183,23 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 140px;
+            height: 140px;
         }
 
         .fact-text {
-            font-size: 13px;
+            font-size: 12px;
             color: #03658C;
             line-height: 1.4;
             font-weight: 500;
             font-style: italic;
         }
 
-        /* 2. Carrusel de Imágenes para Upcoming Events */
+        /* 2. Carrusel */
         .carousel-card {
             position: relative;
             overflow: hidden;
             padding: 0;
-            min-height: 140px;
+            height: 140px;
             border-radius: 20px;
         }
 
@@ -276,7 +273,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 32px;
+            min-height: 28px;
             position: relative;
         }
 
@@ -296,32 +293,32 @@
             margin-top: 2px;
         }
 
-        /* 4. Sección Derecha (Estadísticas y Gráfica) */
+        /* 4. Columna Derecha */
         .right-stats-card {
             background-color: #FBF5DE;
             border-radius: 20px;
             padding: 22px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             gap: 15px;
+            width: 100%;
         }
 
         .chart-container {
             background-color: #EAC8A6;
             border-radius: 16px;
-            padding: 15px;
+            padding: 20px 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-grow: 1;
         }
 
         .stat-value {
             font-size: 22px;
             font-weight: 800;
             color: #03658C;
+            margin-top: 10px;
         }
 
         .stat-label {
@@ -333,7 +330,7 @@
 
         canvas {
             max-width: 100%;
-            max-height: 180px;
+            max-height: 150px;
         }
     </style>
 </head>
@@ -345,7 +342,7 @@
             <div>
                 <div class="brand-logo">Webglish</div>
                 <div class="user-profile">
-                    <img src="https://via.placeholder.com/44/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=U&background=FBF5DE&color=03658C&bold=true&size=128" alt="Profile" class="user-avatar">
                     <div class="user-info">
                         <div class="user-name" id="profileName">Student</div>
                         <div class="user-role">Student</div>
@@ -353,9 +350,7 @@
                 </div>
 
                 <ul class="nav-menu" id="navMenu">
-                    <!-- Este div es la cajita roja que se desplazará -->
                     <div class="nav-indicator" id="navIndicator"></div>
-
                     <li class="nav-item active"><a href="dashboard.html">Inicio</a></li>
                     <li class="nav-item"><a href="examenes.html">Mis exámenes</a></li>
                     <li class="nav-item"><a href="estadisticas.html">Mis estadísticas</a></li>
@@ -374,16 +369,15 @@
             </header>
 
             <div class="dashboard-grid">
-                <!-- Columna Izquierda -->
                 <div class="cards-column">
                     <div class="two-cards-row">
-                        <!-- 1. Dato Curioso Aleatorio -->
+                        <!-- 1. Dato Curioso -->
                         <div class="card fact-card">
                             <div class="card-title">💡 Dato Curioso del Día</div>
                             <p class="fact-text" id="randomFact">Cargando dato curioso...</p>
                         </div>
 
-                        <!-- 2. Upcoming Events (Carrusel de imágenes sin texto) -->
+                        <!-- 2. Carrusel de Imágenes -->
                         <div class="card carousel-card">
                             <div class="carousel-container">
                                 <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop" class="carousel-img active" alt="Evento 1">
@@ -393,53 +387,69 @@
                         </div>
                     </div>
 
-                    <!-- 3. My Schedule (Calendario Interactivo) -->
+                    <!-- 3. Calendario -->
                     <div class="card">
                         <div class="calendar-header">
                             <button class="calendar-btn" onclick="prevMonth()">&lt;</button>
                             <span class="calendar-title" id="monthYearTitle">Mes Año</span>
                             <button class="calendar-btn" onclick="nextMonth()">&gt;</button>
                         </div>
-                        <div class="calendar-grid" id="calendarDays">
-                            <!-- Días generados dinámicamente con JS -->
-</div>
-        </div>
+                        <div class="calendar-grid" id="calendarDays"></div>
+                    </div>
+                </div>
+
+                <!-- 4. Columna Derecha -->
+                <div class="right-stats-card">
+                    <div class="card-title" style="text-align: center;">Resumen de Exámenes</div>
+                    
+                    <div class="chart-container">
+                        <canvas id="statsChart"></canvas>
+                        <div class="stat-value" id="statsPercentage">0%</div>
+                        <div class="stat-label" id="statsStatus">Sin exámenes realizados</div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- 4. Columna Derecha con Gráfica de Estadísticas -->
-    <div class="right-stats-card">
-        <div class="card-title" style="text-align: center;">Resumen de Exámenes</div>
-        
-        <div class="chart-container">
-            <canvas id="statsChart"></canvas>
-            <div class="stat-value" id="statsPercentage">0%</div>
-            <div class="stat-label" id="statsStatus">Sin exámenes realizados</div>
-        </div>
-    </div>
-
-</div>
-</main>
-</div>
     <script>
-        // --- 1. SALUDO Y NOMBRE DINÁMICO ---
         document.addEventListener("DOMContentLoaded", function() {
             const savedName = localStorage.getItem('webglish_userName');
+            const avatarImg = document.querySelector('.user-avatar');
+
             if (savedName && savedName.trim() !== "") {
                 const cleanName = savedName.trim();
                 document.getElementById('greetingTitle').textContent = `HELLO, ${cleanName.toUpperCase()}!`;
                 document.getElementById('profileName').textContent = cleanName;
+
+                const initial = cleanName.charAt(0).toUpperCase();
+                if (avatarImg) {
+                    avatarImg.src = `https://ui-avatars.com/api/?name=${initial}&background=FBF5DE&color=03658C&bold=true&size=128`;
+                }
             }
 
-            // Registrar ingreso del día para el calendario (Punto Azul)
             logDailyActivity('entry');
-            
             initRandomFact();
             initCarousel();
             renderCalendar();
             renderChart();
+            setTimeout(initNavIndicator, 100);
         });
 
-        // --- 2. 20 DATOS CURIOSOS ALEATORIOS ---
+        function initNavIndicator() {
+            const activeLink = document.querySelector('.nav-item.active a');
+            const indicator = document.getElementById('navIndicator');
+
+            if (activeLink && indicator) {
+                indicator.style.top = `${activeLink.offsetTop}px`;
+                indicator.style.left = `${activeLink.offsetLeft}px`;
+                indicator.style.width = `${activeLink.offsetWidth}px`;
+                indicator.style.height = `${activeLink.offsetHeight}px`;
+            }
+        }
+
+        window.addEventListener('resize', initNavIndicator);
+
         const facts = [
             "El inglés es el idioma oficial de los cielos; todos los pilotos deben hablarlo en vuelos internacionales.",
             "La palabra 'Set' tiene la mayor cantidad de definiciones en el diccionario de inglés (más de 430).",
@@ -468,7 +478,6 @@
             document.getElementById('randomFact').textContent = `"${facts[randomIndex]}"`;
         }
 
-        // --- 3. CARRUSEL AUTOMÁTICO DE IMÁGENES ---
         function initCarousel() {
             const images = document.querySelectorAll('.carousel-img');
             let current = 0;
@@ -479,14 +488,12 @@
             }, 3000);
         }
 
-        // --- 4. CALENDARIO CON REGISTRO DE DÍAS (Punto Azul / Rojo) ---
         let currentDate = new Date();
 
         function logDailyActivity(type) {
             const todayStr = new Date().toISOString().split('T')[0];
             let activityLog = JSON.parse(localStorage.getItem('webglish_activity')) || {};
             
-            // Si ya hizo un examen (red), no sobreescribir con entrada (blue)
             if (type === 'exam' || !activityLog[todayStr]) {
                 activityLog[todayStr] = type;
                 localStorage.setItem('webglish_activity', JSON.stringify(activityLog));
@@ -503,7 +510,6 @@
             const grid = document.getElementById('calendarDays');
             grid.innerHTML = '';
 
-            // Nombres de días
             const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             dayNames.forEach(d => {
                 const el = document.createElement('div');
@@ -516,18 +522,15 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const activityLog = JSON.parse(localStorage.getItem('webglish_activity')) || {};
 
-            // Espacios en blanco
             for (let i = 0; i < firstDay; i++) {
                 grid.appendChild(document.createElement('div'));
             }
 
-            // Días del mes
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayEl = document.createElement('div');
                 dayEl.className = 'calendar-day';
                 dayEl.textContent = day;
 
-                // Formatear clave YYYY-MM-DD
                 const monthStr = String(month + 1).padStart(2, '0');
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
@@ -556,64 +559,43 @@
             renderCalendar();
         }
 
-        // --- 5. GRÁFICA DE ESTADÍSTICAS (SEGUNDO LOS EXÁMENES REALIZADOS) ---
         function renderChart() {
             const exams = JSON.parse(localStorage.getItem('webglish_exams')) || [];
             const canvas = document.getElementById('statsChart');
             const ctx = canvas.getContext('2d');
 
-            canvas.width = 160;
-            canvas.height = 160;
+            canvas.width = 150;
+            canvas.height = 150;
 
             if (exams.length === 0) {
-                // Dibujar dona vacía
                 ctx.beginPath();
-                ctx.arc(80, 80, 60, 0, 2 * Math.PI);
+                ctx.arc(75, 75, 55, 0, 2 * Math.PI);
                 ctx.strokeStyle = '#FBF5DE';
-                ctx.lineWidth = 16;
+                ctx.lineWidth = 14;
                 ctx.stroke();
 
                 document.getElementById('statsPercentage').textContent = '0%';
                 document.getElementById('statsStatus').textContent = 'Sin exámenes realizados';
             } else {
-                // Calcular promedio real
                 const totalScore = exams.reduce((acc, e) => acc + e.score, 0);
                 const avgPercentage = Math.round(totalScore / exams.length);
-
                 const angle = (avgPercentage / 100) * 2 * Math.PI;
 
-                // Fondo de la dona
                 ctx.beginPath();
-                ctx.arc(80, 80, 60, 0, 2 * Math.PI);
+                ctx.arc(75, 75, 55, 0, 2 * Math.PI);
                 ctx.strokeStyle = '#FBF5DE';
-                ctx.lineWidth = 16;
+                ctx.lineWidth = 14;
                 ctx.stroke();
 
-                // Progreso de la dona
                 ctx.beginPath();
-                ctx.arc(80, 80, 60, -Math.PI / 2, (-Math.PI / 2) + angle);
+                ctx.arc(75, 75, 55, -Math.PI / 2, (-Math.PI / 2) + angle);
                 ctx.strokeStyle = '#DC3C22';
-                ctx.lineWidth = 16;
+                ctx.lineWidth = 14;
                 ctx.stroke();
 
                 document.getElementById('statsPercentage').textContent = `${avgPercentage}%`;
                 document.getElementById('statsStatus').textContent = `${exams.length} examen(es) completado(s)`;
             }
-
-            function initNavIndicator() {
-            const activeLink = document.querySelector('.nav-item.active a');
-            const indicator = document.getElementById('navIndicator');
-
-            if (activeLink && indicator) {
-                // Mide la posición y ancho del texto activo
-                const rect = activeLink.getBoundingClientRect();
-                
-                indicator.style.top = `${activeLink.offsetTop}px`;
-                indicator.style.left = `${activeLink.offsetLeft}px`;
-                indicator.style.width = `${rect.width}px`;
-                indicator.style.height = `${rect.height}px`;
-            }
-                
         }
     </script>
 </body>
