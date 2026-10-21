@@ -72,28 +72,47 @@
             color: #666;
         }
 
+        /* Contenedor del menú lateral */
         .nav-menu {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            position: relative; /* Importante para fijar la posición del fondo */
+        }
+
+        /* El fondo rojo animado */
+        .nav-indicator {
+            position: absolute;
+            background-color: #DC3C22; /* Rojo de tu paleta */
+            border-radius: 14px;
+            transition: top 0.3s ease, height 0.3s ease, width 0.3s ease;
+            z-index: 1; /* Se dibuja detrás del texto */
+            pointer-events: none;
+        }
+
+        .nav-item {
+            position: relative;
+            z-index: 2; /* El texto queda por encima */
         }
 
         .nav-item a {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
+            padding: 10px 16px;
             color: #03658C;
             text-decoration: none;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 14px;
-            transition: 0.2s;
+            transition: color 0.3s ease;
+            white-space: nowrap;
         }
 
+        /* Cuando está activo, la letra cambia a blanco sobre el fondo rojo */
         .nav-item.active a {
-            background-color: #EAC8A6;
+            color: #FFFFFF !important;
+            background-color: transparent !important;
         }
 
         .logout-link {
