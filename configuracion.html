@@ -83,7 +83,7 @@
 
         .nav-indicator {
             position: absolute;
-            background-color: #DC3C22; /* Rojo de tu paleta */
+            background-color: #DC3C22;
             border-radius: 14px;
             transition: all 0.3s ease;
             z-index: 1;
@@ -352,7 +352,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             updateUserProfile();
-            setTimeout(initNavIndicator, 100);
+            requestAnimationFrame(() => {
+                initNavIndicator();
+            });
         });
 
         function updateUserProfile() {
@@ -372,11 +374,12 @@
         }
 
         function initNavIndicator() {
+            const activeItem = document.querySelector('.nav-item.active');
             const activeLink = document.querySelector('.nav-item.active a');
             const indicator = document.getElementById('navIndicator');
 
-            if (activeLink && indicator) {
-                indicator.style.top = `${activeLink.offsetTop}px`;
+            if (activeItem && activeLink && indicator) {
+                indicator.style.top = `${activeItem.offsetTop}px`;
                 indicator.style.left = `${activeLink.offsetLeft}px`;
                 indicator.style.width = `${activeLink.offsetWidth}px`;
                 indicator.style.height = `${activeLink.offsetHeight}px`;
@@ -390,7 +393,9 @@
             if (newName !== "") {
                 localStorage.setItem('webglish_userName', newName);
                 updateUserProfile();
-                setTimeout(initNavIndicator, 50);
+                requestAnimationFrame(() => {
+                    initNavIndicator();
+                });
                 alert("¡Nombre actualizado exitosamente!");
             }
         }
