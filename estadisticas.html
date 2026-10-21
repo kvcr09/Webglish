@@ -118,7 +118,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Carga nombre de usuario y foto de perfil dinámica con iniciales
             const savedName = localStorage.getItem('webglish_userName');
             const avatarImg = document.querySelector('.user-avatar');
 
@@ -132,7 +131,6 @@
                 }
             }
 
-            // 2. Verifica si el usuario ya ha realizado algún examen
             const userExams = JSON.parse(localStorage.getItem('webglish_exams')) || JSON.parse(localStorage.getItem('webglish_examResults')) || [];
 
             if (userExams.length > 0) {
@@ -151,16 +149,18 @@
                 document.getElementById('approvalRate').textContent = `${approvalRatio}%`;
             }
 
-            // 3. Posiciona la pastilla roja sobre "Mis estadísticas"
-            setTimeout(initNavIndicator, 100);
+            requestAnimationFrame(() => {
+                initNavIndicator();
+            });
         });
 
         function initNavIndicator() {
+            const activeItem = document.querySelector('.nav-item.active');
             const activeLink = document.querySelector('.nav-item.active a');
             const indicator = document.getElementById('navIndicator');
 
-            if (activeLink && indicator) {
-                indicator.style.top = `${activeLink.offsetTop}px`;
+            if (activeItem && activeLink && indicator) {
+                indicator.style.top = `${activeItem.offsetTop}px`;
                 indicator.style.left = `${activeLink.offsetLeft}px`;
                 indicator.style.width = `${activeLink.offsetWidth}px`;
                 indicator.style.height = `${activeLink.offsetHeight}px`;
