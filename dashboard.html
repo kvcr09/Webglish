@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webglish</title>
+    <title>Webglish - Dashboard</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,24 +12,22 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Ocupa todo el alto y ancho del navegador sin scrollbar externa */
         html, body {
             width: 100%;
             height: 100vh;
             overflow: hidden;
-            background-color: #EAC8A6; /* Arena Suave como fondo base */
+            background-color: #EAC8A6;
         }
 
-        /* Contenedor principal a pantalla completa */
         .dashboard-container {
-            background-color: #EAC8A6; /* Arena Suave */
+            background-color: #EAC8A6;
             width: 100vw;
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* Sidebar Izquierda a pantalla completa */
+        /* Sidebar Izquierda */
         .sidebar {
             width: 250px;
             background-color: #F5DEC2;
@@ -44,7 +42,7 @@
         .brand-logo {
             font-size: 26px;
             font-weight: 800;
-            color: #03658C; /* Azul Intenso */
+            color: #03658C;
             margin-bottom: 25px;
         }
 
@@ -100,27 +98,23 @@
 
         .logout-link {
             margin-top: auto;
-            color: #DC3C22; /* Rojo Vibrante */
+            color: #DC3C22;
             text-decoration: none;
             font-weight: 700;
             font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        /* Panel Principal a pantalla completa con scroll interno si se necesita */
+        /* Panel Principal */
         .main-panel {
             flex-grow: 1;
-            padding: 35px 40px;
+            padding: 30px 35px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             height: 100vh;
             overflow-y: auto;
         }
 
-        /* Encabezado */
         .top-header {
             display: flex;
             justify-content: space-between;
@@ -128,106 +122,199 @@
         }
 
         .welcome-title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
             color: #03658C;
             text-transform: uppercase;
         }
 
-        .search-bar {
-            background-color: #FBF5DE;
-            padding: 10px 18px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 240px;
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 13px;
-            color: #03658C;
-            width: 100%;
-        }
-
-        /* Grid adaptado al alto de la pantalla */
+        /* Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 20px;
             flex-grow: 1;
         }
 
         .cards-column {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
         }
 
         .two-cards-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 18px;
         }
 
         .card {
             background-color: #FBF5DE;
             border-radius: 20px;
-            padding: 20px 24px;
+            padding: 18px 22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #03658C;
-            margin-bottom: 14px;
-        }
-
-        .teacher-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             margin-bottom: 10px;
-            font-size: 13px;
-            color: #03658C;
         }
 
-        /* Columna de Estadísticas */
-        .right-stats-card {
-            background-color: #FBF5DE;
-            border-radius: 20px;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .stat-box {
-            background-color: #EAC8A6;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            flex-grow: 1;
+        /* 1. Dato Curioso */
+        .fact-card {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
+            min-height: 140px;
         }
 
-        .stat-circle {
-            font-size: 28px;
+        .fact-text {
+            font-size: 13px;
+            color: #03658C;
+            line-height: 1.4;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        /* 2. Carrusel de Imágenes para Upcoming Events */
+        .carousel-card {
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+            min-height: 140px;
+            border-radius: 20px;
+        }
+
+        .carousel-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            border-radius: 20px;
+        }
+
+        .carousel-img.active {
+            opacity: 1;
+        }
+
+        /* 3. Calendario */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #03658C;
+        }
+
+        .calendar-btn {
+            background: #EAC8A6;
+            border: none;
+            color: #03658C;
+            font-weight: bold;
+            font-size: 14px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .day-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #03658C;
+            opacity: 0.7;
+        }
+
+        .calendar-day {
+            font-size: 12px;
+            color: #03658C;
+            padding: 4px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            position: relative;
+        }
+
+        .dot-blue {
+            width: 5px;
+            height: 5px;
+            background-color: #03658C;
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+
+        .dot-red {
+            width: 5px;
+            height: 5px;
+            background-color: #DC3C22;
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+
+        /* 4. Sección Derecha (Estadísticas y Gráfica) */
+        .right-stats-card {
+            background-color: #FBF5DE;
+            border-radius: 20px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .chart-container {
+            background-color: #EAC8A6;
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .stat-value {
+            font-size: 22px;
             font-weight: 800;
+            color: #03658C;
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #03658C;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-top: 4px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 180px;
         }
     </style>
 </head>
@@ -241,7 +328,7 @@
                 <div class="user-profile">
                     <img src="https://via.placeholder.com/44/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
                     <div class="user-info">
-                        <div class="user-name" id="profileName">Karlee</div>
+                        <div class="user-name" id="profileName">Student</div>
                         <div class="user-role">Student</div>
                     </div>
                 </div>
@@ -251,8 +338,8 @@
                     <li class="nav-item"><a href="examenes.html">Mis exámenes</a></li>
                     <li class="nav-item"><a href="estadisticas.html">Mis estadísticas</a></li>
                     <li class="nav-item"><a href="nosotros.html">Sobre nosotros</a></li>
-                   <li class="nav-item"><a href="configuracion.html">Configuración</a></li>
-            </ul>
+                    <li class="nav-item"><a href="configuracion.html">Configuración</a></li>
+                </ul>
             </div>
 
             <a href="index.html" class="logout-link" onclick="localStorage.removeItem('webglish_userName')">Log out</a>
@@ -261,60 +348,241 @@
         <!-- Panel Principal -->
         <main class="main-panel">
             <header class="top-header">
-                <h1 class="welcome-title" id="greetingTitle">HELLO, KARLEE!</h1>
-                <div class="search-bar">
-                    <span>🔍</span>
-                    <input type="text" placeholder="Search">
-                </div>
+                <h1 class="welcome-title" id="greetingTitle">HELLO, STUDENT!</h1>
             </header>
 
             <div class="dashboard-grid">
                 <!-- Columna Izquierda -->
                 <div class="cards-column">
                     <div class="two-cards-row">
-                        <div class="card">
-                            <div class="card-title">Dato curioso</div>
-                            <div class="teacher-item">
-                                <div><strong>hola</strong><br><small>q tal</small></div>
-                                <span>💬</span>
-                            </div>
-                            <div class="teacher-item">
-                                <div><strong>como</strong><br><small>t va</small></div>
-                                <span>💬</span>
-                            </div>
+                        <!-- 1. Dato Curioso Aleatorio -->
+                        <div class="card fact-card">
+                            <div class="card-title">💡 Dato Curioso del Día</div>
+                            <p class="fact-text" id="randomFact">Cargando dato curioso...</p>
                         </div>
 
-                        <div class="card">
-                            <div class="card-title">Upcoming Events</div>
-                            <div style="font-size:12px; margin-bottom: 10px; color: #03658C;">
-                                <strong>Robot Race</strong><br>22 May 2026 - 03:00
+                        <!-- 2. Upcoming Events (Carrusel de imágenes sin texto) -->
+                        <div class="card carousel-card">
+                            <div class="carousel-container">
+                                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop" class="carousel-img active" alt="Evento 1">
+                                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop" class="carousel-img" alt="Evento 2">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&auto=format&fit=crop" class="carousel-img" alt="Evento 3">
                             </div>
-                            <div style="font-size:12px; color: #03658C;">
-                                <strong>Minecraft Tools</strong><br>15 May 2026 - 17:00
-                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. My Schedule (Calendario Interactivo) -->
+                    <div class="card">
+                        <div class="calendar-header">
+                            <button class="calendar-btn" onclick="prevMonth()">&lt;</button>
+                            <span class="calendar-title" id="monthYearTitle">Mes Año</span>
+                            <button class="calendar-btn" onclick="nextMonth()">&gt;</button>
+                        </div>
+                        <div class="calendar-grid" id="calendarDays">
+                            <!-- Días generados dinámicamente con JS -->
                         </div>
                     </div>
 
                     <div class="card">
-                        <div class="card-title">My Schedule</div>
-                        <p style="font-size: 13px; color: #03658C;">📅 ¿que dias realizaste un examen?</p>
+                        <div class="card-title">My Projects</div>
+                        <p style="font-size: 13px; color: #03658C;">🤖 Homework 15 - Robotics & Coding</p>
                     </div>
                 </div>
 
-                <!-- Columna Derecha -->
+                <!-- 4. Columna Derecha con Gráfica de Estadísticas -->
                 <div class="right-stats-card">
-                    <div class="stat-box">
-                        <div class="stat-label">Listening</div>
-                        <div class="stat-circle" style="color: #DC3C22;">60%</div>
+                    <div class="card-title" style="text-align: center;">Resumen de Exámenes</div>
+                    
+                    <div class="chart-container">
+                        <canvas id="statsChart"></canvas>
+                        <div class="stat-value" id="statsPercentage">0%</div>
+                        <div class="stat-label" id="statsStatus">Sin exámenes realizados</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Reading</div>
-                        <div class="stat-circle" style="color: #03658C;">90%</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Vocabulary</div>
-                        <div class="stat-circle" style="color: #03658C;">75%</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Grammar</div>
-                        <div class="stat-circle" style="color: #03658C;">75%</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- 1. SALUDO Y NOMBRE DINÁMICO ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedName = localStorage.getItem('webglish_userName');
+            if (savedName && savedName.trim() !== "") {
+                const cleanName = savedName.trim();
+                document.getElementById('greetingTitle').textContent = `HELLO, ${cleanName.toUpperCase()}!`;
+                document.getElementById('profileName').textContent = cleanName;
+            }
+
+            // Registrar ingreso del día para el calendario (Punto Azul)
+            logDailyActivity('entry');
+            
+            initRandomFact();
+            initCarousel();
+            renderCalendar();
+            renderChart();
+        });
+
+        // --- 2. 20 DATOS CURIOSOS ALEATORIOS ---
+        const facts = [
+            "El inglés es el idioma oficial de los cielos; todos los pilotos deben hablarlo en vuelos internacionales.",
+            "La palabra 'Set' tiene la mayor cantidad de definiciones en el diccionario de inglés (más de 430).",
+            "El pangrama 'The quick brown fox jumps over the lazy dog' utiliza todas las letras del alfabeto inglés.",
+            "La palabra más corta e independiente en inglés con sujeto y verbo es 'Go!'.",
+            "Aproximadamente el 80% de la información guardada en las computadoras del mundo está en inglés.",
+            "La palabra 'Uncopyrightable' es la palabra de 15 letras más larga que no repite ninguna letra.",
+            "El sonido 'ough' se puede pronunciar de 9 formas distintas en inglés.",
+            "El punto sobre las letras 'i' y 'j' se llama 'tittle'.",
+            "En inglés no existen palabras que rimen perfectamente con 'month', 'orange', 'silver' o 'purple'.",
+            "El alfabeto inglés tenía antiguamente 27 letras en lugar de 26 (la 27ª era '&').",
+            "La palabra 'Goddessship' es la única palabra en inglés que tiene una letra repetida tres veces seguidas.",
+            "Se añade una palabra nueva al diccionario en inglés cada 2 horas aproximadamente.",
+            "El inglés contiene la mayor cantidad de palabras de cualquier idioma en el mundo.",
+            "La palabra 'Queue' se pronuncia exactamente igual si le quitas las últimas cuatro letras.",
+            "El texto impreso más antiguo escrito en inglés data de alrededor del año 700 d.C.",
+            "La palabra 'SWIMS' se lee igual al ponerla de cabeza.",
+            "El adjetivo más usado en el idioma inglés es 'Good'.",
+            "El sustantivo más usado en inglés es 'Time'.",
+            "El número 'Four' es el único número en inglés que tiene la misma cantidad de letras que su valor.",
+            "La palabra 'Rhythm' es la palabra más larga sin vocales normales (A, E, I, O, U)."
+        ];
+
+        function initRandomFact() {
+            const randomIndex = Math.floor(Math.random() * facts.length);
+            document.getElementById('randomFact').textContent = `"${facts[randomIndex]}"`;
+        }
+
+        // --- 3. CARRUSEL AUTOMÁTICO DE IMÁGENES ---
+        function initCarousel() {
+            const images = document.querySelectorAll('.carousel-img');
+            let current = 0;
+            setInterval(() => {
+                images[current].classList.remove('active');
+                current = (current + 1) % images.length;
+                images[current].classList.add('active');
+            }, 3000);
+        }
+
+        // --- 4. CALENDARIO CON REGISTRO DE DÍAS (Punto Azul / Rojo) ---
+        let currentDate = new Date();
+
+        function logDailyActivity(type) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            let activityLog = JSON.parse(localStorage.getItem('webglish_activity')) || {};
+            
+            // Si ya hizo un examen (red), no sobreescribir con entrada (blue)
+            if (type === 'exam' || !activityLog[todayStr]) {
+                activityLog[todayStr] = type;
+                localStorage.setItem('webglish_activity', JSON.stringify(activityLog));
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('monthYearTitle').textContent = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('calendarDays');
+            grid.innerHTML = '';
+
+            // Nombres de días
+            const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayNames.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'day-name';
+                el.textContent = d;
+                grid.appendChild(el);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const activityLog = JSON.parse(localStorage.getItem('webglish_activity')) || {};
+
+            // Espacios en blanco
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            // Días del mes
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = day;
+
+                // Formatear clave YYYY-MM-DD
+                const monthStr = String(month + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const dateKey = `${year}-${monthStr}-${dayStr}`;
+
+                if (activityLog[dateKey] === 'exam') {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot-red';
+                    dayEl.appendChild(dot);
+                } else if (activityLog[dateKey] === 'entry') {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot-blue';
+                    dayEl.appendChild(dot);
+                }
+
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // --- 5. GRÁFICA DE ESTADÍSTICAS (SEGUNDO LOS EXÁMENES REALIZADOS) ---
+        function renderChart() {
+            const exams = JSON.parse(localStorage.getItem('webglish_exams')) || [];
+            const canvas = document.getElementById('statsChart');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 160;
+            canvas.height = 160;
+
+            if (exams.length === 0) {
+                // Dibujar dona vacía
+                ctx.beginPath();
+                ctx.arc(80, 80, 60, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#FBF5DE';
+                ctx.lineWidth = 16;
+                ctx.stroke();
+
+                document.getElementById('statsPercentage').textContent = '0%';
+                document.getElementById('statsStatus').textContent = 'Sin exámenes realizados';
+            } else {
+                // Calcular promedio real
+                const totalScore = exams.reduce((acc, e) => acc + e.score, 0);
+                const avgPercentage = Math.round(totalScore / exams.length);
+
+                const angle = (avgPercentage / 100) * 2 * Math.PI;
+
+                // Fondo de la dona
+                ctx.beginPath();
+                ctx.arc(80, 80, 60, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#FBF5DE';
+                ctx.lineWidth = 16;
+                ctx.stroke();
+
+                // Progreso de la dona
+                ctx.beginPath();
+                ctx.arc(80, 80, 60, -Math.PI / 2, (-Math.PI / 2) + angle);
+                ctx.strokeStyle = '#DC3C22';
+                ctx.lineWidth = 16;
+                ctx.stroke();
+
+                document.getElementById('statsPercentage').textContent = `${avgPercentage}%`;
+                document.getElementById('statsStatus').textContent = `${exams.length} examen(es) completado(s)`;
+            }
+        }
+    </script>
+</body>
+</html>
