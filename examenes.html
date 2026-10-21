@@ -268,32 +268,32 @@
 
         <!-- Panel Principal -->
         <main class="main-panel" id="mainPanel">
-            <!-- Encabezado con Botón a la Derecha que manda al Examen -->
+            <!-- Encabezado con Botón Azul que MANDA AL EXAMEN DE CLASIFICACIÓN -->
             <header class="top-header" id="topHeader">
                 <h1 class="welcome-title">MIS EXÁMENES</h1>
-                <button class="btn-new-exam" onclick="startExam()">+ Iniciar examen</button>
+                <button class="btn-new-exam" onclick="startPlacementTest()">+ Iniciar examen</button>
             </header>
 
             <!-- Rectángulo Superior: Iniciar un nuevo test -->
             <section class="section-card">
                 <h2 class="section-title">Iniciar un nuevo test</h2>
                 <div class="tests-grid">
-                    <div class="test-square" onclick="startExam()">
+                    <div class="test-square" onclick="showSpecificTestInfo('Gramática')">
                         <span class="test-icon">📝</span>
                         <div class="test-square-title">Iniciar test de gramática</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam()">
+                    <div class="test-square" onclick="showSpecificTestInfo('Vocabulario')">
                         <span class="test-icon">📚</span>
                         <div class="test-square-title">Iniciar test de vocabulario</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam()">
+                    <div class="test-square" onclick="showSpecificTestInfo('Lectura')">
                         <span class="test-icon">📖</span>
                         <div class="test-square-title">Iniciar test de lectura</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam()">
+                    <div class="test-square" onclick="showSpecificTestInfo('Escucha')">
                         <span class="test-icon">🎧</span>
                         <div class="test-square-title">Iniciar test de escucha</div>
                     </div>
@@ -304,7 +304,7 @@
             <section class="section-card" style="margin-bottom: 20px;">
                 <h2 class="section-title">Test pendientes</h2>
                 <div class="empty-pending-text" id="pendingContainer">
-                    Aún no tienes evaluaciones incompletas. Inicia un test para mostrarlos aquí. <span class="trigger-scroll" onclick="startExam()">Iniciar test</span>
+                    Aún no tienes evaluaciones incompletas. Para presentar el Examen de Clasificación general haz clic en <span class="trigger-scroll" onclick="startPlacementTest()">+ Iniciar examen</span>.
                 </div>
             </section>
         </main>
@@ -345,9 +345,14 @@
 
         window.addEventListener('resize', initNavIndicator);
 
-        // Función para ir a la vista del examen
-        function startExam() {
+        // EXCLUSIVO: El botón azul "+ Iniciar examen" redirige al Placement Test
+        function startPlacementTest() {
             window.location.href = 'test.html';
+        }
+
+        // Para las tarjetas individuales
+        function showSpecificTestInfo(topic) {
+            alert(`Para realizar la evaluación general de nivelación (PreA1 - C2), utiliza el botón superior "+ Iniciar examen". Los módulos de práctica por área (${topic}) estarán disponibles próximamente.`);
         }
     </script>
 </body>
