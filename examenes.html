@@ -268,32 +268,32 @@
 
         <!-- Panel Principal -->
         <main class="main-panel" id="mainPanel">
-            <!-- Encabezado con Botón a la Derecha -->
+            <!-- Encabezado con Botón a la Derecha que manda al Examen -->
             <header class="top-header" id="topHeader">
                 <h1 class="welcome-title">MIS EXÁMENES</h1>
-                <button class="btn-new-exam" onclick="scrollToTop()">+ Iniciar examen</button>
+                <button class="btn-new-exam" onclick="startExam()">+ Iniciar examen</button>
             </header>
 
             <!-- Rectángulo Superior: Iniciar un nuevo test -->
             <section class="section-card">
                 <h2 class="section-title">Iniciar un nuevo test</h2>
                 <div class="tests-grid">
-                    <div class="test-square" onclick="startExam('Gramática')">
+                    <div class="test-square" onclick="startExam()">
                         <span class="test-icon">📝</span>
                         <div class="test-square-title">Iniciar test de gramática</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam('Vocabulario')">
+                    <div class="test-square" onclick="startExam()">
                         <span class="test-icon">📚</span>
                         <div class="test-square-title">Iniciar test de vocabulario</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam('Lectura')">
+                    <div class="test-square" onclick="startExam()">
                         <span class="test-icon">📖</span>
                         <div class="test-square-title">Iniciar test de lectura</div>
                     </div>
 
-                    <div class="test-square" onclick="startExam('Escucha')">
+                    <div class="test-square" onclick="startExam()">
                         <span class="test-icon">🎧</span>
                         <div class="test-square-title">Iniciar test de escucha</div>
                     </div>
@@ -304,7 +304,7 @@
             <section class="section-card" style="margin-bottom: 20px;">
                 <h2 class="section-title">Test pendientes</h2>
                 <div class="empty-pending-text" id="pendingContainer">
-                    Aún no tienes evaluaciones incompletas. Inicia un test para mostrarlos aquí. <span class="trigger-scroll" onclick="scrollToTop()">Iniciar test</span>
+                    Aún no tienes evaluaciones incompletas. Inicia un test para mostrarlos aquí. <span class="trigger-scroll" onclick="startExam()">Iniciar test</span>
                 </div>
             </section>
         </main>
@@ -345,15 +345,9 @@
 
         window.addEventListener('resize', initNavIndicator);
 
-        function scrollToTop() {
-            document.getElementById('mainPanel').scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        function startExam(type) {
-            alert(`Iniciando test de ${type}...`);
+        // Función para ir a la vista del examen
+        function startExam() {
+            window.location.href = 'test.html';
         }
     </script>
 </body>
