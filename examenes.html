@@ -312,7 +312,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Cargar nombre de usuario y avatar dinámico
             const savedName = localStorage.getItem('webglish_userName');
             const avatarImg = document.querySelector('.user-avatar');
 
@@ -326,16 +325,18 @@
                 }
             }
 
-            // 2. Posicionar indicador rojo animado
-            setTimeout(initNavIndicator, 100);
+            requestAnimationFrame(() => {
+                initNavIndicator();
+            });
         });
 
         function initNavIndicator() {
+            const activeItem = document.querySelector('.nav-item.active');
             const activeLink = document.querySelector('.nav-item.active a');
             const indicator = document.getElementById('navIndicator');
 
-            if (activeLink && indicator) {
-                indicator.style.top = `${activeLink.offsetTop}px`;
+            if (activeItem && activeLink && indicator) {
+                indicator.style.top = `${activeItem.offsetTop}px`;
                 indicator.style.left = `${activeLink.offsetLeft}px`;
                 indicator.style.width = `${activeLink.offsetWidth}px`;
                 indicator.style.height = `${activeLink.offsetHeight}px`;
@@ -344,7 +345,6 @@
 
         window.addEventListener('resize', initNavIndicator);
 
-        // Función para subir suavemente la pantalla hacia arriba
         function scrollToTop() {
             document.getElementById('mainPanel').scrollTo({
                 top: 0,
@@ -352,7 +352,6 @@
             });
         }
 
-        // Función para iniciar un examen
         function startExam(type) {
             alert(`Iniciando test de ${type}...`);
         }
