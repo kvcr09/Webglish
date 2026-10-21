@@ -599,6 +599,21 @@
                 document.getElementById('statsPercentage').textContent = `${avgPercentage}%`;
                 document.getElementById('statsStatus').textContent = `${exams.length} examen(es) completado(s)`;
             }
+
+            function initNavIndicator() {
+            const activeLink = document.querySelector('.nav-item.active a');
+            const indicator = document.getElementById('navIndicator');
+
+            if (activeLink && indicator) {
+                // Mide la posición y ancho del texto activo
+                const rect = activeLink.getBoundingClientRect();
+                
+                indicator.style.top = `${activeLink.offsetTop}px`;
+                indicator.style.left = `${activeLink.offsetLeft}px`;
+                indicator.style.width = `${rect.width}px`;
+                indicator.style.height = `${rect.height}px`;
+            }
+                
         }
     </script>
 </body>
