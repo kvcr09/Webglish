@@ -72,28 +72,45 @@
             color: #666;
         }
 
+        /* Menú e Indicador Animado Rojo */
         .nav-menu {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            position: relative;
+        }
+
+        .nav-indicator {
+            position: absolute;
+            background-color: #DC3C22;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .nav-item {
+            position: relative;
+            z-index: 2;
         }
 
         .nav-item a {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
+            padding: 10px 16px;
             color: #03658C;
             text-decoration: none;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 14px;
-            transition: 0.2s;
+            transition: color 0.3s ease;
+            white-space: nowrap;
         }
 
         .nav-item.active a {
-            background-color: #EAC8A6;
+            color: #FFFFFF !important;
+            background-color: transparent !important;
         }
 
         .logout-link {
@@ -229,14 +246,15 @@
             <div>
                 <div class="brand-logo">Webglish</div>
                 <div class="user-profile">
-                    <img src="https://via.placeholder.com/44/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=U&background=FBF5DE&color=03658C&bold=true&size=128" alt="Profile" class="user-avatar">
                     <div class="user-info">
                         <div class="user-name" id="profileName">Student</div>
                         <div class="user-role">Student</div>
                     </div>
                 </div>
 
-                <ul class="nav-menu">
+                <ul class="nav-menu" id="navMenu">
+                    <div class="nav-indicator" id="navIndicator"></div>
                     <li class="nav-item"><a href="dashboard.html">Inicio</a></li>
                     <li class="nav-item active"><a href="examenes.html">Mis exámenes</a></li>
                     <li class="nav-item"><a href="estadisticas.html">Mis estadísticas</a></li>
@@ -294,12 +312,37 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Cargar nombre de usuario
+            // 1. Cargar nombre de usuario y avatar dinámico
             const savedName = localStorage.getItem('webglish_userName');
+            const avatarImg = document.querySelector('.user-avatar');
+
             if (savedName && savedName.trim() !== "") {
-                document.getElementById('profileName').textContent = savedName.trim();
+                const cleanName = savedName.trim();
+                document.getElementById('profileName').textContent = cleanName;
+
+                const initial = cleanName.charAt(0).toUpperCase();
+                if (avatarImg) {
+                    avatarImg.src = `https://ui-avatars.com/api/?name=${initial}&background=FBF5DE&color=03658C&bold=true&size=128`;
+                }
             }
+
+            // 2. Posicionar indicador rojo animado
+            setTimeout(initNavIndicator, 100);
         });
+
+        function initNavIndicator() {
+            const activeLink = document.querySelector('.nav-item.active a');
+            const indicator = document.getElementById('navIndicator');
+
+            if (activeLink && indicator) {
+                indicator.style.top = `${activeLink.offsetTop}px`;
+                indicator.style.left = `${activeLink.offsetLeft}px`;
+                indicator.style.width = `${activeLink.offsetWidth}px`;
+                indicator.style.height = `${activeLink.offsetHeight}px`;
+            }
+        }
+
+        window.addEventListener('resize', initNavIndicator);
 
         // Función para subir suavemente la pantalla hacia arriba
         function scrollToTop() {
@@ -309,7 +352,7 @@
             });
         }
 
-        // Función placeholder para iniciar un examen
+        // Función para iniciar un examen
         function startExam(type) {
             alert(`Iniciando test de ${type}...`);
         }
