@@ -8,15 +8,22 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         html, body { width: 100%; height: 100vh; overflow: hidden; background-color: #EAC8A6; }
         .dashboard-container { background-color: #EAC8A6; width: 100vw; height: 100vh; display: flex; overflow: hidden; }
+        
+        /* Sidebar Izquierda */
         .sidebar { width: 250px; background-color: #F5DEC2; padding: 30px 24px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; height: 100vh; }
         .brand-logo { font-size: 26px; font-weight: 800; color: #03658C; margin-bottom: 25px; }
         .user-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 35px; }
         .user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #03658C; }
         .user-info .user-name { font-size: 14px; font-weight: 700; color: #03658C; }
         .user-info .user-role { font-size: 11px; color: #666; }
-        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .nav-item a { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #03658C; text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 14px; transition: 0.2s; }
-        .nav-item.active a { background-color: #EAC8A6; }
+        
+        /* Menú e Indicador Animado Rojo */
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        .nav-indicator { position: absolute; background-color: #DC3C22; border-radius: 14px; transition: all 0.3s ease; z-index: 1; pointer-events: none; }
+        .nav-item { position: relative; z-index: 2; }
+        .nav-item a { display: inline-flex; align-items: center; padding: 10px 16px; color: #03658C; text-decoration: none; font-size: 14px; font-weight: 700; border-radius: 14px; transition: color 0.3s ease; white-space: nowrap; }
+        .nav-item.active a { color: #FFFFFF !important; background-color: transparent !important; }
+        
         .logout-link { margin-top: auto; color: #DC3C22; text-decoration: none; font-weight: 700; font-size: 14px; }
         .main-panel { flex-grow: 1; padding: 35px 40px; display: flex; flex-direction: column; gap: 25px; height: 100vh; overflow-y: auto; }
         .welcome-title { font-size: 26px; font-weight: 800; color: #03658C; text-transform: uppercase; }
@@ -40,77 +47,32 @@
             margin-top: 10px;
         }
 
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-title { font-size: 18px; font-weight: 700; color: #03658C; margin-bottom: 8px; }
+        .empty-desc { font-size: 13px; color: #03658C; opacity: 0.8; max-width: 400px; margin: 0 auto 20px auto; }
+        .btn-action { display: inline-block; background-color: #DC3C22; color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 13px; }
 
-        .empty-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #03658C;
-            margin-bottom: 8px;
-        }
-
-        .empty-desc {
-            font-size: 13px;
-            color: #03658C;
-            opacity: 0.8;
-            max-width: 400px;
-            margin: 0 auto 20px auto;
-        }
-
-        .btn-action {
-            display: inline-block;
-            background-color: #DC3C22;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .stat-box {
-            background-color: #EAC8A6;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: 800;
-            color: #DC3C22;
-            margin-top: 5px;
-        }
-
-        .stat-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #03658C;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .stat-box { background-color: #EAC8A6; border-radius: 16px; padding: 20px; text-align: center; }
+        .stat-number { font-size: 32px; font-weight: 800; color: #DC3C22; margin-top: 5px; }
+        .stat-title { font-size: 13px; font-weight: 700; color: #03658C; }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Sidebar Izquierda -->
         <aside class="sidebar">
             <div>
                 <div class="brand-logo">Webglish</div>
                 <div class="user-profile">
-                    <img src="https://via.placeholder.com/44/03658C/FFFFFF?text=U" alt="Profile" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=U&background=FBF5DE&color=03658C&bold=true&size=128" alt="Profile" class="user-avatar">
                     <div class="user-info">
                         <div class="user-name" id="profileName">Student</div>
                         <div class="user-role">Student</div>
                     </div>
                 </div>
-                <ul class="nav-menu">
+                <ul class="nav-menu" id="navMenu">
+                    <div class="nav-indicator" id="navIndicator"></div>
                     <li class="nav-item"><a href="dashboard.html">Inicio</a></li>
                     <li class="nav-item"><a href="examenes.html">Mis exámenes</a></li>
                     <li class="nav-item active"><a href="estadisticas.html">Mis estadísticas</a></li>
@@ -156,16 +118,56 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Carga nombre de usuario
+            // 1. Carga nombre de usuario y foto de perfil dinámica con iniciales
             const savedName = localStorage.getItem('webglish_userName');
+            const avatarImg = document.querySelector('.user-avatar');
+
             if (savedName && savedName.trim() !== "") {
-                document.getElementById('profileName').textContent = savedName.trim();
+                const cleanName = savedName.trim();
+                document.getElementById('profileName').textContent = cleanName;
+
+                const initial = cleanName.charAt(0).toUpperCase();
+                if (avatarImg) {
+                    avatarImg.src = `https://ui-avatars.com/api/?name=${initial}&background=FBF5DE&color=03658C&bold=true&size=128`;
+                }
             }
 
-            // Verifica si el usuario ya ha realizado algún examen
-            const userExams = JSON.parse(localStorage.getItem('webglish_examResults')) || [];
+            // 2. Verifica si el usuario ya ha realizado algún examen
+            const userExams = JSON.parse(localStorage.getItem('webglish_exams')) || JSON.parse(localStorage.getItem('webglish_examResults')) || [];
 
             if (userExams.length > 0) {
-                // Si hay exámenes registrados, muestra las estadísticas calculadas
                 document.getElementById('noStatsContainer').style.display = 'none';
-                document.getElementById('stats
+                document.getElementById('statsContainer').style.display = 'block';
+
+                const totalExams = userExams.length;
+                const totalScore = userExams.reduce((acc, curr) => acc + (curr.score || 0), 0);
+                const avg = Math.round(totalScore / totalExams);
+                
+                const passedExams = userExams.filter(e => (e.score || 0) >= 60).length;
+                const approvalRatio = Math.round((passedExams / totalExams) * 100);
+
+                document.getElementById('examsCount').textContent = totalExams;
+                document.getElementById('avgGrade').textContent = `${avg}%`;
+                document.getElementById('approvalRate').textContent = `${approvalRatio}%`;
+            }
+
+            // 3. Posiciona la pastilla roja sobre "Mis estadísticas"
+            setTimeout(initNavIndicator, 100);
+        });
+
+        function initNavIndicator() {
+            const activeLink = document.querySelector('.nav-item.active a');
+            const indicator = document.getElementById('navIndicator');
+
+            if (activeLink && indicator) {
+                indicator.style.top = `${activeLink.offsetTop}px`;
+                indicator.style.left = `${activeLink.offsetLeft}px`;
+                indicator.style.width = `${activeLink.offsetWidth}px`;
+                indicator.style.height = `${activeLink.offsetHeight}px`;
+            }
+        }
+
+        window.addEventListener('resize', initNavIndicator);
+    </script>
+</body>
+</html>
