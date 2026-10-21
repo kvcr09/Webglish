@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Examen de Clasificación</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #EAC8A6;
+        }
+
+        .dashboard-container {
+            background-color: #EAC8A6;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Izquierda */
+        .sidebar {
+            width: 250px;
+            background-color: #F5DEC2;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-shrink: 0;
+            height: 100vh;
+        }
+
+        .brand-logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #03658C;
+            margin-bottom: 25px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #03658C;
+        }
+
+        .user-info .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #03658C;
+        }
+
+        .user-info .user-role {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .nav-indicator {
+            position: absolute;
+            background-color: #DC3C22;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .nav-item {
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-item a {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: #03658C;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 14px;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-item.active a {
+            color: #FFFFFF !important;
+            background-color: transparent !important;
+        }
+
+        .logout-link {
+            margin-top: auto;
+            color: #DC3C22;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Panel Principal del Examen */
+        .main-panel {
+            flex-grow: 1;
+            padding: 25px 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Barra de progreso de 24 preguntas */
+        .progress-bar-container {
+            background-color: #FBF5DE;
+            border-radius: 18px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 35px;
+            right: 35px;
+            height: 3px;
+            background-color: #D3C3B1;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .progress-nodes {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .node-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            /* Estado 1: Pendiente/Gris */
+            background-color: #CCCCCC;
+            color: #666666;
+            border: 2px solid transparent;
+        }
+
+        /* Estado 2: Respondida (Azul relleno) */
+        .node-circle.answered {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border-color: #03658C;
+        }
+
+        /* Estado 3: Pregunta Actual (Borde Azul con fondo Crema) */
+        .node-circle.current {
+            background-color: #FBF5DE;
+            color: #03658C;
+            border: 3px solid #03658C;
+            box-shadow: 0 0 6px rgba(3, 101, 140, 0.5);
+            transform: scale(1.15);
+        }
+
+        /* Disposición Principal (2 Columnas) */
+        .exam-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex-grow: 1;
+            min-height: 0;
+        }
+
+        .card-panel {
+            background-color: #FBF5DE;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            color: #03658C;
+        }
+
+        /* Columna Izquierda: Recurso/Visual */
+        .resource-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .resource-image {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid #EAC8A6;
+        }
+
+        .resource-badge {
+            background-color: #EAC8A6;
+            color: #03658C;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Columna Derecha: Pregunta y Opciones A, B, C */
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #03658C;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .option-item {
+            background-color: #EAC8A6;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 14px;
+            color: #03658C;
+        }
+
+        .option-item:hover {
+            background-color: #dfb892;
+        }
+
+        .option-item.selected {
+            border-color: #03658C;
+            background-color: #F5DEC2;
+            font-weight: 800;
+        }
+
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #03658C;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        /* Footer de Navegación */
+        .exam-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #EAC8A6;
+        }
+
+        .btn-nav {
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-prev {
+            background-color: #EAC8A6;
+            color: #03658C;
+        }
+
+        .btn-prev:hover {
+            background-color: #dfb892;
+        }
+
+        .btn-next {
+            background-color: #03658C;
+            color: #FFFFFF;
+        }
+
+        .btn-next:hover {
+            background-color: #024a68;
+        }
+
+        .btn-finish {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+        }
+
+        .btn-finish:hover {
+            background-color: #b82e18;
+        }
+
+        /* Modal de Resultados */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background-color: #FBF5DE;
+            border-radius: 24px;
+            padding: 35px;
+            width: 90%;
+            max-width: 480px;
+            text-align: center;
+            color: #03658C;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .level-badge-large {
+            display: inline-block;
+            background-color: #DC3C22;
+            color: white;
+            font-size: 38px;
+            font-weight: 800;
+            padding: 10px 30px;
+            border-radius: 20px;
+            margin: 15px 0;
+        }
+
+        .btn-modal {
+            background-color: #03658C;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Izquierda -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand-logo">Webglish</div>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=U&background=FBF5DE&color=03658C&bold=true&size=128" alt="Profile" class="user-avatar">
+                    <div class="user-info">
+                        <div class="user-name" id="profileName">Student</div>
+                        <div class="user-role">Student</div>
+                    </div>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <div class="nav-indicator" id="navIndicator"></div>
+                    <li class="nav-item"><a href="dashboard.html">Inicio</a></li>
+                    <li class="nav-item active"><a href="examenes.html">Mis exámenes</a></li>
+                    <li class="nav-item"><a href="estadisticas.html">Mis estadísticas</a></li>
+                    <li class="nav-item"><a href="nosotros.html">Sobre nosotros</a></li>
+                    <li class="nav-item"><a href="configuracion.html">Configuración</a></li>
+                </ul>
+            </div>
+
+            <a href="index.html" class="logout-link" onclick="localStorage.removeItem('webglish_userName')">Log out</a>
+        </aside>
+
+        <!-- Panel Principal -->
+        <main class="main-panel">
+            <!-- Barra superior con 24 nodos -->
+            <div class="progress-bar-container">
+                <div class="progress-line"></div>
+                <div class="progress-nodes" id="progressNodes"></div>
+            </div>
+
+            <!-- Disposición del Examen -->
+            <div class="exam-body">
+                <!-- Columna Izquierda: Recurso / Ilustración -->
+                <div class="card-panel">
+                    <div class="resource-container">
+                        <span class="resource-badge" id="resourceCategory">Placement Test</span>
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80" alt="Learning Context" class="resource-image" id="resourceImage">
+                        <p style="font-size: 13px; opacity: 0.8;" id="resourceCaption">Read the question carefully and select the correct answer.</p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Pregunta y Respuestas ABC -->
+                <div class="card-panel">
+                    <div>
+                        <div class="question-header">
+                            <span style="font-size: 12px; font-weight: 700; color: #DC3C22;" id="questionTracker">Question 1 of 24</span>
+                        </div>
+
+                        <h2 class="question-title" id="questionText">Loading question...</h2>
+
+                        <div class="options-list" id="optionsContainer"></div>
+                    </div>
+
+                    <div class="exam-footer">
+                        <button class="btn-nav btn-prev" id="btnPrev" onclick="changeQuestion(-1)">Anterior</button>
+                        <button class="btn-nav btn-next" id="btnNext" onclick="changeQuestion(1)">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Resultado Final -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-card">
+            <h2>¡Examen Completado!</h2>
+            <p style="font-size: 14px; margin-top: 8px;">De acuerdo a tus respuestas, tu nivel estimado de inglés es:</p>
+            <div class="level-badge-large" id="modalLevel">B1</div>
+            <p style="font-size: 13px; opacity: 0.8;" id="modalScoreText">Acertaste 16 de 24 preguntas (66%).</p>
+            <a href="estadisticas.html" class="btn-modal">Ver en Mis Estadísticas</a>
+        </div>
+    </div>
+
+    <script>
+        // BANCO DE DATOS DE 120 PREGUNTAS (20 POR NIVEL)
+        const questionBank = {
+            A1: [
+                { q: "She ___ a student at Webglish.", options: ["is", "are", "am"], correct: 0 },
+                { q: "Where ___ you live?", options: ["does", "do", "is"], correct: 1 },
+                { q: "I have two ___.", options: ["brother", "brothers", "brotheres"], correct: 1 },
+                { q: "Look at ___ car over there!", options: ["that", "this", "these"], correct: 0 },
+                { q: "What time ___ it?", options: ["is", "has", "does"], correct: 0 },
+                { q: "They ___ like coffee.", options: ["doesn't", "don't", "not"], correct: 1 },
+                { q: "My mother's sister is my ___.", options: ["aunt", "uncle", "cousin"], correct: 0 },
+                { q: "There ___ a book on the table.", options: ["are", "is", "be"], correct: 1 },
+                { q: "Can you ___ English?", options: ["speaks", "speaking", "speak"], correct: 2 },
+                { q: "Today is Monday, so tomorrow is ___.", options: ["Tuesday", "Wednesday", "Sunday"], correct: 0 },
+                { q: "I ___ to the gym every morning.", options: ["go", "goes", "going"], correct: 0 },
+                { q: "He usually ___ breakfast at 7:00 AM.", options: ["eat", "eats", "eating"], correct: 1 },
+                { q: "___ you got any pets?", options: ["Have", "Do", "Are"], correct: 0 },
+                { q: "This is ___ apple.", options: ["a", "an", "the"], correct: 1 },
+                { q: "We ___ watching TV right now.", options: ["is", "am", "are"], correct: 2 },
+                { q: "Whose coat is this? It's ___.", options: ["my", "mine", "me"], correct: 1 },
+                { q: "How ___ apples do you need?", options: ["much", "many", "some"], correct: 1 },
+                { q: "He was born ___ July.", options: ["on", "at", "in"], correct: 2 },
+                { q: "___ is your favorite singer?", options: ["Who", "What", "Where"], correct: 0 },
+                { q: " She is taller ___ her sister.", options: ["that", "than", "from"], correct: 1 }
+            ],
+            A2: [
+                { q: "Yesterday, I ___ to the supermarket.", options: ["go", "went", "gone"], correct: 1 },
+                { q: "She was cooking while he ___ the newspaper.", options: ["read", "was reading", "reads"], correct: 1 },
+                { q: "I haven't visited Paris ___.", options: ["already", "yet", "ever"], correct: 1 },
+                { q: "If it rains tomorrow, we ___ stay home.", options: ["will", "would", "did"], correct: 0 },
+                { q: "You ___ wear a helmet when riding a motorbike.", options: ["must", "may", "could"], correct: 0 },
+                { q: "This cake is ___ than the one we bought yesterday.", options: ["deliciouser", "more delicious", "most delicious"], correct: 1 },
+                { q: "Who is the ___ person in your family?", options: ["tallest", "taller", "most tall"], correct: 0 },
+                { q: "They have lived in London ___ 2018.", options: ["for", "since", "during"], correct: 1 },
+                { q: "I enjoyed ___ with my friends last weekend.", options: ["to play", "playing", "play"], correct: 1 },
+                { q: "What were you doing when I ___ you?", options: ["called", "was calling", "call"], correct: 0 },
+                { q: "You don't need to hurry. We have ___ time.", options: ["plenty of", "many", "few"], correct: 0 },
+                { q: "I am interested ___ learning new languages.", options: ["on", "at", "in"], correct: 2 },
+                { q: "He is looking forward to ___ you again.", options: ["see", "seeing", "saw"], correct: 1 },
+                { q: "She asked me where I ___ from.", options: ["am", "was", "were"], correct: 1 },
+                { q: "There aren't ___ chairs for everyone.", options: ["too", "enough", "such"], correct: 1 },
+                { q: "Would you like ___ coffee?", options: ["some", "any", "a few"], correct: 0 },
+                { q: "I think you ___ see a doctor.", options: ["should", "would", "shall"], correct: 0 },
+                { q: "They arrived ___ the airport two hours early.", options: ["at", "to", "in"], correct: 0 },
+                { q: "My phone was stolen while I ___ on the bus.", options: ["slept", "was sleeping", "am sleeping"], correct: 1 },
+                { q: "Have you ___ eaten sushi?", options: ["never", "ever", "yet"], correct: 1 }
+            ],
+            B1: [
+                { q: "If I ___ more money, I would buy a new car.", options: ["have", "had", "would have"], correct: 1 },
+                { q: "The building ___ constructed in 1995.", options: ["was", "is", "were"], correct: 0 },
+                { q: "He promised ___ me as soon as he arrived.", options: ["call", "calling", "to call"], correct: 2 },
+                { q: "I wish I ___ play the piano like a professional.", options: ["can", "could", "would"], correct: 1 },
+                { q: "By the time we got to the cinema, the movie ___.", options: ["already started", "had already started", "has started"], correct: 1 },
+                { q: "She suggested ___ to a different restaurant.", options: ["to go", "going", "go"], correct: 1 },
+                { q: "Although it was raining, they ___ for a walk.", options: ["went", "had gone", "go"], correct: 0 },
+                { q: "This report needs to be finished ___ Friday.", options: ["until", "by", "for"], correct: 1 },
+                { q: "He isn't used to ___ up so early.", options: ["get", "getting", "got"], correct: 1 },
+                { q: "Unless you ___ hard, you won't pass the exam.", options: ["study", "don't study", "will study"], correct: 0 },
+                { q: "The laptop ___ I bought last week is very fast.", options: ["which", "who", "where"], correct: 0 },
+                { q: "She apologized ___ being late for the meeting.", options: ["for", "about", "of"], correct: 0 },
+                { q: "I'd rather you ___ smoke in the house.", options: ["don't", "didn't", "not"], correct: 1 },
+                { q: "We've run ___ of milk. Can you buy some?", options: ["out", "off", "away"], correct: 0 },
+                { q: "He succeeded in ___ the final examination.", options: ["pass", "passing", "to pass"], correct: 1 },
+                { q: "Neither Sarah ___ her brother was at home.", options: ["or", "nor", "and"], correct: 1 },
+                { q: "I'm used to ___ in warm weather.", options: ["live", "living", "lived"], correct: 1 },
+                { q: "He speaks English fluently, ___ he?", options: ["doesn't", "isn't", "don't"], correct: 0 },
+                { q: "The task was far ___ difficult than expected.", options: ["more", "much", "very"], correct: 0 },
+                { q: "You had better ___ your homework now.", options: ["do", "doing", "to do"], correct: 0 }
+            ],
+            B2: [
+                { q: "Had I known about the party, I ___ attended.", options: ["would have", "will have", "had"], correct: 0 },
+                { q: "Not only ___ late, but he also forgot his documents.", options: ["he arrived", "did he arrive", "he did arrive"], correct: 1 },
+                { q: "She insisted on ___ the entire bill herself.", options: ["paying", "to pay", "pay"], correct: 0 },
+                { q: "The decision was postponed ___ lack of consensus.", options: ["due to", "because", "owing"], correct: 0 },
+                { q: "Little ___ know that the project would be cancelled.", options: ["did they", "they did", "they have"], correct: 0 },
+                { q: "The company is on the ___ of launching a new product.", options: ["verge", "edge", "border"], correct: 0 },
+                { q: "He works for a firm ___ head office is in Tokyo.", options: ["which", "whose", "that"], correct: 1 },
+                { q: "It is essential that every applicant ___ the form correctly.", options: ["fills", "fill", "filled"], correct: 1 },
+                { q: "I can't help ___ worried about the future.", options: ["feeling", "to feel", "feel"], correct: 0 },
+                { q: "Scarcely had he sat down ___ the telephone rang.", options: ["when", "than", "then"], correct: 0 },
+                { q: "She accused him ___ leaking the confidential information.", options: ["of", "for", "with"], correct: 0 },
+                { q: "The event turned ___ to be a huge success.", options: ["out", "up", "off"], correct: 0 },
+                { q: "No sooner had we arrived ___ the storm broke out.", options: ["when", "than", "that"], correct: 1 },
+                { q: "We need to take these findings into ___.", options: ["account", "mind", "thought"], correct: 0 },
+                { q: "He is believed ___ the country yesterday morning.", options: ["to leave", "to have left", "leaving"], correct: 1 },
+                { q: "The project was carried ___ despite many objections.", options: ["out", "through", "on"], correct: 0 },
+                { q: "She managed to overcome her fear ___ public speaking.", options: ["of", "for", "to"], correct: 0 },
+                { q: "He was sentenced to two years in prison for tax ___.", options: ["evasion", "avoidance", "refusal"], correct: 0 },
+                { q: "Hardly ever ___ such a breathtaking view.", options: ["I have seen", "have I seen", "I saw"], correct: 1 },
+                { q: "The solution was simple, ___ nobody had thought of it.", options: ["yet", "despite", "whereas"], correct: 0 }
+            ],
+            C1: [
+                { q: "The minister came under heavy ___ for his controversial remarks.", options: ["fire", "flame", "heat"], correct: 0 },
+                { q: "Notwithstanding the opposition, the law was ___ passed.", options: ["ultimately", "eventful", "utterly"], correct: 0 },
+                { q: "Were it not for your assistance, we ___ in severe trouble.", options: ["would be", "will be", "are"], correct: 0 },
+                { q: "He has an extraordinary capacity for ___ detail.", options: ["retaining", "sustaining", "containing"], correct: 0 },
+                { q: "The negotiations were conducted in an atmosphere of mutual ___.", options: ["distrust", "untrust", "mistrust"], correct: 0 },
+                { q: "Her remarks were entirely ___ to the subject under discussion.", options: ["irrelevant", "extraneous", "impertinent"], correct: 1 },
+                { q: "Seldom ___ such an exemplary performance in this theater.", options: ["have we witnessed", "we have witnessed", "did we witnessed"], correct: 0 },
+                { q: "He has a tendency to make mountain out of a ___.", options: ["mole-hill", "anthill", "pebble"], correct: 0 },
+                { q: "The new policy is designed to ___ economic growth.", options: ["foster", "cherish", "nurture"], correct: 0 },
+                { q: "She acquitted herself ___ during the challenging press conference.", options: ["admirably", "admired", "admire"], correct: 0 },
+                { q: "He cast ___ on the accuracy of the official statistics.", options: ["aspersion", "doubts", "shadows"], correct: 0 },
+                { q: "The research findings are ___ with previous academic studies.", options: ["consistent", "compatible", "congruent"], correct: 0 },
+                { q: "The team worked around the ___ to meet the deadline.", options: ["clock", "time", "watch"], correct: 0 },
+                { q: "His explanation, though plausible, left several questions ___.", options: ["unanswered", "unfound", "unsoled"], correct: 0 },
+                { q: "The agreement was signed after protracted ___.", options: ["negotiations", "bargains", "discussions"], correct: 0 },
+                { q: "Her argument was supported by a wealth of empirical ___.", options: ["evidence", "proofs", "facts"], correct: 0 },
+                { q: "The new regulation comes into ___ as of next month.", options: ["effect", "force", "power"], correct: 0 },
+                { q: "He was forced to resign following allegations of financial ___.", options: ["impropriety", "injustice", "immorality"], correct: 0 },
+                { q: "The speech was met with an ___ response from the audience.", options: ["enthusiastic", "overwhelming", "impassive"], correct: 0 },
+                { q: "Such actions are totally incompatible ___ professional ethics.", options: ["with", "to", "for"], correct: 0 }
+            ],
+            C2: [
+                { q: "The sheer magnitude of the disaster left the rescuers ___.", options: ["flabbergasted", "stunned", "dumbfounded"], correct: 0 },
+                { q: "Her pervasive eloquence served to ___ the skeptics.", options: ["mollify", "quell", "assuage"], correct: 0 },
+                { q: "The treatise offers an ___ critique of modern socio-economic theory.", options: ["incisive", "acute", "penetrating"], correct: 0 },
+                { q: "He was renowned for his ___ understanding of geopolitical nuances.", options: ["astute", "shrewd", "perspicacious"], correct: 2 },
+                { q: "The company's precarious financial standing was further ___ by market volatility.", options: ["exacerbated", "aggravated", "intensified"], correct: 0 },
+                { q: "His eloquent plea for clemency proved to be completely ___.", options: ["futile", "fruitless", "incurable"], correct: 0 },
+                { q: "She possesses an uncanny knack for ___ underlying motives.", options: ["discerning", "perceiving", "detecting"], correct: 0 },
+                { q: "The author's prose is characterized by its ___ brevity and clarity.", options: ["succinct", "laconic", "terse"], correct: 0 },
+                { q: "He navigated the complex diplomatic landscape with consummate ___.", options: ["tact", "diplomacy", "finesse"], correct: 2 },
+                { q: "The new legislation was met with fierce opposition from ___ quarters.", options: ["disparate", "divergent", "sundry"], correct: 0 },
+                { q: "Her meticulous attention to detail ensured that no aspect was ___.", options: ["overlooked", "neglected", "omitted"], correct: 0 },
+                { q: "His philosophical doctrine is deeply rooted in ancient ___ traditions.", options: ["esoteric", "abstruse", "recondite"], correct: 0 },
+                { q: "The sudden influx of capital acted as a vital ___ to the stagnating economy.", options: ["catalyst", "stimulus", "impetus"], correct: 0 },
+                { q: "The report lays bare the ___ inadequacies of the current infrastructure.", options: ["glaring", "flagrant", "manifest"], correct: 0 },
+                { q: "He delivered an impromptu speech that was both cogent and ___.", options: ["persuasive", "eloquent", "compelling"], correct: 1 },
+                { q: "Her artistic repertoire encompasses an extraordinary range of ___ styles.", options: ["eclectic", "diverse", "variegated"], correct: 0 },
+                { q: "The magistrate exercised his discretionary powers with utmost ___.", options: ["circumspection", "prudence", "caution"], correct: 0 },
+                { q: "His remarks, though well-intentioned, served only to ___ the disagreement.", options: ["fuel", "exacerbate", "engender"], correct: 1 },
+                { q: "The hypothesis remains purely ___ in the absence of empirical validation.", options: ["conjectural", "speculative", "theoretical"], correct: 0 },
+                { q: "She maintained an air of stoic ___ throughout the arduous trial.", options: ["equanimity", "composure", "serenity"], correct: 0 }
+            ]
+        };
+
+        // ESTADO GLOBAL DEL EXAMEN
+        let currentExam = [];
+        let userAnswers = new Array(24).fill(null);
+        let currentIndex = 0;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadUserProfile();
+            initExamEngine();
+            renderNodes();
+            displayQuestion();
+            
+            requestAnimationFrame(() => {
+                initNavIndicator();
+            });
+        });
+
+        // 1. CARGA NOMBRE Y AVATAR
+        function loadUserProfile() {
+            const savedName = localStorage.getItem('webglish_userName');
+            const avatarImg = document.querySelector('.user-avatar');
+
+            if (savedName && savedName.trim() !== "") {
+                const cleanName = savedName.trim();
+                document.getElementById('profileName').textContent = cleanName;
+                const initial = cleanName.charAt(0).toUpperCase();
+                if (avatarImg) {
+                    avatarImg.src = `https://ui-avatars.com/api/?name=${initial}&background=FBF5DE&color=03658C&bold=true&size=128`;
+                }
+            }
+        }
+
+        // 2. SELECCIÓN ALEATORIA DE 4 PREGUNTAS POR NIVEL Y MEZCLA TOTAL
+        function getRandomItems(arr, count) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function initExamEngine() {
+            const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            let selectedPool = [];
+
+            levels.forEach(level => {
+                const levelQuestions = getRandomItems(questionBank[level], 4).map(q => ({
+                    ...q,
+                    levelTag: level
+                }));
+                selectedPool.push(...levelQuestions);
+            });
+
+            // Mezcla completa de las 24 preguntas
+            currentExam = getRandomItems(selectedPool, 24);
+        }
+
+        // 3. RENDERIZADO DE BARRA DE 24 CÍRCULOS
+        function renderNodes() {
+            const container = document.getElementById('progressNodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 24; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('node-circle');
+                circle.textContent = i + 1;
+
+                if (i === currentIndex) {
+                    circle.classList.add('current');
+                } else if (userAnswers[i] !== null) {
+                    circle.classList.add('answered');
+                }
+
+                circle.onclick = () => jumpToQuestion(i);
+                container.appendChild(circle);
+            }
+        }
+
+        // 4. MOSTRAR PREGUNTA ACTUAL EN PANTALLA
+        function displayQuestion() {
+            const item = currentExam[currentIndex];
+
+            document.getElementById('questionTracker').textContent = `Question ${currentIndex + 1} of 24`;
+            document.getElementById('resourceCategory').textContent = `Level Test • Item ${currentIndex + 1}`;
+            document.getElementById('questionText').textContent = item.q;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            const letters = ['A', 'B', 'C'];
+            item.options.forEach((optText, optIdx) => {
+                const optCard = document.createElement('div');
+                optCard.classList.add('option-item');
+                if (userAnswers[currentIndex] === optIdx) {
+                    optCard.classList.add('selected');
+                }
+
+                optCard.innerHTML = `
+                    <div class="option-letter">${letters[optIdx]}</div>
+                    <div>${optText}</div>
+                `;
+
+                optCard.onclick = () => selectOption(optIdx);
+                optionsContainer.appendChild(optCard);
+            });
+
+            // Ajuste de Botones
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+
+            btnPrev.disabled = currentIndex === 0;
+            btnPrev.style.opacity = currentIndex === 0 ? '0.5' : '1';
+
+            if (currentIndex === 23) {
+                btnNext.textContent = 'Finalizar Examen';
+                btnNext.className = 'btn-nav btn-finish';
+            } else {
+                btnNext.textContent = 'Siguiente';
+                btnNext.className = 'btn-nav btn-next';
+            }
+
+            renderNodes();
+        }
+
+        // 5. SELECCIONAR OPCIÓN
+        function selectOption(optIndex) {
+            userAnswers[currentIndex] = optIndex;
+            displayQuestion();
+        }
+
+        // 6. NAVEGACIÓN ENTRE PREGUNTAS
+        function changeQuestion(step) {
+            if (currentIndex === 23 && step === 1) {
+                calculateAndShowResult();
+                return;
+            }
+            currentIndex += step;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex > 23) currentIndex = 23;
+            displayQuestion();
+        }
+
+        function jumpToQuestion(index) {
+            currentIndex = index;
+            displayQuestion();
+        }
+
+        // 7. CÁLCULO DEL NIVEL OBTENIDO Y EVALUACIÓN
+        function calculateAndShowResult() {
+            let correctCount = 0;
+            let levelScores = { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 };
+
+            currentExam.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) {
+                    correctCount++;
+                    levelScores[q.levelTag]++;
+                }
+            });
+
+            // Determinación del nivel CEFR
+            let assignedLevel = 'Pre-A1';
+            if (correctCount >= 22) assignedLevel = 'C2 Master';
+            else if (correctCount >= 19) assignedLevel = 'C1 Advanced';
+            else if (correctCount >= 15) assignedLevel = 'B2 Upper-Intermediate';
+            else if (correctCount >= 11) assignedLevel = 'B1 Intermediate';
+            else if (correctCount >= 7) assignedLevel = 'A2 Elementary';
+            else if (correctCount >= 4) assignedLevel = 'A1 Beginner';
+
+            // Guardar en localStorage para Mis Estadísticas
+            const examRecord = {
+                date: new Date().toLocaleDateString(),
+                score: Math.round((correctCount / 24) * 100),
+                correctCount: correctCount,
+                level: assignedLevel
+            };
+
+            const existingExams = JSON.parse(localStorage.getItem('webglish_exams')) || [];
+            existingExams.push(examRecord);
+            localStorage.setItem('webglish_exams', JSON.stringify(existingExams));
+
+            // Mostrar modal
+            document.getElementById('modalLevel').textContent = assignedLevel;
+            document.getElementById('modalScoreText').textContent = `Acertaste ${correctCount} de 24 preguntas (${examRecord.score}%).`;
+            document.getElementById('resultModal').style.display = 'flex';
+        }
+
+        // 8. INDICADOR DE NAVEGACIÓN SIDEBAR
+        function initNavIndicator() {
+            const activeItem = document.querySelector('.nav-item.active');
+            const activeLink = document.querySelector('.nav-item.active a');
+            const indicator = document.getElementById('navIndicator');
+
+            if (activeItem && activeLink && indicator) {
+                indicator.style.top = `${activeItem.offsetTop}px`;
+                indicator.style.left = `${activeLink.offsetLeft}px`;
+                indicator.style.width = `${activeLink.offsetWidth}px`;
+                indicator.style.height = `${activeLink.offsetHeight}px`;
+            }
+        }
+
+        window.addEventListener('resize', initNavIndicator);
+    </script>
+</body>
+</html>
