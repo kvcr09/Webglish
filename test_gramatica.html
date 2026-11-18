@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Examen de Gramática</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .test-wrapper {
+            max-width: 750px;
+            margin: 30px auto;
+            background-color: #FFFFFF;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #EAC8A6;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .badge-nivel {
+            background-color: #03658C;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .pregunta-bloque {
+            background-color: #FBF5DE;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #03658C;
+        }
+        .pregunta-titulo {
+            font-size: 1.1rem;
+            color: #03658C;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .opcion-label {
+            display: block;
+            background: #FFFFFF;
+            border: 1px solid #EAC8A6;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .opcion-label:hover {
+            background-color: #EAC8A6;
+            color: #03658C;
+            font-weight: 600;
+        }
+        .opcion-label input {
+            margin-right: 10px;
+        }
+        .acciones-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .btn-salir {
+            background-color: #EAC8A6;
+            color: #03658C;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-finalizar {
+            background-color: #DC3C22;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body style="background-color: #FBF5DE;">
 
+    <div class="test-wrapper">
+        <div class="test-header">
+            <h2 style="color: #03658C; margin: 0;">Test de Gramática</h2>
+            <span class="badge-nivel" id="nivel-badge">Nivel --</span>
+        </div>
+
+        <div id="contenedor-preguntas"></div>
+
+        <div class="acciones-footer">
+            <button class="btn-salir" onclick="window.location.href='gramatica_niveles.html'">Guardar y salir (Dejar pendiente)</button>
+            <button class="btn-finalizar" onclick="finalizarTestGramatica()">Finalizar y ver resultados</button>
+        </div>
+    </div>
+
+    <script>
+        let testActivo = JSON.parse(localStorage.getItem('testActivo'));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!testActivo || !testActivo.preguntas) {
+                alert("No hay ningún test activo. Selecciona un nivel primero.");
+                window.location.href = 'gramatica_niveles.html';
+                return;
+            }
+
+            document.getElementById('nivel-badge').textContent = `Nivel ${testActivo.nivel}`;
+            renderizarPreguntas();
+        });
+
+        function renderizarPreguntas() {
+            const contenedor = document.getElementById('contenedor-preguntas');
+            contenedor.innerHTML = '';
+
+            testActivo.preguntas.forEach((q, index) => {
+                const respuestaGuardada = testActivo.respuestasUsuario[index] || "";
+
+                let opcionesHTML = '';
+                q.opciones.forEach(opcion => {
+                    const checked = (respuestaGuardada === opcion) ? 'checked' : '';
+                    opcionesHTML += `
+                        <label class="opcion-label">
+                            <input type="radio" name="pregunta_${index}" value="${opcion}" ${checked} 
+                                   onchange="guardarRespuesta(${index}, '${opcion.replace(/'/g, "\\'")}')">
+                            ${opcion}
+                        </label>
+                    `;
+                });
+
+                contenedor.innerHTML += `
+                    <div class="pregunta-bloque">
+                        <div class="pregunta-titulo">${index + 1}. ${q.pregunta}</div>
+                        <div>${opcionesHTML}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function guardarRespuesta(indicePregunta, opcionSeleccionada) {
+            testActivo.respuestasUsuario[indicePregunta] = opcionSeleccionada;
+            localStorage.setItem('testActivo', JSON.stringify(testActivo));
+
+            // Actualizar también en testsPendientes
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            pendientes[`gramatica_${testActivo.nivel}`] = testActivo;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+        }
+
+        function finalizarTestGramatica() {
+            const totalPreguntas = testActivo.preguntas.length;
+            const respondidas = Object.keys(testActivo.respuestasUsuario).length;
+
+            if (respondidas < totalPreguntas) {
+                const confirmar = confirm(`Has respondido ${respondidas} de ${totalPreguntas} preguntas. ¿Seguro que deseas finalizar así?`);
+                if (!confirmar) return;
+            }
+
+            // Formatear para resultado.html
+            const resultadosFinales = testActivo.preguntas.map((q, idx) => {
+                const respUser = testActivo.respuestasUsuario[idx] || "Sin responder";
+                return {
+                    pregunta: q.pregunta,
+                    respuestaUsuario: respUser,
+                    respuestaCorrecta: q.correcta,
+                    esCorrecta: respUser.trim().toLowerCase() === q.correcta.trim().toLowerCase()
+                };
+            });
+
+            // Eliminar de pendientes
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            delete pendientes[`gramatica_${testActivo.nivel}`];
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.removeItem('testActivo');
+
+            // Guardar resultados y redirigir
+            localStorage.setItem('ultimoExamenResultados', JSON.stringify(resultadosFinales));
+            window.location.href = 'resultado.html';
+        }
+    </script>
+</body>
+</html>
