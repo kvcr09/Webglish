@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Test de Gramática</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header style="padding: 20px; text-align: center;">
+        <h1 style="color: #03658C;">Evaluación de Gramática</h1>
+        <p style="color: #555;">Selecciona el nivel que deseas evaluar (10 preguntas aleatorias por intento)</p>
+    </header>
 
+    <main class="niveles-grid">
+        <!-- Nivel A1 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel A1 - Principiante</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Verb <em>to be</em>, Present Simple, Pronouns, Articles (<em>a/an/the</em>), Basic Prepositions.</p>
+            </div>
+            <button class="btn-iniciar" id="btn-A1" onclick="iniciarTestGramatica('A1')">Iniciar Test A1</button>
+        </div>
+
+        <!-- Nivel A2 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel A2 - Elemental</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Past Simple, Present Continuous, Comparatives & Superlatives, <em>Going to / Will</em>.</p>
+            </div>
+            <button class="btn-iniciar" id="btn-A2" onclick="iniciarTestGramatica('A2')">Iniciar Test A2</button>
+        </div>
+
+        <!-- Nivel B1 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel B1 - Intermedio</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Present Perfect, First & Second Conditionals, Modal Verbs, Passive Voice (básica).</p>
+            </div>
+            <button class="btn-iniciar" id="btn-B1" onclick="iniciarTestGramatica('B1')">Iniciar Test B1</button>
+        </div>
+
+        <!-- Nivel B2 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel B2 - Intermedio Alto</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Past Perfect, Third Conditional, Reported Speech, Relative Clauses, Passive Voice avanzada.</p>
+            </div>
+            <button class="btn-iniciar" id="btn-B2" onclick="iniciarTestGramatica('B2')">Iniciar Test B2</button>
+        </div>
+
+        <!-- Nivel C1 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel C1 - Avanzado</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Mixed Conditionals, Inversion, Subjunctive Mood, Advanced Modals, Participle Clauses.</p>
+            </div>
+            <button class="btn-iniciar" id="btn-C1" onclick="iniciarTestGramatica('C1')">Iniciar Test C1</button>
+        </div>
+
+        <!-- Nivel C2 -->
+        <div class="nivel-card">
+            <div>
+                <h3>Nivel C2 - Maestría</h3>
+                <p class="temas-txt"><strong>Temas:</strong> Cleft Sentences, Ellipsis & Substitution, Nuanced Phrasal Verbs, Formal Subjunctive.</p>
+            </div>
+            <button class="btn-iniciar" id="btn-C2" onclick="iniciarTestGramatica('C2')">Iniciar Test C2</button>
+        </div>
+    </main>
+
+    <!-- Conectamos primero el banco de preguntas y luego la lógica -->
+    <script src="banco_gramatica.js"></script>
+    <script>
+        // Al cargar la página, revisa si hay tests pendientes para cambiar el texto del botón
+        document.addEventListener('DOMContentLoaded', () => {
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
+                if (pendientes[`gramatica_${nivel}`]) {
+                    const btn = document.getElementById(`btn-${nivel}`);
+                    btn.textContent = `Reanudar Test ${nivel} (Pendiente)`;
+                    btn.style.backgroundColor = '#03658C'; // Cambia a azul para destacar que está en curso
+                }
+            });
+        });
+
+        function iniciarTestGramatica(nivel) {
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+
+            if (pendientes[`gramatica_${nivel}`]) {
+                localStorage.setItem('testActivo', JSON.stringify(pendientes[`gramatica_${nivel}`]));
+                window.location.href = 'test_gramatica.html';
+                return;
+            }
+
+            const pool = [...(bancoGramatica[nivel] || [])];
+            if (pool.length === 0) {
+                alert("Aún no hay preguntas cargadas para este nivel.");
+                return;
+            }
+
+            const seleccionadas = pool.sort(() => Math.random() - 0.5).slice(0, 10);
+
+            const nuevoTest = {
+                tipo: 'Gramática',
+                nivel: nivel,
+                preguntas: seleccionadas,
+                respuestasUsuario: {},
+                fechaInicio: new Date().toLocaleDateString()
+            };
+
+            pendientes[`gramatica_${nivel}`] = nuevoTest;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.setItem('testActivo', JSON.stringify(nuevoTest));
+
+            window.location.href = 'test_gramatica.html';
+        }
+    </script>
+</body>
+</html>
