@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Test de Vocabulario</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #EAC8A6;
+            color: #03658C;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* =========================================
+           VENTANA EMERGENTE (MODAL) DE NIVELES
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 35px;
+        }
+
+        .modal-box {
+            background-color: #FBF5DE;
+            border: 3px solid #EAC8A6;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 680px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: aparecerModal 0.22s ease-out;
+        }
+
+        @keyframes aparecerModal {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            font-weight: 800;
+            color: #DC3C22;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            color: #03658C;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .modal-header p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .modal-niveles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .modal-nivel-btn {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .modal-nivel-btn:hover {
+            border-color: #03658C;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(3, 101, 140, 0.15);
+        }
+
+        .modal-nivel-titulo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .modal-nivel-temas {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.3;
+        }
+
+        .modal-nivel-accion {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
+        /* =========================================
+           CONTENEDOR DEL EXAMEN
+           ========================================= */
+        .exam-wrapper {
+            width: 100%;
+            max-width: 780px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .exam-header {
+            background-color: #FBF5DE;
+            padding: 20px 28px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .exam-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .btn-salir {
+            background-color: #FFFFFF;
+            color: #03658C;
+            border: 2px solid #03658C;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-salir:hover {
+            background-color: #03658C;
+            color: #FFFFFF;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #F5DEC2;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #03658C;
+            width: 10%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background-color: #FBF5DE;
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .question-counter {
+            font-size: 13px;
+            font-weight: 800;
+            color: #DC3C22;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 21px;
+            font-weight: 700;
+            color: #03658C;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 14px;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 600;
+            color: #03658C;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn:hover {
+            border-color: #03658C;
+            background-color: #f4f9fb;
+        }
+
+        .option-btn.selected {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border-color: #03658C;
+        }
+
+        .exam-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn-nav {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-nav:disabled {
+            background-color: #b0c4ce;
+            cursor: not-allowed;
+        }
+
+        .btn-finish {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+        }
+
+        .btn-finish:hover {
+            background-color: #b82f19;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- VENTANA EMERGENTE (MODAL) PARA ELEGIR NIVEL -->
+    <div class="modal-overlay" id="modalNivel" onclick="cerrarSiClickFuera(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="volverAExamenes()" title="Volver a Mis Exámenes">✕</button>
+            
+            <div class="modal-header">
+                <h2>Selecciona el nivel para tu test de vocabulario</h2>
+                <p>Elige tu nivel (10 preguntas aleatorias por intento)</p>
+            </div>
+
+            <div class="modal-niveles-grid">
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('A1')">
+                    <div class="modal-nivel-titulo">Nivel A1</div>
+                    <div class="modal-nivel-temas">Family, Colors, Food, Numbers, Daily Objects</div>
+                    <div class="modal-nivel-accion" id="tag-A1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('A2')">
+                    <div class="modal-nivel-titulo">Nivel A2</div>
+                    <div class="modal-nivel-temas">Weather, Travel, Clothes, Jobs, Hobbies</div>
+                    <div class="modal-nivel-accion" id="tag-A2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('B1')">
+                    <div class="modal-nivel-titulo">Nivel B1</div>
+                    <div class="modal-nivel-temas">Health, Education, Environment, Emotions</div>
+                    <div class="modal-nivel-accion" id="tag-B1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('B2')">
+                    <div class="modal-nivel-titulo">Nivel B2</div>
+                    <div class="modal-nivel-temas">Business, Collocations, Media, Phrasal Verbs</div>
+                    <div class="modal-nivel-accion" id="tag-B2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('C1')">
+                    <div class="modal-nivel-titulo">Nivel C1</div>
+                    <div class="modal-nivel-temas">Academic Terms, Idioms, Nuanced Adjectives</div>
+                    <div class="modal-nivel-accion" id="tag-C1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('C2')">
+                    <div class="modal-nivel-titulo">Nivel C2</div>
+                    <div class="modal-nivel-temas">Sophisticated Lexicon, Figurative Expressions</div>
+                    <div class="modal-nivel-accion" id="tag-C2">Iniciar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERFAZ DEL EXAMEN -->
+    <div class="exam-wrapper" id="examWrapper">
+        <div class="exam-header">
+            <div>
+                <div class="exam-title" id="examTitle">Test de Vocabulario</div>
+                <div style="font-size: 13px; color: #666;" id="examSubtitle">Nivel A1</div>
+            </div>
+            <button class="btn-salir" onclick="guardarYSalir()">Guardar y salir</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-counter" id="questionCounter">Pregunta 1 de 10</div>
+            <div class="question-text" id="questionText">Cargando pregunta...</div>
+            <div class="options-list" id="optionsList"></div>
+        </div>
+
+        <div class="exam-footer">
+            <button class="btn-nav" id="btnPrev" onclick="cambiarPregunta(-1)" disabled>← Anterior</button>
+            <button class="btn-nav" id="btnNext" onclick="cambiarPregunta(1)">Siguiente →</button>
+            <button class="btn-finish" id="btnFinish" onclick="finalizarExamen()">Finalizar Test</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // BANCO DE PREGUNTAS DE VOCABULARIO (A1 - C2)
+        // ==========================================
+        const bancoVocabulario = {
+            A1: [
+                { pregunta: "My mother's brother is my ___.", opciones: ["cousin", "uncle", "nephew", "grandfather"], correcta: 1, explicacion: "El hermano de tu madre o padre es tu tío ('uncle')." },
+                { pregunta: "You use an ___ when it rains.", opciones: ["umbrella", "envelope", "armchair", "oven"], correcta: 0, explicacion: "'Umbrella' significa paraguas." },
+                { pregunta: "I am very ___. I want a glass of water.", opciones: ["hungry", "tired", "thirsty", "angry"], correcta: 2, explicacion: "'Thirsty' significa sediento (tener sed)." },
+                { pregunta: "The meal you eat in the morning is called ___.", opciones: ["dinner", "lunch", "breakfast", "snack"], correcta: 2, explicacion: "'Breakfast' es el desayuno." },
+                { pregunta: "Which of these is a fruit?", opciones: ["Carrot", "Potato", "Strawberry", "Onion"], correcta: 2, explicacion: "'Strawberry' (fresa) es una fruta; las demás son vegetales." },
+                { pregunta: "We sleep in the ___.", opciones: ["kitchen", "bathroom", "bedroom", "garage"], correcta: 2, explicacion: "'Bedroom' es el dormitorio o habitación." },
+                { pregunta: "The opposite of 'expensive' is ___.", opciones: ["cheap", "heavy", "noisy", "empty"], correcta: 0, explicacion: "Lo opuesto a caro ('expensive') es barato ('cheap')." },
+                { pregunta: "A person who teaches students at school is a ___.", opciones: ["nurse", "driver", "teacher", "waiter"], correcta: 2, explicacion: "'Teacher' significa profesor o maestro." },
+                { pregunta: "There are seven days in a ___.", opciones: ["month", "year", "week", "hour"], correcta: 2, explicacion: "'Week' significa semana (7 días)." },
+                { pregunta: "You wear ___ on your feet when you go running.", opciones: ["gloves", "sneakers", "scarves", "glasses"], correcta: 1, explicacion: "'Sneakers' son tenis o zapatillas deportivas." },
+                { pregunta: "The color of the sky on a clear day is ___.", opciones: ["green", "blue", "yellow", "purple"], correcta: 1, explicacion: "'Blue' significa azul." },
+                { pregunta: "My father's mother is my ___.", opciones: ["aunt", "sister", "grandmother", "daughter"], correcta: 2, explicacion: "'Grandmother' es abuela." },
+                { pregunta: "You read a ___ to learn new stories.", opciones: ["book", "plate", "spoon", "chair"], correcta: 0, explicacion: "'Book' significa libro." },
+                { pregunta: "A ___ is an animal that barks.", opciones: ["cat", "bird", "dog", "fish"], correcta: 2, explicacion: "'Dog' es perro." },
+                { pregunta: "We write with a ___.", opciones: ["cup", "pen", "shoe", "fork"], correcta: 1, explicacion: "'Pen' significa bolígrafo o lapicero." },
+                { pregunta: "The opposite of 'hot' is ___.", opciones: ["warm", "cold", "big", "fast"], correcta: 1, explicacion: "Lo opuesto a caliente ('hot') es frío ('cold')." },
+                { pregunta: "December is the last ___ of the year.", opciones: ["day", "week", "month", "season"], correcta: 2, explicacion: "'Month' significa mes." },
+                { pregunta: "You sit on a ___ at the table.", opciones: ["bed", "chair", "lamp", "window"], correcta: 1, explicacion: "'Chair' es silla." },
+                { pregunta: "Milk is usually ___ in color.", opciones: ["black", "white", "red", "orange"], correcta: 1, explicacion: "'White' significa blanco." },
+                { pregunta: "I am ___. I want to eat a sandwich.", opciones: ["hungry", "cold", "sad", "full"], correcta: 0, explicacion: "'Hungry' significa hambriento." },
+                { pregunta: "A ___ flies in the sky.", opciones: ["horse", "bird", "snake", "cow"], correcta: 1, explicacion: "'Bird' es pájaro o ave." },
+                { pregunta: "You open the ___ to enter a room.", opciones: ["wall", "floor", "door", "ceiling"], correcta: 2, explicacion: "'Door' significa puerta." },
+                { pregunta: "Ten plus ten is ___.", opciones: ["twelve", "twenty", "thirty", "fifteen"], correcta: 1, explicacion: "10 + 10 = 20 ('twenty')." },
+                { pregunta: "You wear a ___ on your head.", opciones: ["sock", "hat", "belt", "ring"], correcta: 1, explicacion: "'Hat' es sombrero o gorra." },
+                { pregunta: "A person who helps sick people in a hospital is a ___.", opciones: ["doctor", "chef", "singer", "pilot"], correcta: 0, explicacion: "'Doctor' es médico." },
+                { pregunta: "We brush our ___ every morning.", opciones: ["ears", "teeth", "knees", "elbows"], correcta: 1, explicacion: "'Teeth' significa dientes." },
+                { pregunta: "The opposite of 'big' is ___.", opciones: ["tall", "small", "long", "wide"], correcta: 1, explicacion: "Lo opuesto a grande ('big') es pequeño ('small')." },
+                { pregunta: "Sunday comes after ___.", opciones: ["Monday", "Friday", "Saturday", "Tuesday"], correcta: 2, explicacion: "El domingo ('Sunday') va después del sábado ('Saturday')." },
+                { pregunta: "You drink soup with a ___.", opciones: ["knife", "fork", "spoon", "glass"], correcta: 2, explicacion: "'Spoon' es cuchara." },
+                { pregunta: "Grass and trees are usually ___.", opciones: ["pink", "green", "brown", "grey"], correcta: 1, explicacion: "'Green' significa verde." },
+                { pregunta: "My sister's son is my ___.", opciones: ["niece", "nephew", "uncle", "brother"], correcta: 1, explicacion: "'Nephew' significa sobrino." },
+                { pregunta: "We watch movies on a ___.", opciones: ["fridge", "television", "washing machine", "mirror"], correcta: 1, explicacion: "'Television' es televisor." },
+                { pregunta: "The opposite of 'happy' is ___.", opciones: ["glad", "sad", "funny", "nice"], correcta: 1, explicacion: "Lo opuesto a feliz ('happy') es triste ('sad')." },
+                { pregunta: "You wear ___ to see better.", opciones: ["gloves", "glasses", "boots", "shorts"], correcta: 1, explicacion: "'Glasses' son gafas o anteojos." },
+                { pregunta: "Bananas are ___.", opciones: ["blue", "yellow", "black", "purple"], correcta: 1, explicacion: "'Yellow' significa amarillo." },
+                { pregunta: "A ___ swims in the ocean.", opciones: ["lion", "fish", "tiger", "bear"], correcta: 1, explicacion: "'Fish' es pez." },
+                { pregunta: "We cook food in the ___.", opciones: ["kitchen", "garden", "living room", "balcony"], correcta: 0, explicacion: "'Kitchen' es la cocina." },
+                { pregunta: "The opposite of 'new' is ___.", opciones: ["young", "old", "fresh", "clean"], correcta: 1, explicacion: "Lo opuesto a nuevo ('new') es viejo ('old')." },
+                { pregunta: "January is the ___ month of the year.", opciones: ["first", "second", "third", "last"], correcta: 0, explicacion: "Enero es el primer ('first') mes del año." },
+                { pregunta: "You wash your hands with ___ and water.", opciones: ["bread", "soap", "sugar", "salt"], correcta: 1, explicacion: "'Soap' significa jabón." },
+                { pregunta: "A ___ has four wheels and you drive it.", opciones: ["bicycle", "car", "boat", "train"], correcta: 1, explicacion: "'Car' es carro o automóvil." },
+                { pregunta: "The opposite of 'fast' is ___.", opciones: ["quick", "slow", "high", "short"], correcta: 1, explicacion: "Lo opuesto a rápido ('fast') es lento ('slow')." },
+                { pregunta: "We use our ___ to listen to music.", opciones: ["eyes", "noses", "ears", "mouths"], correcta: 2, explicacion: "'Ears' significa oídos u orejas." },
+                { pregunta: "Monday is the first day of the ___.", opciones: ["weekend", "week", "year", "night"], correcta: 1, explicacion: "El lunes es el primer día de la semana ('week')." },
+                { pregunta: "You put food on a ___.", opciones: ["plate", "book", "pillow", "towel"], correcta: 0, explicacion: "'Plate' significa plato." },
+                { pregunta: "A ___ gives us milk.", opciones: ["chicken", "cow", "duck", "rabbit"], correcta: 1, explicacion: "'Cow' es vaca." },
+                { pregunta: "The opposite of 'tall' is ___.", opciones: ["short", "long", "fat", "thin"], correcta: 0, explicacion: "Lo opuesto a alto ('tall') es bajo ('short')." },
+                { pregunta: "We look through a ___ to see outside.", opciones: ["table", "window", "carpet", "shelf"], correcta: 1, explicacion: "'Window' significa ventana." },
+                { pregunta: "Fifty minus ten is ___.", opciones: ["thirty", "forty", "sixty", "seventy"], correcta: 1, explicacion: "50 - 10 = 40 ('forty')." },
+                { pregunta: "You wear a ___ around your neck in winter.", opciones: ["scarf", "skirt", "shirt", "belt"], correcta: 0, explicacion: "'Scarf' significa bufanda." },
+                { pregunta: "A person who cooks in a restaurant is a ___.", opciones: ["chef", "artist", "farmer", "lawyer"], correcta: 0, explicacion: "'Chef' es cocinero profesional." },
+                { pregunta: "We sleep with our head on a ___.", opciones: ["blanket", "pillow", "curtain", "mat"], correcta: 1, explicacion: "'Pillow' significa almohada." },
+                { pregunta: "The opposite of 'clean' is ___.", opciones: ["dirty", "bright", "dry", "soft"], correcta: 0, explicacion: "Lo opuesto a limpio ('clean') es sucio ('dirty')." },
+                { pregunta: "Wednesday comes between Tuesday and ___.", opciones: ["Monday", "Thursday", "Friday", "Sunday"], correcta: 1, explicacion: "El miércoles va entre martes y jueves ('Thursday')." },
+                { pregunta: "You cut meat with a ___.", opciones: ["spoon", "knife", "cup", "bowl"], correcta: 1, explicacion: "'Knife' significa cuchillo." },
+                { pregunta: "Tomatoes are usually ___.", opciones: ["red", "blue", "white", "grey"], correcta: 0, explicacion: "'Red' significa rojo." },
+                { pregunta: "My parents' son is my ___.", opciones: ["cousin", "brother", "uncle", "nephew"], correcta: 1, explicacion: "El hijo de tus padres es tu hermano ('brother')." },
+                { pregunta: "We keep cold food in the ___.", opciones: ["oven", "fridge", "sink", "toaster"], correcta: 1, explicacion: "'Fridge' es la nevera o refrigerador." },
+                { pregunta: "The opposite of 'good' is ___.", opciones: ["nice", "bad", "great", "fine"], correcta: 1, explicacion: "Lo opuesto a bueno ('good') es malo ('bad')." },
+                { pregunta: "You wear ___ on your hands when it is cold.", opciones: ["socks", "gloves", "boots", "pants"], correcta: 1, explicacion: "'Gloves' significa guantes." },
+                { pregunta: "Oranges and carrots are ___.", opciones: ["orange", "pink", "black", "blue"], correcta: 0, explicacion: "'Orange' es el color naranja." },
+                { pregunta: "A ___ is a pet that likes chasing mice.", opciones: ["dog", "cat", "hamster", "turtle"], correcta: 1, explicacion: "'Cat' es gato." },
+                { pregunta: "We take a shower in the ___.", opciones: ["bedroom", "bathroom", "kitchen", "hall"], correcta: 1, explicacion: "'Bathroom' es el baño." },
+                { pregunta: "The opposite of 'young' is ___.", opciones: ["new", "old", "little", "baby"], correcta: 1, explicacion: "Lo opuesto a joven ('young') es viejo ('old')." },
+                { pregunta: "There are sixty minutes in one ___.", opciones: ["second", "hour", "day", "week"], correcta: 1, explicacion: "'Hour' significa hora." },
+                { pregunta: "You dry yourself with a ___ after a shower.", opciones: ["paper", "towel", "sheet", "napkin"], correcta: 1, explicacion: "'Towel' significa toalla." },
+                { pregunta: "A ___ flies people to other countries.", opciones: ["bus", "plane", "train", "taxi"], correcta: 1, explicacion: "'Plane' es avión." },
+                { pregunta: "The opposite of 'easy' is ___.", opciones: ["simple", "difficult", "light", "soft"], correcta: 1, explicacion: "Lo opuesto a fácil ('easy') es difícil ('difficult')." },
+                { pregunta: "We use our ___ to see.", opciones: ["ears", "eyes", "hands", "feet"], correcta: 1, explicacion: "'Eyes' significa ojos." },
+                { pregunta: "The meal we eat at night is ___.", opciones: ["breakfast", "lunch", "dinner", "brunch"], correcta: 2, explicacion: "'Dinner' es la cena." }
+            ],
+            A2: [
+                { pregunta: "Before getting on an airplane, you must show your ___.", opciones: ["receipt", "boarding pass", "prescription", "menu"], correcta: 1, explicacion: "'Boarding pass' es la tarjeta o pase de abordar." },
+                { pregunta: "It is freezing outside! Don't forget to wear your ___.", opciones: ["swimsuit", "shorts", "coat", "sandals"], correcta: 2, explicacion: "'Coat' significa abrigo." },
+                { pregunta: "A person who fixes cars is a ___.", opciones: ["plumber", "mechanic", "baker", "journalist"], correcta: 1, explicacion: "'Mechanic' es mecánico." },
+                { pregunta: "The sky is full of dark clouds. It looks very ___.", opciones: ["sunny", "cloudy", "dry", "clear"], correcta: 1, explicacion: "'Cloudy' significa nublado." },
+                { pregunta: "I need to go to the ___ to buy some medicine.", opciones: ["bakery", "library", "pharmacy", "butcher's"], correcta: 2, explicacion: "'Pharmacy' es la farmacia o droguería." },
+                { pregunta: "The opposite of 'borrow' is ___.", opciones: ["lend", "steal", "owe", "spend"], correcta: 0, explicacion: "'Borrow' es pedir prestado y 'lend' es prestar." },
+                { pregunta: "He is very ___; he always shares his things with others.", opciones: ["selfish", "generous", "lazy", "rude"], correcta: 1, explicacion: "'Generous' significa generoso." },
+                { pregunta: "You put your clothes in a ___ when you go on vacation.", opciones: ["wallet", "suitcase", "drawer", "cushion"], correcta: 1, explicacion: "'Suitcase' es una maleta de viaje." },
+                { pregunta: "What do you call your sister's daughter?", opciones: ["Niece", "Nephew", "Aunt", "Cousin"], correcta: 0, explicacion: "'Niece' es sobrina ('nephew' es sobrino)." },
+                { pregunta: "This soup has no flavor at all; it is completely ___.", opciones: ["spicy", "delicious", "tasteless", "sour"], correcta: 2, explicacion: "'Tasteless' significa insípido o sin sabor." },
+                { pregunta: "You buy fresh bread and cakes at the ___.", opciones: ["bakery", "chemist", "greengrocer", "newsagent"], correcta: 0, explicacion: "'Bakery' es la panadería." },
+                { pregunta: "A person who writes articles for a newspaper is a ___.", opciones: ["lawyer", "journalist", "accountant", "architect"], correcta: 1, explicacion: "'Journalist' significa periodista." },
+                { pregunta: "When you buy something in a store, the cashier gives you a ___.", opciones: ["recipe", "receipt", "ticket", "bill"], correcta: 1, explicacion: "'Receipt' es el recibo o comprobante de compra." },
+                { pregunta: "If you have a broken water pipe, you should call a ___.", opciones: ["carpenter", "plumber", "electrician", "painter"], correcta: 1, explicacion: "'Plumber' es plomero o fontanero." },
+                { pregunta: "The season between summer and winter is ___.", opciones: ["spring", "autumn", "monsoon", "frost"], correcta: 1, explicacion: "'Autumn' (o 'fall') es el otoño." },
+                { pregunta: "She is very ___; she never talks much at parties.", opciones: ["outgoing", "shy", "loud", "bossy"], correcta: 1, explicacion: "'Shy' significa tímido." },
+                { pregunta: "You go to the ___ to borrow books, not to buy them.", opciones: ["bookshop", "library", "stationery", "museum"], correcta: 1, explicacion: "'Library' es biblioteca (librería es 'bookshop')." },
+                { pregunta: "The opposite of 'polite' is ___.", opciones: ["kind", "rude", "helpful", "honest"], correcta: 1, explicacion: "'Rude' significa grosero o descortés." },
+                { pregunta: "You wear a ___ around your waist to hold up your trousers.", opciones: ["tie", "belt", "bracelet", "collar"], correcta: 1, explicacion: "'Belt' es cinturón o correa." },
+                { pregunta: "When the wind blows very strongly, the weather is ___.", opciones: ["foggy", "windy", "humid", "icy"], correcta: 1, explicacion: "'Windy' significa ventoso." },
+                { pregunta: "A person who designs buildings is an ___.", opciones: ["engineer", "architect", "artist", "actor"], correcta: 1, explicacion: "'Architect' es arquitecto." },
+                { pregunta: "Lemons and limes have a very ___ taste.", opciones: ["sweet", "sour", "salty", "bitter"], correcta: 1, explicacion: "'Sour' significa ácido o agrio." },
+                { pregunta: "You keep your money and credit cards in a ___.", opciones: ["wallet", "luggage", "pocket", "briefcase"], correcta: 0, explicacion: "'Wallet' es billetera o cartera." },
+                { pregunta: "The opposite of 'crowded' is ___.", opciones: ["busy", "empty", "noisy", "full"], correcta: 1, explicacion: "Lo opuesto a lleno de gente ('crowded') es vacío ('empty')." },
+                { pregunta: "If you want to travel to another country, you need a valid ___.", opciones: ["license", "passport", "postage", "brochure"], correcta: 1, explicacion: "'Passport' es pasaporte." },
+                { pregunta: "My brother is very ___; he loves doing extreme sports.", opciones: ["brave", "nervous", "afraid", "calm"], correcta: 0, explicacion: "'Brave' significa valiente." },
+                { pregunta: "You use a ___ to fry eggs.", opciones: ["kettle", "frying pan", "bowl", "jug"], correcta: 1, explicacion: "'Frying pan' es sartén." },
+                { pregunta: "When there is thick mist and you cannot see the road clearly, it is ___.", opciones: ["sunny", "foggy", "breezy", "warm"], correcta: 1, explicacion: "'Foggy' significa con niebla o neblina." },
+                { pregunta: "A person who takes care of patients in a hospital alongside doctors is a ___.", opciones: ["nurse", "dentist", "vet", "chemist"], correcta: 0, explicacion: "'Nurse' significa enfermero/a." },
+                { pregunta: "I need to ___ my phone; the battery is at 2%.", opciones: ["charge", "turn", "switch", "fix"], correcta: 0, explicacion: "'Charge' significa cargar (la batería)." },
+                { pregunta: "The opposite of 'arrive' is ___.", opciones: ["reach", "leave", "enter", "stay"], correcta: 1, explicacion: "Lo opuesto a llegar ('arrive') es irse o partir ('leave')." },
+                { pregunta: "You wear ___ when you go swimming.", opciones: ["a suit", "a swimsuit", "pyjamas", "jeans"], correcta: 1, explicacion: "'Swimsuit' es traje de baño." },
+                { pregunta: "A place where you can see paintings and sculptures is an ___.", opciones: ["aquarium", "art gallery", "stadium", "observatory"], correcta: 1, explicacion: "'Art gallery' es galería de arte." },
+                { pregunta: "He never does any work; he is extremely ___.", opciones: ["hard-working", "lazy", "active", "clever"], correcta: 1, explicacion: "'Lazy' significa perezoso o vago." },
+                { pregunta: "You boil water in a ___ to make tea.", opciones: ["fridge", "kettle", "toaster", "blender"], correcta: 1, explicacion: "'Kettle' es hervidor o tetera." },
+                { pregunta: "The opposite of 'remember' is ___.", opciones: ["remind", "forget", "think", "know"], correcta: 1, explicacion: "Lo opuesto a recordar ('remember') es olvidar ('forget')." },
+                { pregunta: "A doctor who treats sick animals is a ___.", opciones: ["surgeon", "vet", "pharmacist", "optician"], correcta: 1, explicacion: "'Vet' (veterinarian) es veterinario." },
+                { pregunta: "This bag is too ___; I can't lift it by myself.", opciones: ["light", "heavy", "soft", "thin"], correcta: 1, explicacion: "'Heavy' significa pesado." },
+                { pregunta: "You wait for a train on the ___.", opciones: ["pavement", "platform", "runway", "harbor"], correcta: 1, explicacion: "'Platform' es el andén de la estación." },
+                { pregunta: "She always tells the truth; she is a very ___ person.", opciones: ["honest", "dishonest", "mean", "silly"], correcta: 0, explicacion: "'Honest' significa honesto/a." },
+                { pregunta: "You put a letter inside an ___ before mailing it.", opciones: ["envelope", "parcel", "stamp", "folder"], correcta: 0, explicacion: "'Envelope' significa sobre." },
+                { pregunta: "The opposite of 'win' is ___.", opciones: ["beat", "lose", "earn", "score"], correcta: 1, explicacion: "Lo opuesto a ganar ('win') es perder ('lose')." },
+                { pregunta: "A person who cuts and styles hair is a ___.", opciones: ["tailor", "hairdresser", "jeweler", "florist"], correcta: 1, explicacion: "'Hairdresser' es peluquero/a." },
+                { pregunta: "Chili peppers are very ___.", opciones: ["sweet", "spicy", "bland", "creamy"], correcta: 1, explicacion: "'Spicy' significa picante o condimentado." },
+                { pregunta: "You wear ___ on your ears as jewelry.", opciones: ["necklaces", "earrings", "rings", "watches"], correcta: 1, explicacion: "'Earrings' son aretes o pendientes." },
+                { pregunta: "When you have a high body temperature, you have a ___.", opciones: ["cough", "fever", "toothache", "bruise"], correcta: 1, explicacion: "'Fever' significa fiebre." },
+                { pregunta: "The opposite of 'quiet' is ___.", opciones: ["silent", "noisy", "calm", "peaceful"], correcta: 1, explicacion: "Lo opuesto a silencioso ('quiet') es ruidoso ('noisy')." },
+                { pregunta: "You buy meat at the ___.", opciones: ["bakery", "butcher's", "florist's", "pharmacy"], correcta: 1, explicacion: "'Butcher's' es la carnicería." },
+                { pregunta: "A person who flies an airplane is a ___.", opciones: ["driver", "pilot", "sailor", "captain"], correcta: 1, explicacion: "'Pilot' es piloto." },
+                { pregunta: "Please ___ the light when you leave the room.", opciones: ["turn off", "turn on", "put on", "take off"], correcta: 0, explicacion: "'Turn off' significa apagar." },
+                { pregunta: "The opposite of 'safe' is ___.", opciones: ["secure", "dangerous", "careful", "healthy"], correcta: 1, explicacion: "Lo opuesto a seguro ('safe') es peligroso ('dangerous')." },
+                { pregunta: "You look at a ___ to find the streets in a new city.", opciones: ["menu", "map", "poster", "calendar"], correcta: 1, explicacion: "'Map' significa mapa." },
+                { pregunta: "My cousin is very ___; he makes everyone laugh.", opciones: ["serious", "funny", "bored", "strict"], correcta: 1, explicacion: "'Funny' significa gracioso o divertido." },
+                { pregunta: "You wear ___ to protect your eyes from the sun.", opciones: ["glasses", "sunglasses", "goggles", "contact lenses"], correcta: 1, explicacion: "'Sunglasses' son gafas de sol." },
+                { pregunta: "The opposite of 'early' is ___.", opciones: ["soon", "late", "fast", "quick"], correcta: 1, explicacion: "Lo opuesto a temprano ('early') es tarde ('late')." },
+                { pregunta: "A person who serves food in a restaurant is a ___.", opciones: ["cook", "waiter", "guest", "customer"], correcta: 1, explicacion: "'Waiter' es mesero o camarero." },
+                { pregunta: "You use a ___ to clean your teeth.", opciones: ["comb", "toothbrush", "razor", "sponge"], correcta: 1, explicacion: "'Toothbrush' es cepillo de dientes." },
+                { pregunta: "When it rains and the sun shines, you might see a ___.", opciones: ["thunder", "rainbow", "snowstorm", "lightning"], correcta: 1, explicacion: "'Rainbow' significa arcoíris." },
+                { pregunta: "The opposite of 'push' is ___.", opciones: ["press", "pull", "throw", "catch"], correcta: 1, explicacion: "Lo opuesto a empujar ('push') es halar o tirar ('pull')." },
+                { pregunta: "You need a ___ to open a locked door.", opciones: ["coin", "key", "card", "handle"], correcta: 1, explicacion: "'Key' significa llave." },
+                { pregunta: "A person who grows crops and raises animals is a ___.", opciones: ["gardener", "farmer", "builder", "miner"], correcta: 1, explicacion: "'Farmer' es granjero o agricultor." },
+                { pregunta: "I have a terrible ___; my head hurts a lot.", opciones: ["stomachache", "headache", "earache", "backache"], correcta: 1, explicacion: "'Headache' significa dolor de cabeza." },
+                { pregunta: "The opposite of 'full' is ___.", opciones: ["heavy", "empty", "thick", "wide"], correcta: 1, explicacion: "Lo opuesto a lleno ('full') es vacío ('empty')." },
+                { pregunta: "You wear ___ on your feet inside your shoes.", opciones: ["gloves", "socks", "shorts", "sleeves"], correcta: 1, explicacion: "'Socks' significa calcetines o medias." },
+                { pregunta: "A place where planes land and take off is an ___.", opciones: ["station", "airport", "port", "garage"], correcta: 1, explicacion: "'Airport' es aeropuerto." },
+                { pregunta: "She is very ___; she always gets the best grades in class.", opciones: ["clever", "silly", "slow", "weak"], correcta: 0, explicacion: "'Clever' significa inteligente o listo." },
+                { pregunta: "You use a ___ to keep your hair tidy.", opciones: ["brush", "towel", "soap", "mirror"], correcta: 0, explicacion: "'Brush' (o 'comb') se usa para peinar el cabello." },
+                { pregunta: "The opposite of 'buy' is ___.", opciones: ["pay", "sell", "cost", "spend"], correcta: 1, explicacion: "Lo opuesto a comprar ('buy') es vender ('sell')." },
+                { pregunta: "When you go camping, you sleep in a ___.", opciones: ["hotel", "tent", "cabin", "flat"], correcta: 1, explicacion: "'Tent' significa carpa o tienda de campaña." },
+                { pregunta: "A person who plays musical instruments is a ___.", opciones: ["painter", "musician", "dancer", "writer"], correcta: 1, explicacion: "'Musician' es músico." }
+            ],
+            B1: [
+                { pregunta: "After running a marathon, you feel completely ___.", opciones: ["exhausted", "delighted", "curious", "relieved"], correcta: 0, explicacion: "'Exhausted' significa agotado o extremadamente cansado." },
+                { pregunta: "We need to ___ plastic waste to protect the environment.", opciones: ["increase", "reduce", "pollute", "waste"], correcta: 1, explicacion: "'Reduce' significa reducir." },
+                { pregunta: "She applied for the job and has an ___ tomorrow morning.", opciones: ["appointment", "interview", "audience", "argument"], correcta: 1, explicacion: "'Interview' es una entrevista de trabajo." },
+                { pregunta: "Could you ___ me a favor and close the window?", opciones: ["make", "do", "give", "take"], correcta: 1, explicacion: "La colocación correcta en inglés es 'do a favor'." },
+                { pregunta: "The movie was so ___ that half of the audience fell asleep.", opciones: ["thrilling", "dull", "gripping", "hilarious"], correcta: 1, explicacion: "'Dull' significa aburrido o monótono." },
+                { pregunta: "If you have a toothache, you should make an appointment with the ___.", opciones: ["surgeon", "dentist", "pharmacist", "optician"], correcta: 1, explicacion: "'Dentist' es el odontólogo o dentista." },
+                { pregunta: "He felt ___ when he realized he had forgotten his wallet at home.", opciones: ["embarrassed", "proud", "grateful", "confident"], correcta: 0, explicacion: "'Embarrassed' significa avergonzado o apenado." },
+                { pregunta: "The flight was ___ by two hours due to bad weather.", opciones: ["cancelled", "delayed", "arrived", "landed"], correcta: 1, explicacion: "'Delayed' significa retrasado." },
+                { pregunta: "A synonym for 'reliable' is ___.", opciones: ["trustworthy", "careless", "unpredictable", "stubborn"], correcta: 0, explicacion: "'Trustworthy' y 'reliable' significan confiable." },
+                { pregunta: "She managed to ___ her fear of flying.", opciones: ["overcome", "surrender", "avoid", "pretend"], correcta: 0, explicacion: "'Overcome' significa superar (un miedo o dificultad)." },
+                { pregunta: "The government is trying to ___ pollution in big cities.", opciones: ["tackle", "encourage", "ignore", "produce"], correcta: 0, explicacion: "'Tackle' significa abordar o hacer frente a un problema." },
+                { pregunta: "I always ___ my bed as soon as I wake up.", opciones: ["do", "make", "put", "take"], correcta: 1, explicacion: "La expresión correcta es 'make the bed' (tender la cama)." },
+                { pregunta: "She was ___ with joy when she heard she passed the exam.", opciones: ["furious", "thrilled", "anxious", "disappointed"], correcta: 1, explicacion: "'Thrilled' significa emocionado o encantado." },
+                { pregunta: "You should ___ your money wisely instead of spending it all.", opciones: ["waste", "invest", "lend", "owe"], correcta: 1, explicacion: "'Invest' significa invertir." },
+                { pregunta: "The novel has a very complex ___ with many unexpected twists.", opciones: ["plot", "lyrics", "rehearsal", "stage"], correcta: 0, explicacion: "'Plot' es la trama o argumento de una historia." },
+                { pregunta: "He apologized for ___ late to the meeting.", opciones: ["turning up", "turning off", "turning down", "turning into"], correcta: 0, explicacion: "'Turn up' significa aparecer o llegar a un lugar." },
+                { pregunta: "Many endangered species are at risk of ___.", opciones: ["extinction", "evolution", "habitat", "conservation"], correcta: 0, explicacion: "'Extinction' significa extinción." },
+                { pregunta: "Can you ___ the difference between these two identical twins?", opciones: ["say", "tell", "speak", "talk"], correcta: 1, explicacion: "La expresión fija es 'tell the difference' (notar la diferencia)." },
+                { pregunta: "She has a very positive ___ towards life.", opciones: ["attitude", "behavior", "mood", "temper"], correcta: 0, explicacion: "'Attitude' significa actitud." },
+                { pregunta: "The doctor gave me a ___ for antibiotics.", opciones: ["recipe", "prescription", "receipt", "bill"], correcta: 1, explicacion: "'Prescription' es receta médica ('recipe' es receta de cocina)." },
+                { pregunta: "We ran ___ of milk, so I need to go to the supermarket.", opciones: ["out", "off", "away", "over"], correcta: 0, explicacion: "'Run out of' significa quedarse sin algo." },
+                { pregunta: "The stadium was packed with thousands of enthusiastic ___.", opciones: ["spectators", "passengers", "customers", "candidates"], correcta: 0, explicacion: "'Spectators' son los espectadores de un evento deportivo." },
+                { pregunta: "It is important to ___ a healthy balance between work and leisure.", opciones: ["maintain", "destroy", "lose", "avoid"], correcta: 0, explicacion: "'Maintain' significa mantener." },
+                { pregunta: "He is very ___; he never changes his mind even when he is wrong.", opciones: ["flexible", "stubborn", "generous", "modest"], correcta: 1, explicacion: "'Stubborn' significa terco o testarudo." },
+                { pregunta: "The company offers a very competitive ___ and good benefits.", opciones: ["salary", "fee", "fare", "fine"], correcta: 0, explicacion: "'Salary' es el sueldo o salario." },
+                { pregunta: "Please ___ your seatbelt before the plane takes off.", opciones: ["fasten", "loosen", "tie", "unfasten"], correcta: 0, explicacion: "'Fasten' significa abrochar." },
+                { pregunta: "I'm really looking ___ to seeing you next weekend.", opciones: ["forward", "after", "for", "up"], correcta: 0, explicacion: "'Look forward to' significa esperar con ilusión o ganas." },
+                { pregunta: "The witness couldn't ___ the thief because it was too dark.", opciones: ["identify", "invent", "pretend", "accuse"], correcta: 0, explicacion: "'Identify' significa identificar." },
+                { pregunta: "Recycling paper and glass helps preserve natural ___.", opciones: ["resources", "sources", "supplies", "materials"], correcta: 0, explicacion: "'Natural resources' significa recursos naturales." },
+                { pregunta: "She felt a huge sense of ___ after finishing her final exams.", opciones: ["relief", "grief", "envy", "guilt"], correcta: 0, explicacion: "'Relief' significa alivio." },
+                { pregunta: "Don't ___ your time playing video games all day.", opciones: ["spend", "waste", "save", "earn"], correcta: 1, explicacion: "'Waste time' significa malgastar o perder el tiempo." },
+                { pregunta: "The hotel provides excellent ___ for guests, including a pool and gym.", opciones: ["facilities", "furniture", "equipment", "appliances"], correcta: 0, explicacion: "'Facilities' son las instalaciones o servicios de un lugar." },
+                { pregunta: "He was ___ of stealing the money, even though he was innocent.", opciones: ["accused", "blamed", "charged", "punished"], correcta: 0, explicacion: "La estructura correcta es 'accused of' (acusado de)." },
+                { pregunta: "We need to ___ up with a solution before tomorrow.", opciones: ["come", "go", "get", "take"], correcta: 0, explicacion: "'Come up with' significa idear o proponer una solución." },
+                { pregunta: "The view from the top of the mountain was absolutely ___.", opciones: ["breathtaking", "terrifying", "ordinary", "miserable"], correcta: 0, explicacion: "'Breathtaking' significa impresionante o que quita el aliento." },
+                { pregunta: "She decided to ___ up yoga to reduce her stress levels.", opciones: ["take", "give", "put", "make"], correcta: 0, explicacion: "'Take up' significa empezar a practicar un hobby o actividad." },
+                { pregunta: "A person who travels to work every day from another town is a ___.", opciones: ["commuter", "tourist", "pedestrian", "resident"], correcta: 0, explicacion: "'Commuter' es quien viaja diariamente entre su casa y su trabajo." },
+                { pregunta: "The teacher praised the students for their rapid ___.", opciones: ["progress", "failure", "delay", "mistake"], correcta: 0, explicacion: "'Progress' significa progreso o avance." },
+                { pregunta: "You must ___ a fine if you park your car here illegally.", opciones: ["pay", "earn", "win", "charge"], correcta: 0, explicacion: "'Pay a fine' significa pagar una multa." },
+                { pregunta: "The medicine had some unpleasant side ___.", opciones: ["effects", "results", "causes", "reasons"], correcta: 0, explicacion: "'Side effects' significa efectos secundarios." },
+                { pregunta: "He is very ___; you can always count on him when you need help.", opciones: ["dependable", "selfish", "moody", "arrogant"], correcta: 0, explicacion: "'Dependable' significa confiable o de fiar." },
+                { pregunta: "The concert was called ___ because the lead singer lost his voice.", opciones: ["off", "out", "up", "in"], correcta: 0, explicacion: "'Call off' significa cancelar." },
+                { pregunta: "Global warming is causing ice caps to ___ at an alarming rate.", opciones: ["melt", "freeze", "boil", "evaporate"], correcta: 0, explicacion: "'Melt' significa derretirse." },
+                { pregunta: "She felt ___ when nobody remembered her birthday.", opciones: ["hurt", "proud", "excited", "amused"], correcta: 0, explicacion: "'Hurt' significa herido emocionalmente o dolido." },
+                { pregunta: "I couldn't ___ laughing when I saw his funny costume.", opciones: ["help", "avoid", "stop", "prevent"], correcta: 0, explicacion: "'Couldn't help + -ing' significa no poder evitar hacer algo." },
+                { pregunta: "The police are ___ the cause of the fire.", opciones: ["investigating", "inventing", "ignoring", "interfering"], correcta: 0, explicacion: "'Investigate' significa investigar." },
+                { pregunta: "It's a ___ of time trying to argue with him; he never listens.", opciones: ["waste", "loss", "lack", "shortage"], correcta: 0, explicacion: "'A waste of time' significa una pérdida de tiempo." },
+                { pregunta: "She was promoted because of her hard work and ___.", opciones: ["dedication", "laziness", "absence", "hesitation"], correcta: 0, explicacion: "'Dedication' significa dedicación." },
+                { pregunta: "The train ___ was much more expensive than we expected.", opciones: ["fare", "fee", "salary", "tip"], correcta: 0, explicacion: "'Fare' es la tarifa del transporte público (tren, bus, taxi)." },
+                { pregunta: "Could you please ___ down the music? It's too loud.", opciones: ["turn", "put", "take", "get"], correcta: 0, explicacion: "'Turn down' significa bajar el volumen." },
+                { pregunta: "Many people suffer from ___ due to lack of sleep and overwork.", opciones: ["fatigue", "energy", "strength", "vitality"], correcta: 0, explicacion: "'Fatigue' significa fatiga o cansancio extremo." },
+                { pregunta: "The museum displays ancient ___ from the Roman Empire.", opciones: ["artifacts", "gadgets", "appliances", "tools"], correcta: 0, explicacion: "'Artifacts' son artefactos u objetos históricos." },
+                { pregunta: "He was ___ from school for breaking the rules.", opciones: ["suspended", "graduated", "enrolled", "admitted"], correcta: 0, explicacion: "'Suspended' significa suspendido." },
+                { pregunta: "You should ___ advantage of this opportunity to study abroad.", opciones: ["take", "make", "do", "have"], correcta: 0, explicacion: "La colocación correcta es 'take advantage of' (aprovechar)." },
+                { pregunta: "The audience clapped loudly at the end of the ___.", opciones: ["performance", "rehearsal", "audition", "interval"], correcta: 0, explicacion: "'Performance' es la función o presentación artística." },
+                { pregunta: "She has a ___ for mathematics and solves complex problems easily.", opciones: ["talent", "weakness", "dislike", "fear"], correcta: 0, explicacion: "'Talent' significa talento." },
+                { pregunta: "The road was blocked due to a serious traffic ___.", opciones: ["accident", "incident", "event", "occasion"], correcta: 0, explicacion: "'Traffic accident' es accidente de tránsito." },
+                { pregunta: "We need to ___ our expenses if we want to save for a house.", opciones: ["cut down on", "put up with", "look up to", "get away with"], correcta: 0, explicacion: "'Cut down on' significa reducir el consumo o gasto de algo." },
+                { pregunta: "The book was so ___ that I couldn't put it down.", opciones: ["gripping", "boring", "predictable", "confusing"], correcta: 0, explicacion: "'Gripping' significa apasionante o atrapante." },
+                { pregunta: "He felt ___ before going on stage to give his speech.", opciones: ["anxious", "calm", "confident", "bored"], correcta: 0, explicacion: "'Anxious' significa ansioso o nervioso." },
+                { pregunta: "Solar and wind power are examples of ___ energy.", opciones: ["renewable", "fossil", "nuclear", "limited"], correcta: 0, explicacion: "'Renewable energy' es energía renovable." },
+                { pregunta: "Please ___ sure that all windows are locked before leaving.", opciones: ["make", "do", "take", "get"], correcta: 0, explicacion: "'Make sure' significa asegurarse." },
+                { pregunta: "The athlete broke the world ___ in the 100-meter race.", opciones: ["record", "medal", "trophy", "score"], correcta: 0, explicacion: "'Break a record' significa romper un récord." },
+                { pregunta: "She is fluent in three languages, ___ English, French, and Spanish.", opciones: ["including", "consisting", "containing", "involving"], correcta: 0, explicacion: "'Including' significa incluyendo." },
+                { pregunta: "I had to ___ my pride and ask him for help.", opciones: ["swallow", "eat", "drink", "bite"], correcta: 0, explicacion: "'Swallow one's pride' es una expresión que significa tragarse el orgullo." },
+                { pregunta: "The company is planning to ___ a new smartphone next month.", opciones: ["launch", "throw", "drop", "catch"], correcta: 0, explicacion: "'Launch' significa lanzar un producto al mercado." },
+                { pregunta: "He was ___ by his grandparents after his parents moved abroad.", opciones: ["brought up", "grown up", "taken up", "set up"], correcta: 0, explicacion: "'Bring up' significa criar o educar a un niño." },
+                { pregunta: "There is a severe ___ of clean drinking water in the region.", opciones: ["shortage", "surplus", "excess", "abundance"], correcta: 0, explicacion: "'Shortage' significa escasez." },
+                { pregunta: "The instructions were so ___ that nobody understood what to do.", opciones: ["confusing", "clear", "obvious", "simple"], correcta: 0, explicacion: "'Confusing' significa confuso." },
+                { pregunta: "She achieved her ___ of becoming a professional doctor.", opciones: ["ambition", "failure", "regret", "doubt"], correcta: 0, explicacion: "'Ambition' significa meta, aspiración o ambición." }
+            ],
+            B2: [
+                { pregunta: "The company decided to ___ thirty new employees this year.", opciones: ["take on", "turn down", "put off", "give up"], correcta: 0, explicacion: "El phrasal verb 'take on' significa contratar personal." },
+                { pregunta: "We had to ___ the meeting until next Monday because the manager was sick.", opciones: ["call off", "put off", "bring up", "carry out"], correcta: 1, explicacion: "'Put off' significa posponer o aplazar." },
+                { pregunta: "His explanation was very ___; nobody had any doubts afterward.", opciones: ["vague", "ambiguous", "thorough", "superficial"], correcta: 2, explicacion: "'Thorough' significa exhaustivo, minucioso y completo." },
+                { pregunta: "It is important to ___ a distinction between facts and opinions.", opciones: ["do", "make", "take", "set"], correcta: 1, explicacion: "La colocación correcta es 'make a distinction'." },
+                { pregunta: "The scientist made a major ___ in cancer research.", opciones: ["breakdown", "breakthrough", "outbreak", "drawback"], correcta: 1, explicacion: "'Breakthrough' significa un avance o descubrimiento importante." },
+                { pregunta: "One major ___ of living in a big city is the high cost of rent.", opciones: ["benefit", "asset", "drawback", "perk"], correcta: 2, explicacion: "'Drawback' significa desventaja o inconveniente." },
+                { pregunta: "She was ___ from her job after the company went bankrupt.", opciones: ["resigned", "retired", "made redundant", "promoted"], correcta: 2, explicacion: "'Made redundant' significa ser despedido por recorte o cierre de la empresa." },
+                { pregunta: "Please ___ in mind that the deadline is this Friday.", opciones: ["take", "bear", "hold", "put"], correcta: 1, explicacion: "'Bear in mind' (o 'keep in mind') significa tener en cuenta." },
+                { pregunta: "The witness gave an ___ account of what happened during the robbery.", opciones: ["accurate", "inaccurate", "false", "fictional"], correcta: 0, explicacion: "'Accurate' significa preciso y exacto." },
+                { pregunta: "They finally ___ an agreement after six hours of negotiation.", opciones: ["arrived", "reached", "achieved", "got"], correcta: 1, explicacion: "La colocación natural es 'reach an agreement' (llegar a un acuerdo)." },
+                { pregunta: "I can't ___ up with this constant noise anymore; I'm moving out.", opciones: ["put", "get", "come", "keep"], correcta: 0, explicacion: "'Put up with' significa tolerar o soportar." },
+                { pregunta: "The new policy was met with strong ___ from the employees.", opciones: ["resistance", "approval", "enthusiasm", "relief"], correcta: 0, explicacion: "'Resistance' significa resistencia u oposición." },
+                { pregunta: "She has a ___ knowledge of European history.", opciones: ["vast", "wide", "deep", "Todas son correctas, pero 'vast' es la colocación más formal"], correcta: 0, explicacion: "'Vast knowledge' es una colocación clásica para vasto conocimiento." },
+                { pregunta: "The government must ___ priority to education and healthcare.", opciones: ["give", "make", "do", "put"], correcta: 0, explicacion: "'Give priority to' significa dar prioridad a." },
+                { pregunta: "His sudden resignation came completely out of the ___.", opciones: ["blue", "red", "green", "dark"], correcta: 0, explicacion: "'Out of the blue' es un modismo que significa de repente o inesperadamente." },
+                { pregunta: "The journalist refused to ___ the name of her confidential source.", opciones: ["disclose", "conceal", "withhold", "suppress"], correcta: 0, explicacion: "'Disclose' significa revelar o divulgar información." },
+                { pregunta: "The economy is showing signs of gradual ___ after the recession.", opciones: ["recovery", "decline", "collapse", "stagnation"], correcta: 0, explicacion: "'Recovery' significa recuperación." },
+                { pregunta: "You should ___ into account all the risks before investing.", opciones: ["take", "make", "put", "bring"], correcta: 0, explicacion: "'Take into account' significa tomar en cuenta." },
+                { pregunta: "The suspect had a solid ___ for the night of the crime.", opciones: ["alibi", "verdict", "sentence", "offense"], correcta: 0, explicacion: "'Alibi' significa coartada." },
+                { pregunta: "Her speech had a profound ___ on everyone in the room.", opciones: ["impact", "affect", "result", "consequence"], correcta: 0, explicacion: "'Have an impact on' significa tener un impacto en." },
+                { pregunta: "He was ___ with fraud and sentenced to three years in prison.", opciones: ["charged", "accused", "blamed", "suspected"], correcta: 0, explicacion: "'Charged with' significa imputado o acusado formalmente de un delito." },
+                { pregunta: "The project fell ___ due to a lack of funding.", opciones: ["through", "out", "off", "down"], correcta: 0, explicacion: "'Fall through' significa fracasar o no llegar a concretarse." },
+                { pregunta: "We need to ___ out a survey to understand customer preferences.", opciones: ["carry", "make", "do", "take"], correcta: 0, explicacion: "'Carry out a survey' significa realizar o llevar a cabo una encuesta." },
+                { pregunta: "She is very ___; she always sets high goals for herself.", opciones: ["ambitious", "content", "indifferent", "modest"], correcta: 0, explicacion: "'Ambitious' significa ambicioso/a." },
+                { pregunta: "The medicine is only available on ___.", opciones: ["prescription", "receipt", "subscription", "inscription"], correcta: 0, explicacion: "'On prescription' significa bajo fórmula o receta médica." },
+                { pregunta: "The manager decided to ___ the issue at the next board meeting.", opciones: ["bring up", "turn down", "put away", "give in"], correcta: 0, explicacion: "'Bring up' significa sacar a colación o mencionar un tema." },
+                { pregunta: "It is widely ___ that climate change poses a serious threat.", opciones: ["acknowledged", "denied", "ignored", "doubted"], correcta: 0, explicacion: "'Widely acknowledged' significa ampliamente reconocido." },
+                { pregunta: "The company is on the ___ of bankruptcy.", opciones: ["verge", "edge", "border", "limit"], correcta: 0, explicacion: "'On the verge of' significa al borde de." },
+                { pregunta: "He managed to get ___ with cheating on the exam.", opciones: ["away", "out", "off", "over"], correcta: 0, explicacion: "'Get away with' significa salirse con la suya sin castigo." },
+                { pregunta: "The new software will ___ us to process data much faster.", opciones: ["enable", "prevent", "forbid", "restrict"], correcta: 0, explicacion: "'Enable' significa permitir o capacitar." },
+                { pregunta: "There is a growing ___ for organic food products.", opciones: ["demand", "supply", "shortage", "surplus"], correcta: 0, explicacion: "'Demand for' significa demanda de." },
+                { pregunta: "She has always ___ up to her older sister as a role model.", opciones: ["looked", "taken", "kept", "put"], correcta: 0, explicacion: "'Look up to' significa admirar o respetar a alguien." },
+                { pregunta: "The treaty was signed to ___ peace between the two nations.", opciones: ["foster", "hinder", "disrupt", "provoke"], correcta: 0, explicacion: "'Foster' significa fomentar o promover." },
+                { pregunta: "His behavior was completely ___ for someone in his position.", opciones: ["inappropriate", "suitable", "proper", "fitting"], correcta: 0, explicacion: "'Inappropriate' significa inapropiado." },
+                { pregunta: "I accidentally ___ across some old photos while cleaning the attic.", opciones: ["came", "went", "ran", "got"], correcta: 0, explicacion: "'Come across' significa encontrarse con algo por casualidad." },
+                { pregunta: "The jury reached a unanimous ___ of guilty.", opciones: ["verdict", "sentence", "fine", "trial"], correcta: 0, explicacion: "'Verdict' es el veredicto de un jurado." },
+                { pregunta: "She was ___ by the beauty of the ancient cathedral.", opciones: ["overwhelmed", "underwhelmed", "indifferent", "bored"], correcta: 0, explicacion: "'Overwhelmed' significa abrumado o profundamente impresionado." },
+                { pregunta: "We must ___ measures to prevent future cyberattacks.", opciones: ["take", "do", "make", "set"], correcta: 0, explicacion: "'Take measures' significa tomar medidas." },
+                { pregunta: "The factory had to ___ down due to safety violations.", opciones: ["shut", "turn", "put", "cut"], correcta: 0, explicacion: "'Shut down' significa cerrar operaciones." },
+                { pregunta: "He gave a very ___ argument that convinced the entire committee.", opciones: ["persuasive", "weak", "flawed", "irrelevant"], correcta: 0, explicacion: "'Persuasive' significa persuasivo o convincente." },
+                { pregunta: "The athlete was disqualified for failing a drug ___.", opciones: ["test", "trial", "exam", "check"], correcta: 0, explicacion: "'Drug test' es prueba antidopaje." },
+                { pregunta: "It took her months to get ___ the loss of her beloved pet.", opciones: ["over", "through", "away", "by"], correcta: 0, explicacion: "'Get over' significa recuperarse emocionalmente de algo." },
+                { pregunta: "The report highlights the ___ between poverty and poor health.", opciones: ["correlation", "separation", "division", "contrast"], correcta: 0, explicacion: "'Correlation' significa correlación o relación mutua." },
+                { pregunta: "She declined the job offer because the salary didn't ___ her expectations.", opciones: ["meet", "reach", "hit", "touch"], correcta: 0, explicacion: "'Meet expectations' significa cumplir con las expectativas." },
+                { pregunta: "The company is trying to ___ its carbon footprint.", opciones: ["minimize", "maximize", "expand", "double"], correcta: 0, explicacion: "'Minimize' significa minimizar." },
+                { pregunta: "He tends to ___ everything until the very last minute.", opciones: ["procrastinate", "expedite", "accelerate", "advance"], correcta: 0, explicacion: "'Procrastinate' significa procrastinar o posponer tareas." },
+                { pregunta: "The novel provides a vivid ___ of life in Victorian London.", opciones: ["portrayal", "distortion", "omission", "concealment"], correcta: 0, explicacion: "'Portrayal' significa retrato o descripción detallada." },
+                { pregunta: "They decided to ___ up their own business after graduating.", opciones: ["set", "put", "take", "make"], correcta: 0, explicacion: "'Set up a business' significa fundar o montar un negocio." },
+                { pregunta: "The evidence was purely ___, so the judge dismissed the case.", opciones: ["circumstantial", "conclusive", "undeniable", "concrete"], correcta: 0, explicacion: "'Circumstantial evidence' significa evidencia circunstancial (no directa)." },
+                { pregunta: "She has a remarkable ___ for remembering names and faces.", opciones: ["capacity", "inability", "failure", "lack"], correcta: 0, explicacion: "'Capacity' significa capacidad." },
+                { pregunta: "The storm caused ___ damage to the coastal town.", opciones: ["extensive", "minor", "negligible", "trivial"], correcta: 0, explicacion: "'Extensive damage' significa daños extensos o graves." },
+                { pregunta: "I need to ___ up on my French before my trip to Paris.", opciones: ["brush", "wash", "clean", "sweep"], correcta: 0, explicacion: "'Brush up on' significa repasar o refrescar conocimientos." },
+                { pregunta: "The two companies merged to gain a competitive ___.", opciones: ["edge", "corner", "side", "point"], correcta: 0, explicacion: "'Competitive edge' significa ventaja competitiva." },
+                { pregunta: "His comments were taken completely out of ___.", opciones: ["context", "order", "place", "sight"], correcta: 0, explicacion: "'Out of context' significa fuera de contexto." },
+                { pregunta: "The charity relies heavily on voluntary ___.", opciones: ["donations", "taxes", "fines", "debts"], correcta: 0, explicacion: "'Donations' significa donaciones." },
+                { pregunta: "She was ___ to admit that she had made a mistake.", opciones: ["reluctant", "eager", "willing", "enthusiastic"], correcta: 0, explicacion: "'Reluctant' significa reacio o poco dispuesto." },
+                { pregunta: "The new regulations will come into ___ next month.", opciones: ["effect", "affect", "result", "action"], correcta: 0, explicacion: "'Come into effect' significa entrar en vigor." },
+                { pregunta: "He is widely ___ as one of the greatest scientists of our time.", opciones: ["regarded", "thought", "believed", "supposed"], correcta: 0, explicacion: "'Widely regarded as' significa ampliamente considerado como." },
+                { pregunta: "The negotiation reached a ___ when neither side would compromise.", opciones: ["deadlock", "breakthrough", "settlement", "resolution"], correcta: 0, explicacion: "'Deadlock' significa punto muerto o estancamiento." },
+                { pregunta: "Please refrain ___ using your mobile phone during the flight.", opciones: ["from", "of", "to", "with"], correcta: 0, explicacion: "La preposición correcta es 'refrain from' (abstenerse de)." },
+                { pregunta: "The book offers practical ___ on how to manage personal finances.", opciones: ["advice", "advices", "advise", "advising"], correcta: 0, explicacion: "'Advice' es un sustantivo incontable (nunca lleva 's')." },
+                { pregunta: "The witness's testimony contradicted his earlier ___.", opciones: ["statement", "question", "silence", "rumor"], correcta: 0, explicacion: "'Statement' significa declaración." },
+                { pregunta: "We are facing a critical ___ of skilled workers in the sector.", opciones: ["shortage", "excess", "surplus", "plethora"], correcta: 0, explicacion: "'Shortage' significa escasez o déficit." },
+                { pregunta: "She managed to ___ her nervousness and deliver a great presentation.", opciones: ["conceal", "reveal", "display", "exhibit"], correcta: 0, explicacion: "'Conceal' significa ocultar o disimular." },
+                { pregunta: "The agreement is legally ___ on both parties.", opciones: ["binding", "optional", "flexible", "voluntary"], correcta: 0, explicacion: "'Legally binding' significa legalmente vinculante u obligatorio." },
+                { pregunta: "He turned ___ the job offer because it required too much travel.", opciones: ["down", "up", "in", "on"], correcta: 0, explicacion: "'Turn down' significa rechazar una oferta." },
+                { pregunta: "The sudden change in weather caught us completely off ___.", opciones: ["guard", "watch", "duty", "balance"], correcta: 0, explicacion: "'Off guard' significa desprevenido." },
+                { pregunta: "The research team is looking ___ the causes of the disease.", opciones: ["into", "after", "for", "up"], correcta: 0, explicacion: "'Look into' significa investigar." },
+                { pregunta: "Her dedication to the project is truly ___.", opciones: ["commendable", "blameworthy", "negligent", "mediocre"], correcta: 0, explicacion: "'Commendable' significa elogiable o digno de admiración." },
+                { pregunta: "The company had to ___ several branches to reduce costs.", opciones: ["close down", "open up", "set up", "take over"], correcta: 0, explicacion: "'Close down' significa cerrar definitivamente." }
+            ],
+            C1: [
+                { pregunta: "The politician's speech was full of ___ promises that he had no intention of keeping.", opciones: ["hollow", "profound", "lucid", "candid"], correcta: 0, explicacion: "'Hollow promises' significa promesas vacías o sin sinceridad." },
+                { pregunta: "Her ___ attention to detail ensured that the project was flawless.", opciones: ["negligent", "meticulous", "haphazard", "cursory"], correcta: 1, explicacion: "'Meticulous' significa extremadamente cuidadoso y detallista." },
+                { pregunta: "The new regulations will have far-reaching ___ for small businesses.", opciones: ["repercussions", "incentives", "amenities", "fallacies"], correcta: 0, explicacion: "'Repercussions' significa consecuencias o efectos indirectos." },
+                { pregunta: "Rather than addressing the real issue, he tried to ___ the question.", opciones: ["elucidate", "evade", "scrutinize", "bolster"], correcta: 1, explicacion: "'Evade' significa evadir o esquivar una pregunta." },
+                { pregunta: "The evidence presented in court was completely ___; it proved his innocence beyond doubt.", opciones: ["inconclusive", "irrefutable", "dubious", "tenuous"], correcta: 1, explicacion: "'Irrefutable' significa imposible de negar o refutar." },
+                { pregunta: "Working from home has become ___ in the tech industry.", opciones: ["ubiquitous", "obsolete", "scarce", "sporadic"], correcta: 0, explicacion: "'Ubiquitous' significa omnipresente o que está en todas partes." },
+                { pregunta: "He has a ___ for learning foreign languages; he speaks six fluently.", opciones: ["flaw", "knack", "plight", "grudge"], correcta: 1, explicacion: "'Have a knack for' es una expresión idiomática que significa tener un talento natural para algo." },
+                { pregunta: "The sudden drop in sales was a ___ reminder that the market is unpredictable.", opciones: ["sobering", "soothing", "trivial", "whimsical"], correcta: 0, explicacion: "'Sobering' significa que hace reflexionar seriamente." },
+                { pregunta: "The CEO decided to ___ the rumor before it caused panic among investors.", opciones: ["quash", "foster", "ignite", "fabricate"], correcta: 0, explicacion: "'Quash' significa sofocar, acallar o desmentir por completo." },
+                { pregunta: "Their arguments were so ___ that even their critics had to agree.", opciones: ["cogent", "flimsy", "erratic", "obtuse"], correcta: 0, explicacion: "'Cogent' significa convincente, lógico y bien fundamentado." },
+                { pregunta: "The witness gave a ___ account of the events, leaving out no detail.", opciones: ["lucid", "murky", "garbled", "cryptic"], correcta: 0, explicacion: "'Lucid' significa claro, coherente y fácil de entender." },
+                { pregunta: "His ___ lifestyle eventually led to serious financial trouble.", opciones: ["frugal", "extravagant", "prudent", "austere"], correcta: 1, explicacion: "'Extravagant' significa derrochador o excesivamente lujoso." },
+                { pregunta: "The treaty was intended to ___ the long-standing conflict between the neighboring states.", opciones: ["exacerbate", "alleviate", "prolong", "instigate"], correcta: 1, explicacion: "'Alleviate' significa aliviar o mitigar." },
+                { pregunta: "She showed remarkable ___ in the face of severe adversity.", opciones: ["resilience", "fragility", "apathy", "complacency"], correcta: 0, explicacion: "'Resilience' significa resiliencia o capacidad de recuperación." },
+                { pregunta: "The professor's lecture was so ___ that many students struggled to follow his train of thought.", opciones: ["abstruse", "transparent", "elementary", "straightforward"], correcta: 0, explicacion: "'Abstruse' significa abstruso, difícil de comprender o profundo." },
+                { pregunta: "It would be ___ to assume that the problem will simply resolve itself.", opciones: ["naive", "astute", "shrewd", "sagacious"], correcta: 0, explicacion: "'Naive' significa ingenuo." },
+                { pregunta: "The company's profits have been ___ steadily over the past five years.", opciones: ["dwindling", "surging", "skyrocketing", "flourishing"], correcta: 0, explicacion: "'Dwindling' significa disminuyendo o menguando gradualmente." },
+                { pregunta: "He was praised for his ___ handling of the diplomatic crisis.", opciones: ["deft", "clumsy", "inept", "bungling"], correcta: 0, explicacion: "'Deft' significa hábil, diestro y sutil." },
+                { pregunta: "The documentary exposed the ___ living conditions in the overcrowded prisons.", opciones: ["deplorable", "idyllic", "opulent", "lavish"], correcta: 0, explicacion: "'Deplorable' significa deplorable o lamentable." },
+                { pregunta: "Her ___ remarks during the meeting alienated several key stakeholders.", opciones: ["tactless", "diplomatic", "gracious", "cordial"], correcta: 0, explicacion: "'Tactless' significa falto de tacto o indiscreto." },
+                { pregunta: "The new law aims to ___ corruption within public institutions.", opciones: ["curb", "foster", "abet", "perpetuate"], correcta: 0, explicacion: "'Curb' significa frenar, controlar o restringir." },
+                { pregunta: "The scientist's findings were ___ by subsequent independent experiments.", opciones: ["corroborated", "refuted", "invalidated", "contradicted"], correcta: 0, explicacion: "'Corroborated' significa corroborado o confirmado." },
+                { pregunta: "He has a ___ tendency to exaggerate his accomplishments.", opciones: ["marked", "negligible", "imperceptible", "faint"], correcta: 0, explicacion: "'Marked' significa marcado, notable o evidente." },
+                { pregunta: "The committee reached a ___ decision after hours of intense deliberation.", opciones: ["unanimous", "divided", "fractured", "tentative"], correcta: 0, explicacion: "'Unanimous' significa unánime." },
+                { pregunta: "The author's use of symbolism adds ___ to the narrative.", opciones: ["depth", "shallowness", "triviality", "superficiality"], correcta: 0, explicacion: "'Depth' significa profundidad." },
+                { pregunta: "She felt a ___ sense of foreboding as she entered the abandoned building.", opciones: ["palpable", "elusive", "nonexistent", "faint"], correcta: 0, explicacion: "'Palpable' significa palpable, evidente o intenso." },
+                { pregunta: "The merger is expected to ___ significant cost savings for both firms.", opciones: ["yield", "forfeit", "squander", "deplete"], correcta: 0, explicacion: "'Yield' significa producir o generar resultados/beneficios." },
+                { pregunta: "His ___ refusal to compromise stalled the negotiations for weeks.", opciones: ["adamant", "yielding", "compliant", "lenient"], correcta: 0, explicacion: "'Adamant' significa inflexible, firme o rotundamente decidido." },
+                { pregunta: "The charity works to ___ the suffering of displaced families.", opciones: ["mitigate", "aggravate", "intensify", "compound"], correcta: 0, explicacion: "'Mitigate' significa mitigar o atenuar." },
+                { pregunta: "The journalist uncovered a ___ network of shell companies.", opciones: ["clandestine", "transparent", "overt", "public"], correcta: 0, explicacion: "'Clandestine' significa clandestino o secreto." },
+                { pregunta: "Her ___ wit kept the entire dinner party entertained.", opciones: ["scintillating", "dull", "tedious", "vapid"], correcta: 0, explicacion: "'Scintillating' significa brillante, chispeante o ingenioso." },
+                { pregunta: "The report was criticized for its ___ omission of key environmental data.", opciones: ["glaring", "subtle", "minor", "trivial"], correcta: 0, explicacion: "'Glaring omission' significa una omisión flagrante o evidente." },
+                { pregunta: "He was ___ from his duties pending the outcome of the investigation.", opciones: ["relieved", "instated", "appointed", "promoted"], correcta: 0, explicacion: "'Relieved from duties' significa relevado o apartado de sus funciones." },
+                { pregunta: "The novel explores the ___ theme of redemption and forgiveness.", opciones: ["perennial", "transient", "fleeting", "ephemeral"], correcta: 0, explicacion: "'Perennial' significa perenne, duradero o recurrente." },
+                { pregunta: "The government's austerity measures sparked ___ protests across the capital.", opciones: ["widespread", "isolated", "sporadic", "muted"], correcta: 0, explicacion: "'Widespread' significa generalizado o extendido." },
+                { pregunta: "She possesses an ___ ability to remain calm under extreme pressure.", opciones: ["uncanny", "ordinary", "mediocre", "unremarkable"], correcta: 0, explicacion: "'Uncanny' significa extraordinario, asombroso o inexplicable." },
+                { pregunta: "The contract contains several ___ clauses that require legal review.", opciones: ["ambiguous", "explicit", "unequivocal", "lucid"], correcta: 0, explicacion: "'Ambiguous' significa ambiguo o sujeto a varias interpretaciones." },
+                { pregunta: "His ___ apology did little to appease the angry customers.", opciones: ["perfunctory", "heartfelt", "sincere", "earnest"], correcta: 0, explicacion: "'Perfunctory' significa superficial, rutinario o hecho sin verdadero interés." },
+                { pregunta: "The discovery of penicillin was a ___ moment in modern medicine.", opciones: ["watershed", "trivial", "negligible", "mundane"], correcta: 0, explicacion: "'Watershed moment' significa un punto de inflexión o hito decisivo." },
+                { pregunta: "The company was fined for ___ environmental safety standards.", opciones: ["flouting", "upholding", "adhering to", "complying with"], correcta: 0, explicacion: "'Flouting' significa despreciar o infringir abiertamente una norma." },
+                { pregunta: "The speaker's ___ tone alienated much of the audience.", opciones: ["condescending", "humble", "deferential", "respectful"], correcta: 0, explicacion: "'Condescending' significa condescendiente o con aire de superioridad." },
+                { pregunta: "There is a ___ contrast between the rich and poor neighborhoods.", opciones: ["stark", "subtle", "faint", "negligible"], correcta: 0, explicacion: "'Stark contrast' significa un contraste marcado o tajante." },
+                { pregunta: "She was ___ by the sheer volume of work awaiting her after vacation.", opciones: ["daunted", "emboldened", "heartened", "reassured"], correcta: 0, explicacion: "'Daunted' significa intimidado o desanimado por la magnitud de algo." },
+                { pregunta: "The agreement was reached through ___ diplomacy behind closed doors.", opciones: ["astute", "blundering", "inept", "reckless"], correcta: 0, explicacion: "'Astute' significa astuto, sagaz o perspicaz." },
+                { pregunta: "His ___ adherence to tradition prevented him from embracing new ideas.", opciones: ["rigid", "flexible", "adaptable", "progressive"], correcta: 0, explicacion: "'Rigid' significa rígido o inflexible." },
+                { pregunta: "The investigation revealed a ___ disregard for basic safety protocols.", opciones: ["blatant", "subtle", "concealed", "covert"], correcta: 0, explicacion: "'Blatant' significa descarado, evidente o flagrante." },
+                { pregunta: "The new policy aims to ___ innovation in the renewable energy sector.", opciones: ["spur", "stifle", "impede", "hamper"], correcta: 0, explicacion: "'Spur' significa estimular, impulsar o incentivar." },
+                { pregunta: "She has a ___ reputation as one of the finest surgeons in the country.", opciones: ["formidable", "mediocre", "dubious", "tarnished"], correcta: 0, explicacion: "'Formidable' significa imponente, respetable o extraordinario." },
+                { pregunta: "The witness's story began to ___ under intense cross-examination.", opciones: ["unravel", "solidify", "strengthen", "cohere"], correcta: 0, explicacion: "'Unravel' significa desmoronarse o deshacerse." },
+                { pregunta: "The CEO's vision was ___ by a lack of funding and internal resistance.", opciones: ["hampered", "facilitated", "expedited", "accelerated"], correcta: 0, explicacion: "'Hampered' significa obstaculizado o dificultado." },
+                { pregunta: "He delivered an ___ speech that moved the audience to tears.", opciones: ["eloquent", "inarticulate", "halting", "mundane"], correcta: 0, explicacion: "'Eloquent' significa elocuente y conmovedor." },
+                { pregunta: "The town's economy is heavily ___ on seasonal tourism.", opciones: ["reliant", "independent", "autonomous", "detached"], correcta: 0, explicacion: "'Reliant on' significa dependiente de." },
+                { pregunta: "Her ___ nature makes her well-suited for a career in diplomacy.", opciones: ["tactful", "abrasive", "blunt", "impulsive"], correcta: 0, explicacion: "'Tactful' significa diplomático, discreto o con tacto." },
+                { pregunta: "The proposal was rejected as being completely ___ given the budget cuts.", opciones: ["unfeasible", "viable", "practicable", "achievable"], correcta: 0, explicacion: "'Unfeasible' significa inviable o irrealizable." },
+                { pregunta: "The scandal severely ___ the politician's public image.", opciones: ["tarnished", "polished", "enhanced", "bolstered"], correcta: 0, explicacion: "'Tarnished' significa empañó, manchó o dañó la reputación." },
+                { pregunta: "We must ___ a balance between economic growth and environmental protection.", opciones: ["strike", "hit", "beat", "knock"], correcta: 0, explicacion: "'Strike a balance' significa encontrar un equilibrio." },
+                { pregunta: "The movie's plot was so ___ that I guessed the ending within ten minutes.", opciones: ["contrived", "authentic", "spontaneous", "organic"], correcta: 0, explicacion: "'Contrived' significa forzado, artificial o poco natural." },
+                { pregunta: "He was ___ for his bravery during the rescue mission.", opciones: ["commended", "reprimanded", "censured", "rebuked"], correcta: 0, explicacion: "'Commended' significa elogiado o condecorado." },
+                { pregunta: "The company is trying to ___ its operations to remain competitive.", opciones: ["streamline", "complicate", "obstruct", "fragment"], correcta: 0, explicacion: "'Streamline' significa optimizar, agilizar o modernizar procesos." },
+                { pregunta: "Her ___ critique of the novel was published in a leading literary journal.", opciones: ["incisive", "superficial", "vague", "obtuse"], correcta: 0, explicacion: "'Incisive' significa incisivo, agudo y penetrante." },
+                { pregunta: "The new evidence casts ___ on the validity of the original study.", opciones: ["doubt", "light", "certainty", "clarity"], correcta: 0, explicacion: "'Cast doubt on' significa arrojar dudas sobre algo." },
+                { pregunta: "He showed ___ disregard for the feelings of his colleagues.", opciones: ["callous", "compassionate", "empathetic", "considerate"], correcta: 0, explicacion: "'Callous' significa insensible o cruel." },
+                { pregunta: "The negotiations were ___ with difficulties from the very beginning.", opciones: ["beset", "blessed", "endowed", "graced"], correcta: 0, explicacion: "'Beset with' significa plagado o acosado por problemas." },
+                { pregunta: "She has an ___ appetite for knowledge and reads constantly.", opciones: ["insatiable", "apathetic", "indifferent", "minimal"], correcta: 0, explicacion: "'Insatiable' significa insaciable." },
+                { pregunta: "The treaty was hailed as a ___ achievement in international relations.", opciones: ["landmark", "trivial", "negligible", "minor"], correcta: 0, explicacion: "'Landmark achievement' significa un logro histórico o trascendental." },
+                { pregunta: "His ___ demeanor concealed a fiercely competitive spirit.", opciones: ["placid", "agitated", "volatile", "erratic"], correcta: 0, explicacion: "'Placid' significa plácido, tranquilo o sereno." },
+                { pregunta: "The report offers a ___ assessment of the country's economic prospects.", opciones: ["candid", "deceptive", "evasive", "biased"], correcta: 0, explicacion: "'Candid' significa franco, sincero y directo." },
+                { pregunta: "The policy is designed to ___ the gap between rich and poor.", opciones: ["bridge", "widen", "deepen", "expand"], correcta: 0, explicacion: "'Bridge the gap' significa cerrar o reducir la brecha." },
+                { pregunta: "Their efforts to save the historic building proved ___.", opciones: ["futile", "fruitful", "productive", "efficacious"], correcta: 0, explicacion: "'Futile' significa inútil, vano o infructuoso." },
+                { pregunta: "The lawyer presented a ___ argument that dismantled the prosecution's case.", opciones: ["compelling", "flimsy", "tenuous", "feeble"], correcta: 0, explicacion: "'Compelling' significa contundente o convincente." }
+            ],
+            C2: [
+                { pregunta: "His ___ remarks during the formal dinner offended several guests.", opciones: ["tactful", "flippant", "deferential", "astute"], correcta: 1, explicacion: "'Flippant' describe una actitud irreverente o poco seria ante algo importante." },
+                { pregunta: "The author's ___ prose style makes even complex philosophical concepts accessible.", opciones: ["convoluted", "pellucid", "turgid", "opaque"], correcta: 1, explicacion: "'Pellucid' significa cristalino, transparente y de gran claridad expresiva." },
+                { pregunta: "She accepted the award with ___ modesty, attributing her success to her team.", opciones: ["ostentatious", "unassuming", "supercilious", "bombastic"], correcta: 1, explicacion: "'Unassuming' significa modesto, sencillo y sin pretensiones." },
+                { pregunta: "The committee's decision was seen as a ___ attempt to appease both factions.", opciones: ["pusillanimous", "intrepid", "resolute", "unwavering"], correcta: 0, explicacion: "'Pusillanimous' significa timorato o falto de valor para tomar una postura firme." },
+                { pregunta: "Years of ___ habits eventually took a toll on his cardiovascular health.", opciones: ["abstemious", "sedentary", "ascetic", "vigorous"], correcta: 1, explicacion: "'Sedentary' refiere a un estilo de vida con poca o nula actividad física." },
+                { pregunta: "The critic dismissed the novel as a ___ imitation of nineteenth-century classics.", opciones: ["seminal", "derivative", "avant-garde", "groundbreaking"], correcta: 1, explicacion: "'Derivative' significa falto de originalidad, copiado de obras anteriores." },
+                { pregunta: "Despite the ___ nature of fame, many young artists still pursue it relentlessly.", opciones: ["ephemeral", "perennial", "immutable", "enduring"], correcta: 0, explicacion: "'Ephemeral' significa efímero o de muy corta duración." },
+                { pregunta: "His ___ wit made him the most sought-after speaker at literary festivals.", opciones: ["mordant", "insipid", "banal", "obtuse"], correcta: 0, explicacion: "'Mordant' describe un ingenio agudo, incisivo y mordaz." },
+                { pregunta: "The diplomat navigated the ___ negotiations without offending either delegation.", opciones: ["fraught", "serene", "mundane", "harmonious"], correcta: 0, explicacion: "'Fraught' significa cargado de tensión, ansiedad o dificultades." },
+                { pregunta: "To ___ the truth in order to avoid conflict is rarely a sustainable strategy.", opciones: ["obfuscate", "illuminate", "corroborate", "vindicate"], correcta: 0, explicacion: "'Obfuscate' significa oscurecer, confundir o volver poco claro algo intencionalmente." },
+                { pregunta: "The professor's ___ knowledge of classical literature astonished his colleagues.", opciones: ["encyclopedic", "rudimentary", "superficial", "scant"], correcta: 0, explicacion: "'Encyclopedic' significa enciclopédico o vastísimo." },
+                { pregunta: "Her ___ refusal to bow to political pressure earned her widespread respect.", opciones: ["intransigent", "compliant", "pliable", "submissive"], correcta: 0, explicacion: "'Intransigent' significa intransigente o firme en sus principios." },
+                { pregunta: "The CEO's ___ speech failed to inspire confidence among the shareholders.", opciones: ["platitudinous", "galvanizing", "stirring", "rousing"], correcta: 0, explicacion: "'Platitudinous' significa lleno de lugares comunes o clichés vacíos." },
+                { pregunta: "He was known for his ___ lifestyle, living in a tiny cabin without modern luxuries.", opciones: ["ascetic", "hedonistic", "sybaritic", "opulent"], correcta: 0, explicacion: "'Ascetic' significa ascético, austero o dado a la abstinencia." },
+                { pregunta: "The journalist's ___ investigation exposed decades of systemic fraud.", opciones: ["unremitting", "lackadaisical", "perfunctory", "desultory"], correcta: 0, explicacion: "'Unremitting' significa incesante, tenaz o implacable." },
+                { pregunta: "The new policy proved to be a ___ for the company's declining revenues.", opciones: ["panacea", "catalyst", "detriment", "hindrance"], correcta: 0, explicacion: "'Panacea' significa remedio universal para todos los males." },
+                { pregunta: "His ___ manner often alienated potential allies before negotiations even began.", opciones: ["truculent", "affable", "amiable", "genial"], correcta: 0, explicacion: "'Truculent' significa beligerante, agresivo o desafiante." },
+                { pregunta: "The painting's ___ beauty captivated visitors from around the globe.", opciones: ["ineffable", "mundane", "pedestrian", "unremarkable"], correcta: 0, explicacion: "'Ineffable' significa inefable, tan sublime que no puede expresarse con palabras." },
+                { pregunta: "She gave a ___ summary of the three-hundred-page report in just five minutes.", opciones: ["pithy", "verbose", "prolix", "garrulous"], correcta: 0, explicacion: "'Pithy' significa conciso, breve y lleno de sustancia." },
+                { pregunta: "The regime used ___ propaganda to suppress dissent among the population.", opciones: ["insidious", "benign", "salutary", "innocuous"], correcta: 0, explicacion: "'Insidious' significa insidioso, sutilmente dañino o traicionero." },
+                { pregunta: "His ___ attention to minor grammatical rules made him a feared editor.", opciones: ["pedantic", "lax", "negligent", "slapdash"], correcta: 0, explicacion: "'Pedantic' significa pedante o excesivamente escrupuloso con detalles formales." },
+                { pregunta: "The sudden economic collapse served as a ___ reminder of market fragility.", opciones: ["salutary", "detrimental", "pernicious", "baneful"], correcta: 0, explicacion: "'Salutary' significa saludable o beneficioso (especialmente una lección difícil)." },
+                { pregunta: "The witness's ___ testimony left the jury uncertain of what actually transpired.", opciones: ["equivocal", "categorical", "unambiguous", "explicit"], correcta: 0, explicacion: "'Equivocal' significa equívoco, ambiguo o deliberadamente vago." },
+                { pregunta: "She possessed a ___ charm that effortlessly won over even her fiercest critics.", opciones: ["disarming", "repellent", "abrasive", "off-putting"], correcta: 0, explicacion: "'Disarming' significa encantador o que desarma cualquier hostilidad." },
+                { pregunta: "The philosopher's treatise was criticized for its ___ and impenetrable jargon.", opciones: ["obfuscation", "lucidity", "perspicuity", "clarity"], correcta: 0, explicacion: "'Obfuscation' significa oscurecimiento o confusión deliberada del lenguaje." },
+                { pregunta: "The board was divided between pragmatists and ___ idealists.", opciones: ["quixotic", "cynical", "hard-headed", "utilitarian"], correcta: 0, explicacion: "'Quixotic' significa quijotesco, idealista hasta lo poco práctico." },
+                { pregunta: "His ___ generosity funded dozens of scholarships for underprivileged students.", opciones: ["munificent", "parsimonious", "miserly", "stingy"], correcta: 0, explicacion: "'Munificent' significa munífico o extremadamente generoso." },
+                { pregunta: "The novel is a ___ critique of contemporary consumer culture.", opciones: ["scathing", "laudatory", "complimentary", "fawning"], correcta: 0, explicacion: "'Scathing' significa mordaz, implacable o severamente crítico." },
+                { pregunta: "The old mansion stood as a ___ reminder of the family's former wealth.", opciones: ["poignant", "insipid", "vapid", "bland"], correcta: 0, explicacion: "'Poignant' significa conmovedor o que evoca melancolía profunda." },
+                { pregunta: "He was accused of ___ when he praised the project publicly while undermining it privately.", opciones: ["duplicity", "candor", "probity", "rectitude"], correcta: 0, explicacion: "'Duplicity' significa duplicidad, doblez o engaño." },
+                { pregunta: "The scientist's ___ hypothesis was initially mocked before being proven right.", opciones: ["iconoclastic", "orthodox", "conventional", "conformist"], correcta: 0, explicacion: "'Iconoclastic' significa iconoclasta o que desafía creencias establecidas." },
+                { pregunta: "The speaker's ___ delivery put half the auditorium to sleep.", opciones: ["soporific", "riveting", "electrifying", "captivating"], correcta: 0, explicacion: "'Soporific' significa soporífero o que induce al sueño." },
+                { pregunta: "She navigated the corporate hierarchy with ___ political skill.", opciones: ["consummate", "amateurish", "inept", "bungling"], correcta: 0, explicacion: "'Consummate' significa consumado, magistral o perfecto." },
+                { pregunta: "The treaty proved to be a ___ document that failed to prevent war.", opciones: ["chimerical", "pragmatic", "substantive", "tangible"], correcta: 0, explicacion: "'Chimerical' significa quimérico, ilusorio o irrealizable." },
+                { pregunta: "His ___ habits made him unpopular with his more spontaneous roommates.", opciones: ["fastidious", "slovenly", "carefree", "haphazard"], correcta: 0, explicacion: "'Fastidious' significa melindroso, meticuloso o difícil de complacer." },
+                { pregunta: "The scandal was a ___ stain on the administration's legacy.", opciones: ["indelible", "erasable", "fleeting", "transient"], correcta: 0, explicacion: "'Indelible' significa indeleble o imborrable." },
+                { pregunta: "The critic praised the director's ___ handling of a sensitive historical subject.", opciones: ["sure-footed", "faltering", "clumsy", "hesitant"], correcta: 0, explicacion: "'Sure-footed' significa seguro, firme y acertado." },
+                { pregunta: "Her ___ nature led her to question every assumption presented in the textbook.", opciones: ["inquisitive", "credulous", "gullible", "docile"], correcta: 0, explicacion: "'Inquisitive' significa inquisitivo o ávido de investigar." },
+                { pregunta: "The company's ___ growth eventually outpaced its logistical infrastructure.", opciones: ["prodigious", "paltry", "negligible", "meager"], correcta: 0, explicacion: "'Prodigious' significa prodigioso, enorme o extraordinario." },
+                { pregunta: "He offered a ___ excuse for missing the crucial board meeting.", opciones: ["specious", "cogent", "irrefutable", "sound"], correcta: 0, explicacion: "'Specious' significa especioso, aparentemente razonable pero falso en el fondo." },
+                { pregunta: "The ambassador's ___ silence spoke louder than any official statement.", opciones: ["eloquent", "vacuous", "inane", "insipid"], correcta: 0, explicacion: "'Eloquent silence' es un oxímoron clásico para un silencio muy expresivo." },
+                { pregunta: "The region's ___ climate makes agriculture virtually impossible.", opciones: ["inimical", "hospitable", "benign", "conducive"], correcta: 0, explicacion: "'Inimical' significa hostil, desfavorable o adverso." },
+                { pregunta: "She dismissed his complaints as ___ whining over trivial inconveniences.", opciones: ["querulous", "stoic", "forbearing", "magnanimous"], correcta: 0, explicacion: "'Querulous' significa quejumbroso o malhumorado." },
+                { pregunta: "The biography offers an ___ look at the artist's turbulent private life.", opciones: ["unflinching", "sanitized", "euphemistic", "evasive"], correcta: 0, explicacion: "'Unflinching' significa valiente, directo y sin evadir verdades incómodas." },
+                { pregunta: "His ___ wit often masked a deep-seated melancholy.", opciones: ["acerbic", "bland", "mellifluous", "soothing"], correcta: 0, explicacion: "'Acerbic' significa mordaz, ácido o sarcástico." },
+                { pregunta: "The committee's recommendations were largely ___ and lacked enforcement mechanisms.", opciones: ["hortatory", "mandatory", "coercive", "binding"], correcta: 0, explicacion: "'Hortatory' significa exhortativo o de mero consejo sin fuerza obligatoria." },
+                { pregunta: "The novel's ___ structure mirrors the fragmented memories of its protagonist.", opciones: ["labyrinthine", "linear", "uniform", "symmetrical"], correcta: 0, explicacion: "'Labyrinthine' significa laberíntico o intrincado." },
+                { pregunta: "He was known for his ___ integrity, refusing bribes even when impoverished.", opciones: ["unimpeachable", "venal", "corruptible", "dubious"], correcta: 0, explicacion: "'Unimpeachable' significa intachable o irreprochable." },
+                { pregunta: "The speech was a ___ call to action that mobilized thousands of volunteers.", opciones: ["clarion", "muted", "tepid", "lackluster"], correcta: 0, explicacion: "'Clarion call' significa un llamado claro, enérgico e irresistible." },
+                { pregunta: "Her ___ prose avoids unnecessary ornament in favor of stark precision.", opciones: ["spare", "florid", "ornate", "grandiloquent"], correcta: 0, explicacion: "'Spare' significa austero, sobrio y sin adornos superfluos." },
+                { pregunta: "The politician's ___ behavior alienated both his supporters and his party.", opciones: ["erratic", "steadfast", "consistent", "predictable"], correcta: 0, explicacion: "'Erratic' significa errático o impredecible." },
+                { pregunta: "The discovery challenged the ___ orthodoxy of the scientific establishment.", opciones: ["entrenched", "nascent", "tentative", "fledgling"], correcta: 0, explicacion: "'Entrenched' significa arraigado o profundamente establecido." },
+                { pregunta: "He spoke with ___ authority on matters of constitutional law.", opciones: ["unassailable", "tenuous", "dubious", "questionable"], correcta: 0, explicacion: "'Unassailable' significa irrefutable o indiscutible." },
+                { pregunta: "The film's ___ pacing tested the patience of even the most dedicated cinephiles.", opciones: ["glacial", "frenetic", "brisk", "breakneck"], correcta: 0, explicacion: "'Glacial pacing' significa un ritmo extremadamente lento." },
+                { pregunta: "She was praised for her ___ ability to synthesize vast amounts of information.", opciones: ["preternatural", "mediocre", "deficient", "ordinary"], correcta: 0, explicacion: "'Preternatural' significa extraordinario o fuera de lo común." },
+                { pregunta: "The regime's ___ policies led to widespread famine and economic ruin.", opciones: ["ruinous", "salutary", "beneficent", "provident"], correcta: 0, explicacion: "'Ruinous' significa ruinoso o catastrófico." },
+                { pregunta: "His ___ remarks were intended to provoke a reaction from his opponents.", opciones: ["incendiary", "conciliatory", "pacifying", "soothing"], correcta: 0, explicacion: "'Incendiary' significa incendiario o provocador." },
+                { pregunta: "The artist's later works show a ___ departure from her earlier realism.", opciones: ["radical", "negligible", "imperceptible", "slight"], correcta: 0, explicacion: "'Radical departure' significa un cambio o ruptura total." },
+                { pregunta: "The negotiator's ___ patience eventually wore down the opposition.", opciones: ["inexhaustible", "fleeting", "brittle", "fragile"], correcta: 0, explicacion: "'Inexhaustible' significa inagotable." },
+                { pregunta: "The essay is a ___ defense of freedom of expression in democratic societies.", opciones: ["spirited", "tepid", "half-hearted", "apathetic"], correcta: 0, explicacion: "'Spirited' significa vigoroso, apasionado y enérgico." },
+                { pregunta: "His ___ worldview left little room for optimism or human kindness.", opciones: ["jaundiced", "sanguine", "buoyant", "upbeat"], correcta: 0, explicacion: "'Jaundiced' significa amargado, cínico o pesimista." },
+                { pregunta: "The courtroom fell silent as the judge delivered a ___ rebuke to the defense.", opciones: ["stinging", "gentle", "mild", "lenient"], correcta: 0, explicacion: "'Stinging rebuke' significa una reprimenda mordaz o severa." },
+                { pregunta: "The museum's collection is a ___ testament to the region's cultural heritage.", opciones: ["fitting", "incongruous", "unsuitable", "discordant"], correcta: 0, explicacion: "'Fitting testament' significa un testimonio adecuado o digno." },
+                { pregunta: "She exhibited ___ composure even when the broadcast equipment failed live on air.", opciones: ["imperturbable", "flustered", "rattled", "frantic"], correcta: 0, explicacion: "'Imperturbable' significa imperturbable o serenamente calmado." },
+                { pregunta: "The author's ___ wit turns an otherwise bleak story into a dark comedy.", opciones: ["wry", "earnest", "solemn", "melodramatic"], correcta: 0, explicacion: "'Wry' significa irónico, seco o sarcástico." },
+                { pregunta: "The treaty was undermined by ___ violations on both sides of the border.", opciones: ["flagrant", "imperceptible", "negligible", "inadvertent"], correcta: 0, explicacion: "'Flagrant' significa flagrante o escandalosamente evidente." },
+                { pregunta: "His ___ scholarship earned him fellowships at the world's top universities.", opciones: ["erudite", "ignorant", "unlettered", "dilettante"], correcta: 0, explicacion: "'Erudite' significa erudito o de profunda cultura." },
+                { pregunta: "The proposal met with ___ approval from every department.", opciones: ["resounding", "muted", "lukewarm", "ambivalent"], correcta: 0, explicacion: "'Resounding approval' significa una aprobación rotunda." },
+                { pregunta: "The investigation exposed a ___ web of bribery and kickbacks.", opciones: ["sordid", "noble", "edifying", "virtuous"], correcta: 0, explicacion: "'Sordid' significa sórdido, sucio o moralmente reprobable." },
+                { pregunta: "Her ___ dedication to public service spanned over four decades.", opciones: ["unflagging", "wavering", "sporadic", "fickle"], correcta: 0, explicacion: "'Unflagging' significa incansable o constante." }
+            ]
+        };
+
+        // ==========================================
+        // LÓGICA DE CONTROL Y MOTOR DEL TEST
+        // ==========================================
+        let testActual = null;
+        let indiceActual = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activo = JSON.parse(localStorage.getItem('testActivo'));
+
+            if (activo && activo.tipo === 'Vocabulario') {
+                testActual = activo;
+                iniciarInterfazExamen();
+            } else {
+                abrirModalNiveles();
+            }
+        });
+
+        function abrirModalNiveles() {
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
+                const tag = document.getElementById(`tag-${nivel}`);
+                if (pendientes[`vocabulario_${nivel}`]) {
+                    tag.textContent = 'Continuar';
+                    tag.style.backgroundColor = '#03658C';
+                } else {
+                    tag.textContent = 'Iniciar';
+                    tag.style.backgroundColor = '#DC3C22';
+                }
+            });
+            document.getElementById('modalNivel').style.display = 'flex';
+        }
+
+        function volverAExamenes() {
+            window.location.href = 'examenes.html';
+        }
+
+        function cerrarSiClickFuera(event) {
+            if (event.target.id === 'modalNivel') {
+                volverAExamenes();
+            }
+        }
+
+        function seleccionarNivel(nivel) {
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+
+            if (pendientes[`vocabulario_${nivel}`]) {
+                testActual = pendientes[`vocabulario_${nivel}`];
+            } else {
+                const pool = [...(bancoVocabulario[nivel] || [])];
+                const seleccionadas = pool.sort(() => Math.random() - 0.5).slice(0, 10);
+
+                testActual = {
+                    tipo: 'Vocabulario',
+                    nivel: nivel,
+                    preguntas: seleccionadas,
+                    respuestasUsuario: {},
+                    fechaInicio: new Date().toLocaleDateString()
+                };
+
+                pendientes[`vocabulario_${nivel}`] = testActual;
+                localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            }
+
+            localStorage.setItem('testActivo', JSON.stringify(testActual));
+            document.getElementById('modalNivel').style.display = 'none';
+            iniciarInterfazExamen();
+        }
+
+        function iniciarInterfazExamen() {
+            document.getElementById('examWrapper').style.display = 'flex';
+            document.getElementById('examSubtitle').textContent = `Nivel ${testActual.nivel} • 10 preguntas`;
+            
+            const respondidas = Object.keys(testActual.respuestasUsuario || {}).map(Number);
+            if (respondidas.length > 0 && respondidas.length < testActual.preguntas.length) {
+                for (let i = 0; i < testActual.preguntas.length; i++) {
+                    if (testActual.respuestasUsuario[i] === undefined) {
+                        indiceActual = i;
+                        break;
+                    }
+                }
+            }
+
+            renderizarPregunta();
+        }
+
+        function renderizarPregunta() {
+            const total = testActual.preguntas.length;
+            const q = testActual.preguntas[indiceActual];
+
+            document.getElementById('questionCounter').textContent = `Pregunta ${indiceActual + 1} de ${total}`;
+            document.getElementById('questionText').textContent = q.pregunta;
+
+            const porcentaje = ((indiceActual + 1) / total) * 100;
+            document.getElementById('progressBar').style.width = `${porcentaje}%`;
+
+            const opcionesContainer = document.getElementById('optionsList');
+            opcionesContainer.innerHTML = '';
+
+            const letras = ['A', 'B', 'C', 'D'];
+            q.opciones.forEach((opcion, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if (testActual.respuestasUsuario[indiceActual] === idx) {
+                    btn.classList.add('selected');
+                }
+                btn.innerHTML = `<strong>${letras[idx]}.</strong> <span>${opcion}</span>`;
+                btn.onclick = () => seleccionarRespuesta(idx);
+                opcionesContainer.appendChild(btn);
+            });
+
+            document.getElementById('btnPrev').disabled = (indiceActual === 0);
+
+            if (indiceActual === total - 1) {
+                document.getElementById('btnNext').style.display = 'none';
+                document.getElementById('btnFinish').style.display = 'inline-block';
+            } else {
+                document.getElementById('btnNext').style.display = 'inline-block';
+                document.getElementById('btnFinish').style.display = 'none';
+            }
+        }
+
+        function seleccionarRespuesta(opcionIdx) {
+            testActual.respuestasUsuario[indiceActual] = opcionIdx;
+
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            pendientes[`vocabulario_${testActual.nivel}`] = testActual;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.setItem('testActivo', JSON.stringify(testActual));
+
+            renderizarPregunta();
+        }
+
+        function cambiarPregunta(direccion) {
+            const nuevoIndice = indiceActual + direccion;
+            if (nuevoIndice >= 0 && nuevoIndice < testActual.preguntas.length) {
+                indiceActual = nuevoIndice;
+                renderizarPregunta();
+            }
+        }
+
+        function guardarYSalir() {
+            window.location.href = 'examenes.html';
+        }
+
+        function finalizarExamen() {
+            const total = testActual.preguntas.length;
+            const respondidas = Object.keys(testActual.respuestasUsuario).length;
+
+            if (respondidas < total) {
+                if (!confirm(`Has respondido ${respondidas} de ${total} preguntas. ¿Deseas finalizar de todas formas?`)) {
+                    return;
+                }
+            }
+
+            let aciertos = 0;
+            testActual.preguntas.forEach((p, idx) => {
+                if (testActual.respuestasUsuario[idx] === p.correcta) {
+                    aciertos++;
+                }
+            });
+
+            const resultadoFinal = {
+                tipo: testActual.tipo,
+                nivel: testActual.nivel,
+                aciertos: aciertos,
+                total: total,
+                porcentaje: Math.round((aciertos / total) * 100),
+                preguntas: testActual.preguntas,
+                respuestasUsuario: testActual.respuestasUsuario,
+                fecha: new Date().toLocaleDateString()
+            };
+
+            localStorage.setItem('ultimoResultado', JSON.stringify(resultadoFinal));
+
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            delete pendientes[`vocabulario_${testActual.nivel}`];
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.removeItem('testActivo');
+
+            window.location.href = 'resultadosv.html';
+        }
+    </script>
+</body>
+</html>
