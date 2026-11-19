@@ -283,6 +283,117 @@
         .btn-descartar:hover {
             background-color: #b52d17;
         }
+
+        /* =========================================
+           VENTANA EMERGENTE (MODAL) DE GRAMÁTICA
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 35px;
+        }
+
+        .modal-box {
+            background-color: #FBF5DE;
+            border: 3px solid #EAC8A6;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 680px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: aparecerModal 0.22s ease-out;
+        }
+
+        @keyframes aparecerModal {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            font-weight: 800;
+            color: #DC3C22;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            color: #03658C;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .modal-header p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .modal-niveles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .modal-nivel-btn {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .modal-nivel-btn:hover {
+            border-color: #03658C;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(3, 101, 140, 0.15);
+        }
+
+        .modal-nivel-titulo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .modal-nivel-temas {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.3;
+        }
+
+        .modal-nivel-accion {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -327,7 +438,7 @@
             <section class="section-card">
                 <h2 class="section-title">Iniciar un nuevo test</h2>
                 <div class="tests-grid">
-                    <div class="test-square" onclick="window.location.href='gramatica_niveles.html'">
+                    <div class="test-square" onclick="abrirModalGramatica()">
                         <span class="test-icon">📝</span>
                         <div class="test-square-title">Iniciar test de gramática</div>
                     </div>
@@ -358,7 +469,59 @@
             </section>
         </main>
     </div>
-    
+
+    <!-- Ventana Emergente (Modal) para Selección de Nivel de Gramática -->
+    <div class="modal-overlay" id="modalGramatica" onclick="cerrarModalSiClickFuera(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarModalGramatica()">✕</button>
+            
+            <div class="modal-header">
+                <h2>Selecciona el nivel para tu test de gramática</h2>
+                <p>Elige tu nivel (10 preguntas aleatorias por intento)</p>
+            </div>
+
+            <div class="modal-niveles-grid">
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('A1')">
+                    <div class="modal-nivel-titulo">Nivel A1</div>
+                    <div class="modal-nivel-temas">To be, Present Simple, Pronouns, Articles</div>
+                    <div class="modal-nivel-accion" id="tag-A1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('A2')">
+                    <div class="modal-nivel-titulo">Nivel A2</div>
+                    <div class="modal-nivel-temas">Past Simple, Continuous, Comparatives, Future</div>
+                    <div class="modal-nivel-accion" id="tag-A2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('B1')">
+                    <div class="modal-nivel-titulo">Nivel B1</div>
+                    <div class="modal-nivel-temas">Present Perfect, Conditionals, Modals, Passive</div>
+                    <div class="modal-nivel-accion" id="tag-B1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('B2')">
+                    <div class="modal-nivel-titulo">Nivel B2</div>
+                    <div class="modal-nivel-temas">Past Perfect, 3rd Conditional, Reported Speech</div>
+                    <div class="modal-nivel-accion" id="tag-B2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('C1')">
+                    <div class="modal-nivel-titulo">Nivel C1</div>
+                    <div class="modal-nivel-temas">Mixed Conditionals, Inversion, Subjunctive</div>
+                    <div class="modal-nivel-accion" id="tag-C1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="iniciarTestGramatica('C2')">
+                    <div class="modal-nivel-titulo">Nivel C2</div>
+                    <div class="modal-nivel-temas">Cleft Sentences, Ellipsis, Nuanced Idioms</div>
+                    <div class="modal-nivel-accion" id="tag-C2">Iniciar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conexión al banco de preguntas -->
+    <script src="banco_gramatica.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const savedName = localStorage.getItem('webglish_userName');
@@ -403,9 +566,67 @@
             }
         }
 
-        // Para las tarjetas individuales
         function showSpecificTestInfo(topic) {
             alert(`Para realizar la evaluación general de nivelación (PreA1 - C2), utiliza el botón superior "+ Iniciar examen". Los módulos de práctica por área (${topic}) estarán disponibles próximamente.`);
+        }
+
+        // Funciones de la Ventana Emergente (Modal)
+        function abrirModalGramatica() {
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
+                const tag = document.getElementById(`tag-${nivel}`);
+                if (pendientes[`gramatica_${nivel}`]) {
+                    tag.textContent = 'Continuar';
+                    tag.style.backgroundColor = '#03658C';
+                } else {
+                    tag.textContent = 'Iniciar';
+                    tag.style.backgroundColor = '#DC3C22';
+                }
+            });
+
+            document.getElementById('modalGramatica').style.display = 'flex';
+        }
+
+        function cerrarModalGramatica() {
+            document.getElementById('modalGramatica').style.display = 'none';
+        }
+
+        function cerrarModalSiClickFuera(event) {
+            if (event.target.id === 'modalGramatica') {
+                cerrarModalGramatica();
+            }
+        }
+
+        function iniciarTestGramatica(nivel) {
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+
+            if (pendientes[`gramatica_${nivel}`]) {
+                localStorage.setItem('testActivo', JSON.stringify(pendientes[`gramatica_${nivel}`]));
+                window.location.href = 'test_gramatica.html';
+                return;
+            }
+
+            if (typeof bancoGramatica === 'undefined') {
+                alert("Error: No se encontró el archivo banco_gramatica.js.");
+                return;
+            }
+
+            const pool = [...(bancoGramatica[nivel] || [])];
+            const seleccionadas = pool.sort(() => Math.random() - 0.5).slice(0, 10);
+
+            const nuevoTest = {
+                tipo: 'Gramática',
+                nivel: nivel,
+                preguntas: seleccionadas,
+                respuestasUsuario: {},
+                fechaInicio: new Date().toLocaleDateString()
+            };
+
+            pendientes[`gramatica_${nivel}`] = nuevoTest;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.setItem('testActivo', JSON.stringify(nuevoTest));
+
+            window.location.href = 'test_gramatica.html';
         }
 
         // Gestión de Tests Pendientes
