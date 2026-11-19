@@ -413,6 +413,11 @@ function irATestVocabulario() {
     window.location.href = 'test_vocabulario.html';
 }
 
+function irATestLectura() {
+    localStorage.removeItem('testActivo');
+    window.location.href = 'test_lectura.html';
+}
+
         function showSpecificTestInfo(topic) {
             alert(`Para realizar la evaluación general de nivelación (PreA1 - C2), utiliza el botón superior "+ Iniciar examen". Los módulos de práctica por área (${topic}) estarán disponibles próximamente.`);
         }
