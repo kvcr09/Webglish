@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Resultados de Lectura</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #EAC8A6;
+            color: #03658C;
+            min-height: 100vh;
+            padding: 35px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-container {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .score-card {
+            background-color: #FBF5DE;
+            border-radius: 24px;
+            padding: 35px 30px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .badge-tipo {
+            display: inline-block;
+            background-color: #03658C;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .score-card h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #03658C;
+            margin-bottom: 6px;
+        }
+
+        .reading-ref {
+            font-size: 14px;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+            border: 8px solid #03658C;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 18px auto;
+        }
+
+        .score-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: #03658C;
+            line-height: 1;
+        }
+
+        .score-sub {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .feedback-msg {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        .actions-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #024a68;
+        }
+
+        .btn-secondary {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b82f19;
+        }
+
+        .review-section {
+            background-color: #FBF5DE;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .review-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #03658C;
+            margin-bottom: 18px;
+        }
+
+        .review-item {
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border-left: 6px solid #03658C;
+        }
+
+        .review-item.correct {
+            border-left-color: #2e8b57;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #DC3C22;
+        }
+
+        .review-q {
+            font-size: 16px;
+            font-weight: 700;
+            color: #03658C;
+            margin-bottom: 8px;
+        }
+
+        .review-ans {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .review-exp {
+            font-size: 13px;
+            color: #555;
+            background-color: #FBF5DE;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="result-container">
+        <div class="score-card">
+            <span class="badge-tipo" id="resBadge">LECTURA - NIVEL A1</span>
+            <h1>¡Test de Lectura Completado!</h1>
+            <div class="reading-ref" id="readingRef">Texto: ...</div>
+
+            <div class="score-circle" id="scoreCircle">
+                <span class="score-number" id="scorePorcentaje">0%</span>
+                <span class="score-sub" id="scoreDetalle">0 de 10</span>
+            </div>
+
+            <p class="feedback-msg" id="feedbackMsg">Calculando desempeño...</p>
+
+            <div class="actions-row">
+                <button class="btn-primary" onclick="window.location.href='examenes.html'">Volver a Mis Exámenes</button>
+                <button class="btn-secondary" onclick="window.location.href='test_lectura.html'">Hacer otro test de Lectura</button>
+            </div>
+        </div>
+
+        <div class="review-section">
+            <h2 class="review-title">Revisión detallada de comprensión lectora</h2>
+            <div id="reviewList"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultado = JSON.parse(localStorage.getItem('ultimoResultado'));
+
+            if (!resultado || resultado.tipo !== 'Lectura') {
+                window.location.href = 'examenes.html';
+                return;
+            }
+
+            document.getElementById('resBadge').textContent = `LECTURA - NIVEL ${resultado.nivel}`;
+            document.getElementById('readingRef').textContent = `Lectura: "${resultado.tituloLectura}"`;
+            document.getElementById('scorePorcentaje').textContent = `${resultado.porcentaje}%`;
+            document.getElementById('scoreDetalle').textContent = `${resultado.aciertos} de ${resultado.total} aciertos`;
+
+            const circle = document.getElementById('scoreCircle');
+            const feedback = document.getElementById('feedbackMsg');
+
+            if (resultado.porcentaje >= 80) {
+                circle.style.borderColor = '#2e8b57';
+                feedback.textContent = '¡Excelente comprensión lectora! Captaste tanto las ideas principales como los detalles.';
+            } else if (resultado.porcentaje >= 60) {
+                circle.style.borderColor = '#03658C';
+                feedback.textContent = '¡Buen trabajo! Aprobaste el nivel, revisa los detalles marcados abajo.';
+            } else {
+                circle.style.borderColor = '#DC3C22';
+                feedback.textContent = 'Sigue practicando la lectura en este nivel. Revisa las explicaciones para mejorar.';
+            }
+
+            const list = document.getElementById('reviewList');
+            resultado.preguntas.forEach((p, idx) => {
+                const respIdx = resultado.respuestasUsuario[idx];
+                const esCorrecta = (respIdx === p.correcta);
+                const textoUsuario = (respIdx !== undefined) ? p.opciones[respIdx] : 'Sin responder';
+                const textoCorrecta = p.opciones[p.correcta];
+
+                const item = document.createElement('div');
+                item.className = `review-item ${esCorrecta ? 'correct' : 'incorrect'}`;
+                item.innerHTML = `
+                    <div class="review-q">${idx + 1}. ${p.pregunta}</div>
+                    <div class="review-ans">
+                        <strong>Tu respuesta:</strong> 
+                        <span style="color: ${esCorrecta ? '#2e8b57' : '#DC3C22'}; font-weight: 700;">
+                            ${textoUsuario} ${esCorrecta ? '✓' : '✕'}
+                        </span>
+                    </div>
+                    ${!esCorrecta ? `<div class="review-ans"><strong>Respuesta correcta:</strong> <span style="color: #2e8b57; font-weight: 700;">${textoCorrecta}</span></div>` : ''}
+                    <div class="review-exp">💡 <strong>Explicación:</strong> ${p.explicacion}</div>
+                `;
+                list.appendChild(item);
+            });
+        });
+    </script>
+</body>
+</html>
