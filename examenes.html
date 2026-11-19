@@ -236,6 +236,53 @@
         .trigger-scroll:hover {
             color: #DC3C22;
         }
+
+        /* Tarjetas de Tests Pendientes Activos */
+        .pendiente-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFFFF;
+            border: 1px solid #EAC8A6;
+            border-left: 6px solid #03658C;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .pendiente-acciones {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-reanudar {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-reanudar:hover {
+            background-color: #024b69;
+        }
+
+        .btn-descartar {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-descartar:hover {
+            background-color: #b52d17;
+        }
     </style>
 </head>
 <body>
@@ -272,8 +319,8 @@
             <header class="top-header" id="topHeader">
                 <h1 class="welcome-title">MIS EXÁMENES</h1>
                 <a href="test.html" style="text-decoration: none;">
-    <button class="btn-new-exam" type="button">+ Iniciar examen</button>
-</a>
+                    <button class="btn-new-exam" type="button">+ Iniciar examen</button>
+                </a>
             </header>
 
             <!-- Rectángulo Superior: Iniciar un nuevo test -->
@@ -330,6 +377,8 @@
             requestAnimationFrame(() => {
                 initNavIndicator();
             });
+
+            renderizarTestsPendientes();
         });
 
         function initNavIndicator() {
@@ -347,14 +396,73 @@
 
         window.addEventListener('resize', initNavIndicator);
 
-        // EXCLUSIVO: El botón azul "+ Iniciar examen" redirige al Placement Test
-        function startPlacementTest() {
-            window.location.href = 'test.html';
+        function scrollToTop() {
+            const mainPanel = document.getElementById('mainPanel');
+            if (mainPanel) {
+                mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         // Para las tarjetas individuales
         function showSpecificTestInfo(topic) {
             alert(`Para realizar la evaluación general de nivelación (PreA1 - C2), utiliza el botón superior "+ Iniciar examen". Los módulos de práctica por área (${topic}) estarán disponibles próximamente.`);
+        }
+
+        // Gestión de Tests Pendientes
+        function renderizarTestsPendientes() {
+            const contenedor = document.getElementById('pendingContainer');
+            if (!contenedor) return;
+
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            const claves = Object.keys(pendientes);
+
+            if (claves.length === 0) {
+                contenedor.classList.add('empty-pending-text');
+                contenedor.innerHTML = 'Aún no tienes evaluaciones incompletas. Inicia un test para mostrarlos aquí. <span class="trigger-scroll" onclick="scrollToTop()">Iniciar test</span>';
+                return;
+            }
+
+            contenedor.classList.remove('empty-pending-text');
+            contenedor.innerHTML = '';
+
+            claves.forEach(clave => {
+                const test = pendientes[clave];
+                const totalPreguntas = test.preguntas.length;
+                const respondidas = Object.keys(test.respuestasUsuario || {}).length;
+
+                const itemHTML = document.createElement('div');
+                itemHTML.className = 'pendiente-item';
+                itemHTML.innerHTML = `
+                    <div class="pendiente-info">
+                        <strong style="color: #03658C; font-size: 1.05rem;">Test de ${test.tipo} - Nivel ${test.nivel}</strong>
+                        <div style="font-size: 0.9rem; color: #555; margin-top: 4px;">
+                            Progreso: <strong>${respondidas} de ${totalPreguntas}</strong> respondidas • Iniciado: ${test.fechaInicio}
+                        </div>
+                    </div>
+                    <div class="pendiente-acciones">
+                        <button class="btn-reanudar" onclick="reanudarTestDesdeDashboard('${clave}')">Continuar</button>
+                        <button class="btn-descartar" onclick="eliminarTestPendiente('${clave}')">✕</button>
+                    </div>
+                `;
+                contenedor.appendChild(itemHTML);
+            });
+        }
+
+        function reanudarTestDesdeDashboard(clave) {
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            if (pendientes[clave]) {
+                localStorage.setItem('testActivo', JSON.stringify(pendientes[clave]));
+                window.location.href = 'test_gramatica.html';
+            }
+        }
+
+        function eliminarTestPendiente(clave) {
+            if (!confirm("¿Seguro que deseas descartar este test pendiente? Se perderá tu progreso actual.")) return;
+            
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            delete pendientes[clave];
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            renderizarTestsPendientes();
         }
     </script>
 </body>
