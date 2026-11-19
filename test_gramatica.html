@@ -3,184 +3,637 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webglish - Examen de Gramática</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Webglish - Test de Gramática</title>
     <style>
-        .test-wrapper {
-            max-width: 750px;
-            margin: 30px auto;
-            background-color: #FFFFFF;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .test-header {
+
+        body {
+            background-color: #EAC8A6;
+            color: #03658C;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* =========================================
+           VENTANA EMERGENTE (MODAL) DE NIVELES
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 35px;
+        }
+
+        .modal-box {
+            background-color: #FBF5DE;
+            border: 3px solid #EAC8A6;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 680px;
+            padding: 32px;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: aparecerModal 0.22s ease-out;
+        }
+
+        @keyframes aparecerModal {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            font-weight: 800;
+            color: #DC3C22;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            color: #03658C;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .modal-header p {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .modal-niveles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .modal-nivel-btn {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .modal-nivel-btn:hover {
+            border-color: #03658C;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(3, 101, 140, 0.15);
+        }
+
+        .modal-nivel-titulo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .modal-nivel-temas {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.3;
+        }
+
+        .modal-nivel-accion {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
+        /* =========================================
+           CONTENEDOR DEL EXAMEN
+           ========================================= */
+        .exam-wrapper {
+            width: 100%;
+            max-width: 780px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .exam-header {
+            background-color: #FBF5DE;
+            padding: 20px 28px;
+            border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #EAC8A6;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        .badge-nivel {
-            background-color: #03658C;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-        .pregunta-bloque {
-            background-color: #FBF5DE;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 5px solid #03658C;
-        }
-        .pregunta-titulo {
-            font-size: 1.1rem;
+
+        .exam-title {
+            font-size: 20px;
+            font-weight: 800;
             color: #03658C;
-            font-weight: bold;
-            margin-bottom: 12px;
         }
-        .opcion-label {
-            display: block;
-            background: #FFFFFF;
-            border: 1px solid #EAC8A6;
-            padding: 10px 15px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+
+        .btn-salir {
+            background-color: #FFFFFF;
+            color: #03658C;
+            border: 2px solid #03658C;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .opcion-label:hover {
-            background-color: #EAC8A6;
+
+        .btn-salir:hover {
+            background-color: #03658C;
+            color: #FFFFFF;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #F5DEC2;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #03658C;
+            width: 10%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background-color: #FBF5DE;
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .question-counter {
+            font-size: 13px;
+            font-weight: 800;
+            color: #DC3C22;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 21px;
+            font-weight: 700;
             color: #03658C;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 14px;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 16px;
             font-weight: 600;
+            color: #03658C;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .opcion-label input {
-            margin-right: 10px;
+
+        .option-btn:hover {
+            border-color: #03658C;
+            background-color: #f4f9fb;
         }
-        .acciones-footer {
+
+        .option-btn.selected {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border-color: #03658C;
+        }
+
+        .exam-footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            align-items: center;
+            margin-top: 10px;
         }
-        .btn-salir {
-            background-color: #EAC8A6;
-            color: #03658C;
+
+        .btn-nav {
+            background-color: #03658C;
+            color: #FFFFFF;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .btn-finalizar {
+
+        .btn-nav:disabled {
+            background-color: #b0c4ce;
+            cursor: not-allowed;
+        }
+
+        .btn-finish {
             background-color: #DC3C22;
-            color: white;
+            color: #FFFFFF;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
+            display: none;
+        }
+
+        .btn-finish:hover {
+            background-color: #b82f19;
         }
     </style>
 </head>
-<body style="background-color: #FBF5DE;">
+<body>
 
-    <div class="test-wrapper">
-        <div class="test-header">
-            <h2 style="color: #03658C; margin: 0;">Test de Gramática</h2>
-            <span class="badge-nivel" id="nivel-badge">Nivel --</span>
+    <!-- VENTANA EMERGENTE (MODAL) PARA ELEGIR NIVEL -->
+    <div class="modal-overlay" id="modalNivel" onclick="cerrarSiClickFuera(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="volverAExamenes()" title="Volver a Mis Exámenes">✕</button>
+            
+            <div class="modal-header">
+                <h2>Selecciona el nivel para tu test de gramática</h2>
+                <p>Elige tu nivel (10 preguntas aleatorias por intento)</p>
+            </div>
+
+            <div class="modal-niveles-grid">
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('A1')">
+                    <div class="modal-nivel-titulo">Nivel A1</div>
+                    <div class="modal-nivel-temas">To be, Present Simple, Pronouns, Articles</div>
+                    <div class="modal-nivel-accion" id="tag-A1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('A2')">
+                    <div class="modal-nivel-titulo">Nivel A2</div>
+                    <div class="modal-nivel-temas">Past Simple, Continuous, Comparatives, Future</div>
+                    <div class="modal-nivel-accion" id="tag-A2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('B1')">
+                    <div class="modal-nivel-titulo">Nivel B1</div>
+                    <div class="modal-nivel-temas">Present Perfect, Conditionals, Modals, Passive</div>
+                    <div class="modal-nivel-accion" id="tag-B1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('B2')">
+                    <div class="modal-nivel-titulo">Nivel B2</div>
+                    <div class="modal-nivel-temas">Past Perfect, 3rd Conditional, Reported Speech</div>
+                    <div class="modal-nivel-accion" id="tag-B2">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('C1')">
+                    <div class="modal-nivel-titulo">Nivel C1</div>
+                    <div class="modal-nivel-temas">Mixed Conditionals, Inversion, Subjunctive</div>
+                    <div class="modal-nivel-accion" id="tag-C1">Iniciar</div>
+                </div>
+
+                <div class="modal-nivel-btn" onclick="seleccionarNivel('C2')">
+                    <div class="modal-nivel-titulo">Nivel C2</div>
+                    <div class="modal-nivel-temas">Cleft Sentences, Ellipsis, Nuanced Idioms</div>
+                    <div class="modal-nivel-accion" id="tag-C2">Iniciar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERFAZ DEL EXAMEN -->
+    <div class="exam-wrapper" id="examWrapper">
+        <div class="exam-header">
+            <div>
+                <div class="exam-title" id="examTitle">Test de Gramática</div>
+                <div style="font-size: 13px; color: #666;" id="examSubtitle">Nivel A1</div>
+            </div>
+            <button class="btn-salir" onclick="guardarYSalir()">Guardar y salir</button>
         </div>
 
-        <div id="contenedor-preguntas"></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
 
-        <div class="acciones-footer">
-            <button class="btn-salir" onclick="window.location.href='gramatica_niveles.html'">Guardar y salir (Dejar pendiente)</button>
-            <button class="btn-finalizar" onclick="finalizarTestGramatica()">Finalizar y ver resultados</button>
+        <div class="question-card">
+            <div class="question-counter" id="questionCounter">Pregunta 1 de 10</div>
+            <div class="question-text" id="questionText">Cargando pregunta...</div>
+            <div class="options-list" id="optionsList"></div>
+        </div>
+
+        <div class="exam-footer">
+            <button class="btn-nav" id="btnPrev" onclick="cambiarPregunta(-1)" disabled>← Anterior</button>
+            <button class="btn-nav" id="btnNext" onclick="cambiarPregunta(1)">Siguiente →</button>
+            <button class="btn-finish" id="btnFinish" onclick="finalizarExamen()">Finalizar Test</button>
         </div>
     </div>
 
     <script>
-        let testActivo = JSON.parse(localStorage.getItem('testActivo'));
+        // ==========================================
+        // BANCO DE PREGUNTAS DE GRAMÁTICA (A1 - C2)
+        // ==========================================
+        const bancoGramatica = {
+            A1: [
+                { pregunta: "She ___ a doctor at the local hospital.", opciones: ["am", "is", "are", "be"], correcta: 1, explicacion: "Con 'she' (tercera persona singular) se usa 'is'." },
+                { pregunta: "They ___ from Colombia.", opciones: ["is", "am", "are", "be"], correcta: 2, explicacion: "Con el pronombre plural 'they' se usa 'are'." },
+                { pregunta: "I ___ coffee every morning.", opciones: ["drinks", "drinking", "drink", "to drink"], correcta: 2, explicacion: "En Present Simple con 'I', el verbo va en su forma base." },
+                { pregunta: "He ___ to school by bus.", opciones: ["go", "goes", "going", "is go"], correcta: 1, explicacion: "En Present Simple con 'he/she/it' se agrega '-es' al verbo 'go'." },
+                { pregunta: "Look! That is ___ elephant.", opciones: ["a", "an", "the", "two"], correcta: 1, explicacion: "Se usa 'an' antes de palabras que empiezan con sonido vocal ('elephant')." },
+                { pregunta: "My birthday is ___ October.", opciones: ["on", "at", "in", "to"], correcta: 2, explicacion: "Para los meses del año siempre se usa la preposición 'in'." },
+                { pregunta: "___ you like pizza?", opciones: ["Does", "Are", "Do", "Is"], correcta: 2, explicacion: "Para preguntas en Present Simple con 'you' se usa el auxiliar 'Do'." },
+                { pregunta: "This book belongs to Maria. It is ___ book.", opciones: ["she", "hers", "her", "him"], correcta: 2, explicacion: "El adjetivo posesivo para 'she' es 'her'." },
+                { pregunta: "There ___ two cats on the sofa.", opciones: ["is", "are", "am", "be"], correcta: 1, explicacion: "Como 'two cats' es plural, se usa 'There are'." },
+                { pregunta: "We don't have ___ milk in the fridge.", opciones: ["some", "any", "a", "many"], correcta: 1, explicacion: "En oraciones negativas con sustantivos incontables se usa 'any'." }
+            ],
+            A2: [
+                { pregunta: "Yesterday, I ___ a very interesting movie.", opciones: ["watch", "watched", "watching", "watches"], correcta: 1, explicacion: "'Yesterday' indica pasado simple, por lo que se usa 'watched'." },
+                { pregunta: "She ___ dinner right now.", opciones: ["cooks", "cooked", "is cooking", "cook"], correcta: 2, explicacion: "'Right now' indica una acción en progreso (Present Continuous)." },
+                { pregunta: "This car is ___ than my old one.", opciones: ["fast", "more fast", "faster", "fastest"], correcta: 2, explicacion: "Para adjetivos cortos comparativos se añade '-er' ('faster')." },
+                { pregunta: "We ___ visit Paris next summer. We already bought the tickets.", opciones: ["will", "are going to", "go to", "going"], correcta: 1, explicacion: "Para planes futuros ya decididos se usa 'going to'." },
+                { pregunta: "Mount Everest is the ___ mountain in the world.", opciones: ["high", "higher", "highest", "most high"], correcta: 2, explicacion: "El superlativo de 'high' es 'the highest'." },
+                { pregunta: "Did you ___ to the party last night?", opciones: ["went", "go", "going", "goes"], correcta: 1, explicacion: "Después del auxiliar 'Did', el verbo principal va en forma base ('go')." },
+                { pregunta: "I was sleeping when the phone ___.", opciones: ["ring", "ringing", "rang", "rings"], correcta: 2, explicacion: "Una acción corta en pasado simple ('rang') interrumpe una acción continua." },
+                { pregunta: "How ___ apples do you want?", opciones: ["much", "many", "any", "little"], correcta: 1, explicacion: "'Apples' es contable plural, por lo que se usa 'How many'." },
+                { pregunta: "She speaks English very ___.", opciones: ["good", "well", "best", "better"], correcta: 1, explicacion: "Para describir cómo se hace una acción se usa el adverbio 'well'." },
+                { pregunta: "You ___ wear a seatbelt in the car. It's the law.", opciones: ["can", "must", "might", "could"], correcta: 1, explicacion: "'Must' expresa obligación o regla." }
+            ],
+            B1: [
+                { pregunta: "I have lived in this city ___ 2018.", opciones: ["for", "since", "ago", "during"], correcta: 1, explicacion: "'Since' se usa con un punto específico en el tiempo (un año)." },
+                { pregunta: "If it rains tomorrow, we ___ at home.", opciones: ["stay", "would stay", "will stay", "stayed"], correcta: 2, explicacion: "First Conditional: If + Present Simple, will + verbo base." },
+                { pregunta: "Have you ___ been to Japan?", opciones: ["never", "ever", "yet", "just"], correcta: 1, explicacion: "'Ever' se usa en preguntas de experiencia en Present Perfect." },
+                { pregunta: "If I ___ rich, I would travel around the world.", opciones: ["am", "was", "were", "will be"], correcta: 2, explicacion: "Second Conditional: se usa 'were' para situaciones hipotéticas." },
+                { pregunta: "This book ___ by Gabriel García Márquez.", opciones: ["wrote", "was written", "is writing", "written"], correcta: 1, explicacion: "Voz pasiva en pasado: 'was + participio pasado'." },
+                { pregunta: "You ___ smoke here. It is strictly prohibited.", opciones: ["don't have to", "mustn't", "shouldn't", "couldn't"], correcta: 1, explicacion: "'Mustn't' indica prohibición estricta." },
+                { pregunta: "She hasn't finished her homework ___.", opciones: ["already", "just", "yet", "ever"], correcta: 2, explicacion: "'Yet' va al final de oraciones negativas en Present Perfect." },
+                { pregunta: "I enjoy ___ books in my free time.", opciones: ["to read", "reading", "read", "reads"], correcta: 1, explicacion: "El verbo 'enjoy' siempre va seguido de gerundio (-ing)." },
+                { pregunta: "He asked me where I ___.", opciones: ["live", "lived", "am living", "will live"], correcta: 1, explicacion: "En Reported Speech, el presente simple retrocede a pasado simple." },
+                { pregunta: "That's the man ___ helped me yesterday.", opciones: ["which", "who", "whose", "where"], correcta: 1, explicacion: "Para personas en cláusulas relativas se usa 'who'." }
+            ],
+            B2: [
+                { pregunta: "By the time we arrived at the station, the train ___.", opciones: ["left", "has left", "had left", "was leaving"], correcta: 2, explicacion: "Past Perfect ('had left') describe una acción anterior a otra en el pasado." },
+                { pregunta: "If I had studied harder, I ___ the exam.", opciones: ["would pass", "will pass", "would have passed", "passed"], correcta: 2, explicacion: "Third Conditional: If + Past Perfect, would have + participio." },
+                { pregunta: "I wish I ___ taller so I could play basketball.", opciones: ["am", "were", "will be", "have been"], correcta: 1, explicacion: "'I wish + pasado simple (were)' expresa un deseo irreal en el presente." },
+                { pregunta: "The bridge ___ at the moment, so the road is closed.", opciones: ["is repairing", "is being repaired", "repaired", "has repaired"], correcta: 1, explicacion: "Voz pasiva en Present Continuous: 'is being + participio'." },
+                { pregunta: "She denied ___ the money from the drawer.", opciones: ["to take", "taking", "take", "took"], correcta: 1, explicacion: "El verbo 'deny' exige gerundio (-ing)." },
+                { pregunta: "He ___ have forgotten about the meeting; he's usually very punctual.", opciones: ["must", "can't", "should", "would"], correcta: 0, explicacion: "'Must have + participio' indica una deducción lógica sobre el pasado." },
+                { pregunta: "I'm not used to ___ up so early.", opciones: ["wake", "waking", "woke", "woken"], correcta: 1, explicacion: "'Be used to' va seguido de sustantivo o gerundio (-ing)." },
+                { pregunta: "Despite ___ tired, she continued working.", opciones: ["she was", "being", "of being", "to be"], correcta: 1, explicacion: "'Despite' va seguido de gerundio (-ing) o sustantivo." },
+                { pregunta: "You had better ___ a doctor if the pain continues.", opciones: ["to see", "see", "seeing", "saw"], correcta: 1, explicacion: "'Had better' va seguido del infinitivo sin 'to'." },
+                { pregunta: "The woman ___ car was stolen called the police.", opciones: ["who", "whom", "whose", "which"], correcta: 2, explicacion: "'Whose' indica posesión en cláusulas relativas." }
+            ],
+            C1: [
+                { pregunta: "Never ___ such a breathtaking performance.", opciones: ["I have seen", "have I seen", "I saw", "did I saw"], correcta: 1, explicacion: "Al iniciar con un adverbio negativo ('Never'), se aplica inversión sujeto-auxiliar." },
+                { pregunta: "If she hadn't missed the flight, she ___ in London right now.", opciones: ["would be", "would have been", "will be", "is"], correcta: 0, explicacion: "Mixed Conditional: condición pasada con resultado presente ('would + base')." },
+                { pregunta: "It is essential that every student ___ on time.", opciones: ["is", "be", "was", "are"], correcta: 1, explicacion: "Subjuntivo en inglés tras 'It is essential that': verbo en forma base ('be')." },
+                { pregunta: "___ the weather improves, the match will be postponed.", opciones: ["Provided", "Unless", "In case", "Supposing"], correcta: 1, explicacion: "'Unless' significa 'a menos que' (condición negativa)." },
+                { pregunta: "Hardly ___ the house when it started pouring.", opciones: ["I had left", "had I left", "I left", "did I left"], correcta: 1, explicacion: "Inversión negativa tras 'Hardly... when'." },
+                { pregunta: "No sooner ___ the news than everyone started celebrating.", opciones: ["had they heard", "they had heard", "they heard", "did they heard"], correcta: 0, explicacion: "'No sooner + had + sujeto + participio + than'." },
+                { pregunta: "I'd rather you ___ anyone about what happened.", opciones: ["don't tell", "didn't tell", "not tell", "haven't told"], correcta: 1, explicacion: "'Would rather + sujeto' usa pasado simple para referirse al presente/futuro." },
+                { pregunta: "___ by the noise, the baby woke up crying.", opciones: ["Startling", "Startled", "Having startle", "To startle"], correcta: 1, explicacion: "Cláusula de participio pasado con sentido pasivo." },
+                { pregunta: "Little ___ that his life was about to change forever.", opciones: ["he knew", "did he know", "knew he", "had he knew"], correcta: 1, explicacion: "'Little' al inicio con sentido negativo requiere inversión ('did he know')." },
+                { pregunta: "Were it not for your help, we ___ in serious trouble.", opciones: ["will be", "would be", "would have been", "are"], correcta: 1, explicacion: "Inversión condicional formal equivalente a 'If it weren't for'." }
+            ],
+            C2: [
+                { pregunta: "What the company needs ___ a complete overhaul of its strategy.", opciones: ["are", "is", "were", "have been"], correcta: 1, explicacion: "En pseudo-cleft sentences con 'What...', el verbo concuerda con el complemento singular." },
+                { pregunta: "Be that as it ___, we cannot afford to ignore the warning signs.", opciones: ["is", "may", "might", "can"], correcta: 1, explicacion: "'Be that as it may' es una expresión idiomática fija de concesión." },
+                { pregunta: "So complex ___ that even experts struggled to decipher it.", opciones: ["the code was", "was the code", "the code is", "is the code"], correcta: 1, explicacion: "Inversión tras 'So + adjetivo' al inicio de la oración." },
+                { pregunta: "She speaks French fluently, ___ does her younger brother.", opciones: ["so", "neither", "as", "such"], correcta: 2, explicacion: "'As + auxiliar + sujeto' es una estructura formal equivalente a 'so'." },
+                { pregunta: "Try ___ he might, he could not solve the riddle.", opciones: ["so", "as", "how", "though"], correcta: 1, explicacion: "'Verbo + as + sujeto + might' expresa concesión enfática." },
+                { pregunta: "The committee recommended that the proposal ___ immediately.", opciones: ["is implemented", "be implemented", "was implemented", "implements"], correcta: 1, explicacion: "Subjuntivo pasivo tras 'recommend that': 'be + participio'." },
+                { pregunta: "Seldom ___ such a display of sheer determination.", opciones: ["one witnesses", "does one witness", "witnesses one", "one did witness"], correcta: 1, explicacion: "Inversión tras adverbio de frecuencia restrictivo ('Seldom')." },
+                { pregunta: "It was not until midnight ___ the rescue team arrived.", opciones: ["when", "that", "which", "than"], correcta: 1, explicacion: "Estructura enfática 'It was not until... that...'." },
+                { pregunta: "Had I been apprised of the situation earlier, I ___ differently.", opciones: ["would act", "would have acted", "had acted", "will have acted"], correcta: 1, explicacion: "Inversión en Third Conditional formal." },
+                { pregunta: "Far ___ it from me to criticize your decision, but have you considered the risks?", opciones: ["is", "be", "was", "were"], correcta: 1, explicacion: "'Far be it from me to...' es una fórmula fija del modo subjuntivo." }
+            ]
+        };
+
+        // ==========================================
+        // LÓGICA DE CONTROL Y MOTOR DEL TEST
+        // ==========================================
+        let testActual = null;
+        let indiceActual = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (!testActivo || !testActivo.preguntas) {
-                alert("No hay ningún test activo. Selecciona un nivel primero.");
-                window.location.href = 'gramatica_niveles.html';
-                return;
-            }
+            const activo = JSON.parse(localStorage.getItem('testActivo'));
 
-            document.getElementById('nivel-badge').textContent = `Nivel ${testActivo.nivel}`;
-            renderizarPreguntas();
+            // Si viene desde "Continuar" en Test Pendientes, arranca directo el examen
+            if (activo && activo.tipo === 'Gramática') {
+                testActual = activo;
+                iniciarInterfazExamen();
+            } else {
+                // Si viene desde "Iniciar test de gramática", abre la ventana emergente de niveles
+                abrirModalNiveles();
+            }
         });
 
-        function renderizarPreguntas() {
-            const contenedor = document.getElementById('contenedor-preguntas');
-            contenedor.innerHTML = '';
-
-            testActivo.preguntas.forEach((q, index) => {
-                const respuestaGuardada = testActivo.respuestasUsuario[index] || "";
-
-                let opcionesHTML = '';
-                q.opciones.forEach(opcion => {
-                    const checked = (respuestaGuardada === opcion) ? 'checked' : '';
-                    opcionesHTML += `
-                        <label class="opcion-label">
-                            <input type="radio" name="pregunta_${index}" value="${opcion}" ${checked} 
-                                   onchange="guardarRespuesta(${index}, '${opcion.replace(/'/g, "\\'")}')">
-                            ${opcion}
-                        </label>
-                    `;
-                });
-
-                contenedor.innerHTML += `
-                    <div class="pregunta-bloque">
-                        <div class="pregunta-titulo">${index + 1}. ${q.pregunta}</div>
-                        <div>${opcionesHTML}</div>
-                    </div>
-                `;
+        function abrirModalNiveles() {
+            const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
+                const tag = document.getElementById(`tag-${nivel}`);
+                if (pendientes[`gramatica_${nivel}`]) {
+                    tag.textContent = 'Continuar';
+                    tag.style.backgroundColor = '#03658C';
+                } else {
+                    tag.textContent = 'Iniciar';
+                    tag.style.backgroundColor = '#DC3C22';
+                }
             });
+            document.getElementById('modalNivel').style.display = 'flex';
         }
 
-        function guardarRespuesta(indicePregunta, opcionSeleccionada) {
-            testActivo.respuestasUsuario[indicePregunta] = opcionSeleccionada;
-            localStorage.setItem('testActivo', JSON.stringify(testActivo));
+        function volverAExamenes() {
+            window.location.href = 'examenes.html';
+        }
 
-            // Actualizar también en testsPendientes
+        function cerrarSiClickFuera(event) {
+            if (event.target.id === 'modalNivel') {
+                volverAExamenes();
+            }
+        }
+
+        function seleccionarNivel(nivel) {
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
-            pendientes[`gramatica_${testActivo.nivel}`] = testActivo;
-            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
-        }
 
-        function finalizarTestGramatica() {
-            const totalPreguntas = testActivo.preguntas.length;
-            const respondidas = Object.keys(testActivo.respuestasUsuario).length;
+            // Si ya había uno pendiente de ese nivel, lo reanuda
+            if (pendientes[`gramatica_${nivel}`]) {
+                testActual = pendientes[`gramatica_${nivel}`];
+            } else {
+                const pool = [...(bancoGramatica[nivel] || [])];
+                const seleccionadas = pool.sort(() => Math.random() - 0.5).slice(0, 10);
 
-            if (respondidas < totalPreguntas) {
-                const confirmar = confirm(`Has respondido ${respondidas} de ${totalPreguntas} preguntas. ¿Seguro que deseas finalizar así?`);
-                if (!confirmar) return;
+                testActual = {
+                    tipo: 'Gramática',
+                    nivel: nivel,
+                    preguntas: seleccionadas,
+                    respuestasUsuario: {},
+                    fechaInicio: new Date().toLocaleDateString()
+                };
+
+                pendientes[`gramatica_${nivel}`] = testActual;
+                localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
             }
 
-            // Formatear para resultado.html
-            const resultadosFinales = testActivo.preguntas.map((q, idx) => {
-                const respUser = testActivo.respuestasUsuario[idx] || "Sin responder";
-                return {
-                    pregunta: q.pregunta,
-                    respuestaUsuario: respUser,
-                    respuestaCorrecta: q.correcta,
-                    esCorrecta: respUser.trim().toLowerCase() === q.correcta.trim().toLowerCase()
-                };
+            localStorage.setItem('testActivo', JSON.stringify(testActual));
+            document.getElementById('modalNivel').style.display = 'none';
+            iniciarInterfazExamen();
+        }
+
+        function iniciarInterfazExamen() {
+            document.getElementById('examWrapper').style.display = 'flex';
+            document.getElementById('examSubtitle').textContent = `Nivel ${testActual.nivel} • 10 preguntas`;
+            
+            // Ubicar en la primera pregunta sin responder si se reanuda
+            const respondidas = Object.keys(testActual.respuestasUsuario || {}).map(Number);
+            if (respondidas.length > 0 && respondidas.length < testActual.preguntas.length) {
+                for (let i = 0; i < testActual.preguntas.length; i++) {
+                    if (testActual.respuestasUsuario[i] === undefined) {
+                        indiceActual = i;
+                        break;
+                    }
+                }
+            }
+
+            renderizarPregunta();
+        }
+
+        function renderizarPregunta() {
+            const total = testActual.preguntas.length;
+            const q = testActual.preguntas[indiceActual];
+
+            document.getElementById('questionCounter').textContent = `Pregunta ${indiceActual + 1} de ${total}`;
+            document.getElementById('questionText').textContent = q.pregunta;
+
+            const porcentaje = ((indiceActual + 1) / total) * 100;
+            document.getElementById('progressBar').style.width = `${porcentaje}%`;
+
+            const opcionesContainer = document.getElementById('optionsList');
+            opcionesContainer.innerHTML = '';
+
+            const letras = ['A', 'B', 'C', 'D'];
+            q.opciones.forEach((opcion, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                if (testActual.respuestasUsuario[indiceActual] === idx) {
+                    btn.classList.add('selected');
+                }
+                btn.innerHTML = `<strong>${letras[idx]}.</strong> <span>${opcion}</span>`;
+                btn.onclick = () => seleccionarRespuesta(idx);
+                opcionesContainer.appendChild(btn);
             });
 
-            // Eliminar de pendientes
+            // Botones de navegación
+            document.getElementById('btnPrev').disabled = (indiceActual === 0);
+
+            if (indiceActual === total - 1) {
+                document.getElementById('btnNext').style.display = 'none';
+                document.getElementById('btnFinish').style.display = 'inline-block';
+            } else {
+                document.getElementById('btnNext').style.display = 'inline-block';
+                document.getElementById('btnFinish').style.display = 'none';
+            }
+        }
+
+        function seleccionarRespuesta(opcionIdx) {
+            testActual.respuestasUsuario[indiceActual] = opcionIdx;
+
+            // Guardar progreso automático en localStorage
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
-            delete pendientes[`gramatica_${testActivo.nivel}`];
+            pendientes[`gramatica_${testActual.nivel}`] = testActual;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+            localStorage.setItem('testActivo', JSON.stringify(testActual));
+
+            renderizarPregunta();
+        }
+
+        function cambiarPregunta(direccion) {
+            const nuevoIndice = indiceActual + direccion;
+            if (nuevoIndice >= 0 && nuevoIndice < testActual.preguntas.length) {
+                indiceActual = nuevoIndice;
+                renderizarPregunta();
+            }
+        }
+
+        function guardarYSalir() {
+            window.location.href = 'examenes.html';
+        }
+
+        function finalizarExamen() {
+            const total = testActual.preguntas.length;
+            const respondidas = Object.keys(testActual.respuestasUsuario).length;
+
+            if (respondidas < total) {
+                if (!confirm(`Has respondido ${respondidas} de ${total} preguntas. ¿Deseas finalizar de todas formas?`)) {
+                    return;
+                }
+            }
+
+            // Calcular puntaje
+            let aciertos = 0;
+            testActual.preguntas.forEach((p, idx) => {
+                if (testActual.respuestasUsuario[idx] === p.correcta) {
+                    aciertos++;
+                }
+            });
+
+            const resultadoFinal = {
+                tipo: testActual.tipo,
+                nivel: testActual.nivel,
+                aciertos: aciertos,
+                total: total,
+                porcentaje: Math.round((aciertos / total) * 100),
+                preguntas: testActual.preguntas,
+                respuestasUsuario: testActual.respuestasUsuario,
+                fecha: new Date().toLocaleDateString()
+            };
+
+            // Guardar resultado para resultado.html y eliminar de pendientes
+            localStorage.setItem('ultimoResultado', JSON.stringify(resultadoFinal));
+
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+            delete pendientes[`gramatica_${testActual.nivel}`];
             localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
             localStorage.removeItem('testActivo');
 
-            // Guardar resultados y redirigir
-            localStorage.setItem('ultimoExamenResultados', JSON.stringify(resultadosFinales));
             window.location.href = 'resultado.html';
         }
     </script>
