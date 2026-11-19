@@ -1,3 +1,4 @@
+const bancoGramatica = {
 A1: [
         { id: "a1_1", pregunta: "She ___ a doctor.", opciones: ["am", "is", "are", "be"], correcta: "is" },
         { id: "a1_2", pregunta: "They ___ to school every day.", opciones: ["goes", "go", "going", "gone"], correcta: "go" },
@@ -429,4 +430,4 @@ A1: [
         { id: "c2_68", pregunta: "She is inclined ___ agree with the majority.", opciones: ["for", "to", "with", "in"], correcta: "to" },
         { id: "c2_69", pregunta: "The remarks were off the ___.", opciones: ["record", "note", "file", "book"], correcta: "record" },
         { id: "c2_70", pregunta: "All things ___, the event was a resounding success.", opciones: ["considering", "considered", "consider", "to consider"], correcta: "considered" }
-    ]
+    };
