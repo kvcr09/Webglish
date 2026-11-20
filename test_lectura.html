@@ -420,6 +420,29 @@
         </div>
     </div>
 
+    <!-- PASO 2: ELEGIR MODALIDAD DEL TEST -->
+<div id="pasoModalidad" style="display: none;">
+    <h2>Modalidad del Test (<span id="etiquetaNivelElegido"></span>)</h2>
+    <p>¿Cómo prefieres realizar las 10 preguntas de comprensión?</p>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <button class="nivel-btn" onclick="iniciarTestConModalidad('unico')">
+            📄 1 Texto para las 10 preguntas
+            <span style="display:block; font-size:0.85rem; opacity:0.8;">Lectura profunda de un único pasaje completo</span>
+        </button>
+        <button class="nivel-btn" onclick="iniciarTestConModalidad('por_pregunta')">
+            📚 1 Texto diferente por cada pregunta
+            <span style="display:block; font-size:0.85rem; opacity:0.8;">10 textos distintos (1 pregunta de cada uno)</span>
+        </button>
+        <button class="nivel-btn" onclick="iniciarTestConModalidad('mixto')">
+            🔀 Modo Mixto
+            <span style="display:block; font-size:0.85rem; opacity:0.8;">Combina un bloque de texto compartido con preguntas de textos variados</span>
+        </button>
+    </div>
+    <button onclick="volverAPasoNivel()" style="margin-top: 16px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer;">
+        ← Cambiar de nivel
+    </button>
+</div>
+
     <!-- INTERFAZ DIVIDIDA DEL TEST DE LECTURA -->
     <div class="reading-layout" id="readingLayout">
         <div class="exam-header">
