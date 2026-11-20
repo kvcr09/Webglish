@@ -6828,41 +6828,70 @@
             const modalOverlay = document.getElementById('modalNivel');
             if (!modalOverlay || document.getElementById('pasoModalidad')) return;
 
-            const contenedorModal = modalOverlay.firstElementChild;
-            if (!contenedorModal) return;
+            const cajaCrema = modalOverlay.firstElementChild;
+            if (!cajaCrema) return;
+
+            // Separa el botón X (cerrar) para mantenerlo siempre arriba a la derecha
+            const btnCerrar = cajaCrema.querySelector('button[onclick*="volverAExamenes"], .close-btn, .modal-close');
 
             const pasoNivel = document.createElement('div');
             pasoNivel.id = 'pasoNivel';
-            while (contenedorModal.firstChild) {
-                pasoNivel.appendChild(contenedorModal.firstChild);
-            }
-            contenedorModal.appendChild(pasoNivel);
+            Array.from(cajaCrema.childNodes).forEach(nodo => {
+                if (nodo !== btnCerrar) {
+                    pasoNivel.appendChild(nodo);
+                }
+            });
+            cajaCrema.appendChild(pasoNivel);
 
+            // Crea la vista de modalidades con el MISMO estilo visual que los niveles
             const pasoModalidad = document.createElement('div');
             pasoModalidad.id = 'pasoModalidad';
             pasoModalidad.style.display = 'none';
             pasoModalidad.innerHTML = `
-                <h2 style="margin-bottom: 8px;">Modalidad del Test • Nivel <span id="nivelModalidadLabel"></span></h2>
-                <p style="margin-bottom: 18px; opacity: 0.85;">¿Cómo deseas realizar las 10 preguntas?</p>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('unico')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
-                        <strong>📄 1 Texto para las 10 preguntas</strong>
-                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Un único pasaje completo con sus 10 preguntas.</span>
-                    </button>
-                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('individual')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
-                        <strong>📚 1 Texto diferente por cada pregunta</strong>
-                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">10 textos distintos al azar (1 pregunta de cada uno).</span>
-                    </button>
-                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('mixto')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
-                        <strong>🔀 Modo Mixto (Variado al azar)</strong>
-                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Combina bloques de varios textos distintos hasta sumar 10 preguntas.</span>
+                <h2 style="color: #03658C; font-size: 1.75rem; margin-bottom: 8px; text-align: center;">
+                    Modalidad del Test • Nivel <span id="nivelModalidadLabel"></span>
+                </h2>
+                <p style="color: #03658C; opacity: 0.85; margin-bottom: 24px; text-align: center; font-size: 0.95rem;">
+                    Elige cómo deseas realizar las 10 preguntas de comprensión
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                    <div style="background: #FFFDF9; border: 1.5px solid #E5D3B3; border-radius: 14px; padding: 20px 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                        <div>
+                            <h3 style="color: #03658C; font-size: 1.2rem; margin-bottom: 6px;">1 Texto Único</h3>
+                            <p style="color: #03658C; font-size: 0.82rem; opacity: 0.8; line-height: 1.4;">Un único pasaje completo a la izquierda para responder las 10 preguntas.</p>
+                        </div>
+                        <button type="button" onclick="confirmarModalidad('unico')" style="background: #DC3C22; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%;">
+                            Elegir
+                        </button>
+                    </div>
+
+                    <div style="background: #FFFDF9; border: 1.5px solid #E5D3B3; border-radius: 14px; padding: 20px 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                        <div>
+                            <h3 style="color: #03658C; font-size: 1.2rem; margin-bottom: 6px;">1 Texto por Pregunta</h3>
+                            <p style="color: #03658C; font-size: 0.82rem; opacity: 0.8; line-height: 1.4;">10 textos diferentes al azar (1 pregunta de comprensión por cada texto).</p>
+                        </div>
+                        <button type="button" onclick="confirmarModalidad('individual')" style="background: #DC3C22; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%;">
+                            Elegir
+                        </button>
+                    </div>
+
+                    <div style="background: #FFFDF9; border: 1.5px solid #E5D3B3; border-radius: 14px; padding: 20px 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
+                        <div>
+                            <h3 style="color: #03658C; font-size: 1.2rem; margin-bottom: 6px;">Modo Mixto</h3>
+                            <p style="color: #03658C; font-size: 0.82rem; opacity: 0.8; line-height: 1.4;">Combina bloques de varios textos distintos al azar hasta sumar 10 preguntas.</p>
+                        </div>
+                        <button type="button" onclick="confirmarModalidad('mixto')" style="background: #DC3C22; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%;">
+                            Elegir
+                        </button>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" onclick="volverPasoNiveles()" style="background: transparent; border: none; color: #03658C; text-decoration: underline; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                        ← Cambiar de nivel
                     </button>
                 </div>
-                <button type="button" onclick="volverPasoNiveles()" style="margin-top: 18px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-weight: 600;">
-                    ← Volver a elegir nivel
-                </button>
             `;
-            contenedorModal.appendChild(pasoModalidad);
+            cajaCrema.appendChild(pasoModalidad);
         }
 
         function abrirModalNiveles() {
