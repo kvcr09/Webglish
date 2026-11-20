@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webglish - Resultados del Test de Audio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #EAC8A6;
+            color: #03658C;
+            min-height: 100vh;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Tarjeta resumen superior */
+        .summary-card {
+            background-color: #FBF5DE;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .badge-tipo {
+            background-color: #EAC8A6;
+            color: #03658C;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .summary-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+            border: 6px solid #03658C;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 6px 0;
+            box-shadow: 0 4px 12px rgba(3, 101, 140, 0.15);
+        }
+
+        .score-percent {
+            font-size: 30px;
+            font-weight: 800;
+            color: #03658C;
+            line-height: 1;
+        }
+
+        .score-fraction {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .feedback-msg {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f3642;
+            max-width: 600px;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background-color: #DC3C22;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #b82f19;
+        }
+
+        .btn-secondary {
+            background-color: #03658C;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #024c6b;
+        }
+
+        /* Lista de revisión por pregunta */
+        .review-section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #03658C;
+            padding-left: 6px;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .question-card {
+            background-color: #FBF5DE;
+            border-radius: 20px;
+            padding: 24px 26px;
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+            border-left: 7px solid #03658C;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .question-card.correct {
+            border-left-color: #2e8b57;
+        }
+
+        .question-card.incorrect {
+            border-left-color: #DC3C22;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .q-number {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #03658C;
+        }
+
+        .q-status {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+        .q-status.ok {
+            background-color: #d4edda;
+            color: #1e6b38;
+        }
+
+        .q-status.bad {
+            background-color: #f8d7da;
+            color: #a71d2a;
+        }
+
+        .q-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #03658C;
+            line-height: 1.4;
+        }
+
+        .answers-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14.5px;
+        }
+
+        .ans-row {
+            background-color: #FFFFFF;
+            border: 1.5px solid #EAC8A6;
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #1f3642;
+        }
+
+        .ans-row.user-wrong {
+            background-color: #fff2f0;
+            border-color: #DC3C22;
+            color: #a71d2a;
+        }
+
+        .ans-row.right-ans {
+            background-color: #effaf3;
+            border-color: #2e8b57;
+            color: #1e6b38;
+        }
+
+        .explanation-box {
+            background-color: #FFFDF9;
+            border: 1.5px solid #EAC8A6;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #1f3642;
+            line-height: 1.5;
+        }
+
+        /* Botón y caja desplegable de transcripción del audio */
+        .transcript-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 2px;
+        }
+
+        .btn-toggle-script {
+            background-color: #FFFFFF;
+            color: #03658C;
+            border: 1.5px solid #03658C;
+            border-radius: 10px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-toggle-script:hover {
+            background-color: #03658C;
+            color: #FFFFFF;
+        }
+
+        .btn-listen-mini {
+            background-color: #EAC8A6;
+            color: #03658C;
+            border: none;
+            border-radius: 10px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-listen-mini:hover {
+            opacity: 0.85;
+        }
+
+        .script-dropdown {
+            display: none;
+            background-color: #FFFFFF;
+            border: 1.5px dashed #03658C;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #1f3642;
+            line-height: 1.65;
+        }
+
+        .script-track-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            color: #03658C;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 12px;
+            }
+            .summary-card, .question-card {
+                padding: 20px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- RESUMEN DE PUNTUACIÓN -->
+        <section class="summary-card">
+            <span class="badge-tipo" id="resBadge">Comprensión Auditiva • Nivel A1</span>
+            <h1 class="summary-title">¡Test de Audio Completado!</h1>
+
+            <div class="score-circle" id="scoreCircle">
+                <div class="score-percent" id="resPercent">0%</div>
+                <div class="score-fraction" id="resFraction">0 / 10</div>
+            </div>
+
+            <p class="feedback-msg" id="resFeedback">Cargando resultados...</p>
+
+            <div class="actions-bar">
+                <button type="button" class="btn-primary" onclick="window.location.href='test_audio.html'">Hacer otro test de audio</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='examenes.html'">Volver a Mis Exámenes</button>
+            </div>
+        </section>
+
+        <!-- REVISIÓN DETALLADA -->
+        <h2 class="review-section-title">Revisión de preguntas y audios</h2>
+        <div class="review-list" id="reviewList"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultado = JSON.parse(localStorage.getItem('ultimoResultado'));
+
+            if (!resultado || !resultado.preguntas) {
+                document.getElementById('resFeedback').textContent = 'No se encontraron resultados recientes. Inicia un nuevo test desde Mis Exámenes.';
+                return;
+            }
+
+            // Rellena cabecera
+            document.getElementById('resBadge').textContent = `Listening • Nivel ${resultado.nivel} • ${resultado.fecha || ''}`;
+            document.getElementById('resPercent').textContent = `${resultado.porcentaje}%`;
+            document.getElementById('resFraction').textContent = `${resultado.aciertos} / ${resultado.total} aciertos`;
+
+            const circle = document.getElementById('scoreCircle');
+            const feedback = document.getElementById('resFeedback');
+
+            if (resultado.porcentaje >= 80) {
+                circle.style.borderColor = '#2e8b57';
+                feedback.textContent = '¡Excelente comprensión auditiva! Dominas muy bien el vocabulario y la pronunciación de este nivel.';
+            } else if (resultado.porcentaje >= 60) {
+                circle.style.borderColor = '#03658C';
+                feedback.textContent = '¡Buen trabajo! Has aprobado el test. Revisa las transcripciones desplegables abajo para afinar detalles.';
+            } else {
+                circle.style.borderColor = '#DC3C22';
+                feedback.textContent = 'Sigue practicando. Despliega la transcripción de los audios fallados para asociar lo que escuchaste con el texto escrito.';
+            }
+
+            // Renderiza cada pregunta con transcripción oculta por defecto
+            const reviewList = document.getElementById('reviewList');
+            const letras = ['A', 'B', 'C', 'D'];
+
+            resultado.preguntas.forEach((p, idx) => {
+                const respIdx = resultado.respuestasUsuario ? resultado.respuestasUsuario[idx] : undefined;
+                const correctaIdx = Number(p.correcta);
+                const esCorrecta = (respIdx === correctaIdx);
+
+                const textoUsuario = (respIdx !== undefined && p.opciones[respIdx] !== undefined)
+                    ? `${letras[respIdx]}. ${p.opciones[respIdx]}`
+                    : 'Sin responder';
+
+                const textoCorrecto = (p.opciones[correctaIdx] !== undefined)
+                    ? `${letras[correctaIdx]}. ${p.opciones[correctaIdx]}`
+                    : 'No disponible';
+
+                const explicacion = p.explicacion || 'Revisa el fragmento clave del audio desplegando la transcripción.';
+                const guion = p.guionAudio || 'Transcripción no disponible para esta pista.';
+                const tituloPista = p.tituloAudio || `Pista ${idx + 1}`;
+
+                const card = document.createElement('div');
+                card.className = `question-card ${esCorrecta ? 'correct' : 'incorrect'}`;
+
+                card.innerHTML = `
+                    <div class="q-header">
+                        <span class="q-number">Pregunta ${idx + 1} de ${resultado.total} • ${tituloPista}</span>
+                        <span class="q-status ${esCorrecta ? 'ok' : 'bad'}">
+                            ${esCorrecta ? '✓ Correcta' : '✕ Incorrecta'}
+                        </span>
+                    </div>
+
+                    <div class="q-title">${p.pregunta}</div>
+
+                    <div class="answers-grid">
+                        <div class="ans-row ${esCorrecta ? 'right-ans' : 'user-wrong'}">
+                            <strong>Tu respuesta:</strong> ${textoUsuario}
+                        </div>
+                        ${!esCorrecta ? `
+                        <div class="ans-row right-ans">
+                            <strong>Respuesta correcta:</strong> ${textoCorrecto}
+                        </div>` : ''}
+                    </div>
+
+                    <div class="explanation-box">
+                        <strong>💡 Explicación:</strong> ${explicacion}
+                    </div>
+
+                    <div class="transcript-controls">
+                        <button type="button" class="btn-toggle-script" onclick="toggleGuion(${idx}, this)">
+                            📄 Ver transcripción del audio
+                        </button>
+                        <button type="button" class="btn-listen-mini" onclick="escucharDeNuevo(${idx})">
+                            🔊 Escuchar pista
+                        </button>
+                    </div>
+
+                    <div class="script-dropdown" id="script-${idx}">
+                        <span class="script-track-label">🎧 Transcripción • ${tituloPista}</span>
+                        "${guion}"
+                    </div>
+                `;
+
+                reviewList.appendChild(card);
+            });
+
+            // Guarda guiones en memoria para permitir re-escuchar si el usuario quiere
+            window._preguntasResultado = resultado.preguntas;
+        });
+
+        function toggleGuion(idx, btn) {
+            const box = document.getElementById(`script-${idx}`);
+            const abierto = box.style.display === 'block';
+            box.style.display = abierto ? 'none' : 'block';
+            btn.innerHTML = abierto ? '📄 Ver transcripción del audio' : '🙈 Ocultar transcripción';
+        }
+
+        function escucharDeNuevo(idx) {
+            if (!('speechSynthesis' in window) || !window._preguntasResultado) return;
+            window.speechSynthesis.cancel();
+            const guion = window._preguntasResultado[idx]?.guionAudio;
+            if (!guion) return;
+            const utterance = new SpeechSynthesisUtterance(guion);
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        });
+    </script>
+</body>
+</html>
