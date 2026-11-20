@@ -370,78 +370,92 @@
 </head>
 <body>
 
-    <!-- VENTANA EMERGENTE (MODAL) PARA ELEGIR NIVEL -->
+   <!-- VENTANA EMERGENTE (MODAL) PARA ELEGIR NIVEL Y MODALIDAD -->
     <div class="modal-overlay" id="modalNivel" onclick="cerrarSiClickFuera(event)">
         <div class="modal-box">
             <button class="modal-close" onclick="volverAExamenes()" title="Volver a Mis Exámenes">✕</button>
             
-            <div class="modal-header">
-                <h2>Selecciona el nivel para tu test de lectura</h2>
-                <p>Lee el texto completo a la izquierda y responde las 10 preguntas a la derecha</p>
+            <!-- PASO 1: ELEGIR NIVEL -->
+            <div id="pasoNivel">
+                <div class="modal-header">
+                    <h2>Selecciona el nivel para tu test de lectura</h2>
+                    <p>Lee el texto completo a la izquierda y responde las 10 preguntas a la derecha</p>
+                </div>
+
+                <div class="modal-niveles-grid">
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('A1')">
+                        <div class="modal-nivel-titulo">Nivel A1</div>
+                        <div class="modal-nivel-temas">Short Descriptions, Daily Routines, Simple Messages</div>
+                        <div class="modal-nivel-accion" id="tag-A1">Iniciar</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('A2')">
+                        <div class="modal-nivel-titulo">Nivel A2</div>
+                        <div class="modal-nivel-temas">Travel Stories, Personal Emails, Short Articles</div>
+                        <div class="modal-nivel-accion" id="tag-A2">Iniciar</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('B1')">
+                        <div class="modal-nivel-titulo">Nivel B1</div>
+                        <div class="modal-nivel-temas">News Reports, Cultural Topics, Biographies</div>
+                        <div class="modal-nivel-accion" id="tag-B1">Iniciar</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('B2')">
+                        <div class="modal-nivel-titulo">Nivel B2</div>
+                        <div class="modal-nivel-temas">Opinion Essays, Science & Tech, Workplace</div>
+                        <div class="modal-nivel-accion" id="tag-B2">Iniciar</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('C1')">
+                        <div class="modal-nivel-titulo">Nivel C1</div>
+                        <div class="modal-nivel-temas">Academic Analysis, Psychology, Global Economics</div>
+                        <div class="modal-nivel-accion" id="tag-C1">Iniciar</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="seleccionarNivel('C2')">
+                        <div class="modal-nivel-titulo">Nivel C2</div>
+                        <div class="modal-nivel-temas">Philosophical Critique, Nuanced Literature</div>
+                        <div class="modal-nivel-accion" id="tag-C2">Iniciar</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="modal-niveles-grid">
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('A1')">
-                    <div class="modal-nivel-titulo">Nivel A1</div>
-                    <div class="modal-nivel-temas">Short Descriptions, Daily Routines, Simple Messages</div>
-                    <div class="modal-nivel-accion" id="tag-A1">Iniciar</div>
+            <!-- PASO 2: ELEGIR MODALIDAD DEL TEST -->
+            <div id="pasoModalidad" style="display: none;">
+                <div class="modal-header">
+                    <h2>Modalidad del Test • Nivel <span id="nivelModalidadLabel"></span></h2>
+                    <p>Elige cómo prefieres realizar las 10 preguntas de comprensión</p>
                 </div>
 
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('A2')">
-                    <div class="modal-nivel-titulo">Nivel A2</div>
-                    <div class="modal-nivel-temas">Travel Stories, Personal Emails, Short Articles</div>
-                    <div class="modal-nivel-accion" id="tag-A2">Iniciar</div>
+                <div class="modal-niveles-grid">
+                    <div class="modal-nivel-btn" onclick="confirmarModalidad('unico')">
+                        <div class="modal-nivel-titulo">1 Texto Único</div>
+                        <div class="modal-nivel-temas">Un único pasaje completo a la izquierda para responder las 10 preguntas</div>
+                        <div class="modal-nivel-accion">Elegir</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="confirmarModalidad('individual')">
+                        <div class="modal-nivel-titulo">1 Texto por Pregunta</div>
+                        <div class="modal-nivel-temas">10 textos distintos al azar (1 pregunta de cada uno)</div>
+                        <div class="modal-nivel-accion">Elegir</div>
+                    </div>
+
+                    <div class="modal-nivel-btn" onclick="confirmarModalidad('mixto')">
+                        <div class="modal-nivel-titulo">Modo Mixto</div>
+                        <div class="modal-nivel-temas">Combina bloques de varios textos distintos al azar hasta sumar 10 preguntas</div>
+                        <div class="modal-nivel-accion">Elegir</div>
+                    </div>
                 </div>
 
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('B1')">
-                    <div class="modal-nivel-titulo">Nivel B1</div>
-                    <div class="modal-nivel-temas">News Reports, Cultural Topics, Biographies</div>
-                    <div class="modal-nivel-accion" id="tag-B1">Iniciar</div>
-                </div>
-
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('B2')">
-                    <div class="modal-nivel-titulo">Nivel B2</div>
-                    <div class="modal-nivel-temas">Opinion Essays, Science & Tech, Workplace</div>
-                    <div class="modal-nivel-accion" id="tag-B2">Iniciar</div>
-                </div>
-
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('C1')">
-                    <div class="modal-nivel-titulo">Nivel C1</div>
-                    <div class="modal-nivel-temas">Academic Analysis, Psychology, Global Economics</div>
-                    <div class="modal-nivel-accion" id="tag-C1">Iniciar</div>
-                </div>
-
-                <div class="modal-nivel-btn" onclick="seleccionarNivel('C2')">
-                    <div class="modal-nivel-titulo">Nivel C2</div>
-                    <div class="modal-nivel-temas">Philosophical Critique, Nuanced Literature</div>
-                    <div class="modal-nivel-accion" id="tag-C2">Iniciar</div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" onclick="volverPasoNiveles()" style="background: none; border: none; color: #03658C; font-weight: 700; font-size: 13px; text-decoration: underline; cursor: pointer;">
+                        ← Cambiar de nivel
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- PASO 2: ELEGIR MODALIDAD DEL TEST -->
-<div id="pasoModalidad" style="display: none;">
-    <h2>Modalidad del Test (<span id="etiquetaNivelElegido"></span>)</h2>
-    <p>¿Cómo prefieres realizar las 10 preguntas de comprensión?</p>
-    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
-        <button class="nivel-btn" onclick="iniciarTestConModalidad('unico')">
-            📄 1 Texto para las 10 preguntas
-            <span style="display:block; font-size:0.85rem; opacity:0.8;">Lectura profunda de un único pasaje completo</span>
-        </button>
-        <button class="nivel-btn" onclick="iniciarTestConModalidad('por_pregunta')">
-            📚 1 Texto diferente por cada pregunta
-            <span style="display:block; font-size:0.85rem; opacity:0.8;">10 textos distintos (1 pregunta de cada uno)</span>
-        </button>
-        <button class="nivel-btn" onclick="iniciarTestConModalidad('mixto')">
-            🔀 Modo Mixto
-            <span style="display:block; font-size:0.85rem; opacity:0.8;">Combina un bloque de texto compartido con preguntas de textos variados</span>
-        </button>
-    </div>
-    <button onclick="volverAPasoNivel()" style="margin-top: 16px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer;">
-        ← Cambiar de nivel
-    </button>
-</div>
 
     <!-- INTERFAZ DIVIDIDA DEL TEST DE LECTURA -->
     <div class="reading-layout" id="readingLayout">
