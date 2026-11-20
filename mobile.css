@@ -1,0 +1,104 @@
+/* Adaptación automática para celulares en toda la plataforma Webglish */
+@media (max-width: 900px) {
+    html, body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+
+    /* Dashboard, Estadísticas, Exámenes, Nosotros, Configuración */
+    .dashboard-container {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        padding: 16px 18px !important;
+        gap: 12px !important;
+    }
+
+    .brand-logo {
+        margin-bottom: 8px !important;
+        font-size: 22px !important;
+    }
+
+    .user-profile {
+        margin-bottom: 10px !important;
+    }
+
+    .nav-menu {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding-bottom: 6px !important;
+        gap: 8px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-indicator {
+        display: none !important;
+    }
+
+    .nav-item.active a {
+        background-color: #DC3C22 !important;
+        color: #FFFFFF !important;
+    }
+
+    .logout-link {
+        margin-top: 6px !important;
+        align-self: flex-end !important;
+    }
+
+    .main-panel {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 20px 16px !important;
+        gap: 16px !important;
+    }
+
+    .welcome-title {
+        font-size: 20px !important;
+    }
+
+    .content-card {
+        padding: 18px 16px !important;
+    }
+
+    /* Cuadrículas y tarjetas */
+    .stats-grid,
+    .charts-grid,
+    .exams-grid,
+    .cards-grid,
+    .modules-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .history-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    /* Pantallas divididas de los Tests (Audio, Lectura, Gramática, Vocabulario) */
+    .main-container,
+    .split-container,
+    .test-layout,
+    .test-container {
+        flex-direction: column !important;
+        height: auto !important;
+    }
+
+    .left-panel,
+    .right-panel,
+    .audio-panel,
+    .reading-panel,
+    .questions-panel {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+}
