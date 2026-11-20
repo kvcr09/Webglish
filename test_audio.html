@@ -2419,7 +2419,18 @@
             };
 
             localStorage.setItem('ultimoResultado', JSON.stringify(resultadoFinal));
-
+            
+// Guardar en el historial global de estadísticas
+            let historial = JSON.parse(localStorage.getItem('webglish_exams')) || [];
+            historial.push({
+                tipo: testActual.tipo,       // 'Gramática', 'Lectura' o 'Audio'
+                nivel: testActual.nivel,     // 'A1' .. 'C2'
+                score: resultadoFinal.porcentaje,
+                aciertos: aciertos,
+                total: total,
+                fecha: resultadoFinal.fecha
+            });
+            localStorage.setItem('webglish_exams', JSON.stringify(historial));
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
             delete pendientes[`audio_${testActual.nivel}`];
             localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
