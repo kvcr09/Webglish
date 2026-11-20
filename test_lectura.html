@@ -6799,13 +6799,15 @@
             ]
         };
 
-        // ==========================================
+      // ==========================================
         // LÓGICA DE CONTROL Y MOTOR DEL TEST
         // ==========================================
         let testActual = null;
         let indiceActual = 0;
+        let nivelSeleccionadoTemporal = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            prepararModalModalidades();
             const activo = JSON.parse(localStorage.getItem('testActivo'));
 
             if (activo && activo.tipo === 'Lectura') {
@@ -6816,19 +6818,72 @@
             }
         });
 
+        function prepararModalModalidades() {
+            const modalOverlay = document.getElementById('modalNivel');
+            if (!modalOverlay || document.getElementById('pasoModalidad')) return;
+
+            const contenedorModal = modalOverlay.firstElementChild;
+            if (!contenedorModal) return;
+
+            // Envuelve el contenido actual de niveles en #pasoNivel
+            const pasoNivel = document.createElement('div');
+            pasoNivel.id = 'pasoNivel';
+            while (contenedorModal.firstChild) {
+                pasoNivel.appendChild(contenedorModal.firstChild);
+            }
+            contenedorModal.appendChild(pasoNivel);
+
+            // Crea e inserta #pasoModalidad automáticamente
+            const pasoModalidad = document.createElement('div');
+            pasoModalidad.id = 'pasoModalidad';
+            pasoModalidad.style.display = 'none';
+            pasoModalidad.innerHTML = `
+                <h2 style="margin-bottom: 8px;">Modalidad del Test • Nivel <span id="nivelModalidadLabel"></span></h2>
+                <p style="margin-bottom: 18px; opacity: 0.85;">¿Cómo deseas realizar las 10 preguntas?</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="nivel-btn" onclick="confirmarModalidad('unico')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                        <strong>📄 1 Texto para las 10 preguntas</strong>
+                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Un único pasaje completo con sus 10 preguntas.</span>
+                    </button>
+                    <button class="nivel-btn" onclick="confirmarModalidad('individual')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                        <strong>📚 1 Texto diferente por cada pregunta</strong>
+                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">10 textos distintos al azar (1 pregunta de cada uno).</span>
+                    </button>
+                    <button class="nivel-btn" onclick="confirmarModalidad('mixto')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                        <strong>🔀 Modo Mixto (Variado al azar)</strong>
+                        <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Combina bloques de varios textos distintos hasta sumar 10 preguntas.</span>
+                    </button>
+                </div>
+                <button onclick="volverPasoNiveles()" style="margin-top: 18px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-weight: 600;">
+                    ← Volver a elegir nivel
+                </button>
+            `;
+            contenedorModal.appendChild(pasoModalidad);
+        }
+
         function abrirModalNiveles() {
             const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
             ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
                 const tag = document.getElementById(`tag-${nivel}`);
-                if (pendientes[`lectura_${nivel}`]) {
-                    tag.textContent = 'Continuar';
-                    tag.style.backgroundColor = '#03658C';
-                } else {
-                    tag.textContent = 'Iniciar';
-                    tag.style.backgroundColor = '#DC3C22';
+                if (tag) {
+                    if (pendientes[`lectura_${nivel}`]) {
+                        tag.textContent = 'Continuar';
+                        tag.style.backgroundColor = '#03658C';
+                    } else {
+                        tag.textContent = 'Iniciar';
+                        tag.style.backgroundColor = '#DC3C22';
+                    }
                 }
             });
+            volverPasoNiveles();
             document.getElementById('modalNivel').style.display = 'flex';
+        }
+
+        function volverPasoNiveles() {
+            const pasoNivel = document.getElementById('pasoNivel');
+            const pasoModalidad = document.getElementById('pasoModalidad');
+            if (pasoNivel) pasoNivel.style.display = 'block';
+            if (pasoModalidad) pasoModalidad.style.display = 'none';
         }
 
         function volverAExamenes() {
@@ -6841,7 +6896,7 @@
             }
         }
 
-      function construirSetLectura(nivel, modo) {
+        function construirSetLectura(nivel, modo) {
             const textos = bancoLectura[nivel] || [];
             if (textos.length === 0) return [];
 
@@ -6849,7 +6904,6 @@
             const poolTextos = [...textos].sort(() => Math.random() - 0.5);
 
             if (modo === 'unico') {
-                // 1 solo texto elegido al azar con sus 10 preguntas
                 const elegido = poolTextos[0];
                 elegido.preguntas.slice(0, 10).forEach(q => {
                     preguntasArmadas.push({
@@ -6862,7 +6916,6 @@
                     });
                 });
             } else if (modo === 'individual') {
-                // 10 textos distintos al azar (1 pregunta aleatoria de cada uno)
                 for (let i = 0; i < 10; i++) {
                     const fuente = poolTextos[i % poolTextos.length];
                     const qAleatoria = fuente.preguntas[Math.floor(Math.random() * fuente.preguntas.length)];
@@ -6876,7 +6929,6 @@
                     });
                 }
             } else {
-                // MODO VARIADO AL AZAR: combina textos al azar con cantidades aleatorias hasta sumar 10
                 let restantes = 10;
                 let idxFuente = 0;
                 let bloquesSeleccionados = [];
@@ -6921,47 +6973,73 @@
 
             return preguntasArmadas;
         }
+
         function seleccionarNivel(nivel) {
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
 
             if (pendientes[`lectura_${nivel}`]) {
                 testActual = pendientes[`lectura_${nivel}`];
-            } else {
-                const lecturasNivel = bancoLectura[nivel] || [];
-                const lecturaElegida = lecturasNivel[Math.floor(Math.random() * lecturasNivel.length)];
-
-                testActual = {
-                    tipo: 'Lectura',
-                    nivel: nivel,
-                    tituloLectura: lecturaElegida.titulo,
-                    parrafosLectura: lecturaElegida.parrafos,
-                    preguntas: lecturaElegida.preguntas,
-                    respuestasUsuario: {},
-                    fechaInicio: new Date().toLocaleDateString()
-                };
-
-                pendientes[`lectura_${nivel}`] = testActual;
-                localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
+                localStorage.setItem('testActivo', JSON.stringify(testActual));
+                document.getElementById('modalNivel').style.display = 'none';
+                iniciarInterfazExamen();
+                return;
             }
 
+            nivelSeleccionadoTemporal = nivel;
+            document.getElementById('nivelModalidadLabel').textContent = nivel;
+            document.getElementById('pasoNivel').style.display = 'none';
+            document.getElementById('pasoModalidad').style.display = 'block';
+        }
+
+        function confirmarModalidad(modo) {
+            const nivel = nivelSeleccionadoTemporal;
+            const preguntasArmadas = construirSetLectura(nivel, modo);
+            if (preguntasArmadas.length === 0) return;
+
+            let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
+
+            testActual = {
+                tipo: 'Lectura',
+                nivel: nivel,
+                modo: modo,
+                tituloLectura: preguntasArmadas[0].tituloLectura,
+                parrafosLectura: preguntasArmadas[0].parrafosLectura,
+                preguntas: preguntasArmadas,
+                respuestasUsuario: {},
+                fechaInicio: new Date().toLocaleDateString()
+            };
+
+            pendientes[`lectura_${nivel}`] = testActual;
+            localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
             localStorage.setItem('testActivo', JSON.stringify(testActual));
+
+            indiceActual = 0;
             document.getElementById('modalNivel').style.display = 'none';
             iniciarInterfazExamen();
+        }
+
+        function actualizarPasajeActual(q) {
+            const titulo = q.tituloLectura || testActual.tituloLectura;
+            const parrafos = q.parrafosLectura || testActual.parrafosLectura;
+            const infoBloque = (q.totalBloques && q.totalBloques > 1)
+                ? ` • Texto ${q.bloqueTexto} de ${q.totalBloques} (${q.rangoTexto})`
+                : '';
+
+            document.getElementById('passageTag').textContent = `Reading Passage • Nivel ${testActual.nivel}${infoBloque}`;
+            document.getElementById('passageTitle').textContent = titulo;
+
+            const bodyContainer = document.getElementById('passageBody');
+            bodyContainer.innerHTML = '';
+            parrafos.forEach(texto => {
+                const p = document.createElement('p');
+                p.textContent = texto;
+                bodyContainer.appendChild(p);
+            });
         }
 
         function iniciarInterfazExamen() {
             document.getElementById('readingLayout').style.display = 'flex';
             document.getElementById('examSubtitle').textContent = `Nivel ${testActual.nivel} • ${testActual.preguntas.length} preguntas`;
-            document.getElementById('passageTag').textContent = `Reading Passage • Nivel ${testActual.nivel}`;
-            document.getElementById('passageTitle').textContent = testActual.tituloLectura;
-
-            const bodyContainer = document.getElementById('passageBody');
-            bodyContainer.innerHTML = '';
-            testActual.parrafosLectura.forEach(texto => {
-                const p = document.createElement('p');
-                p.textContent = texto;
-                bodyContainer.appendChild(p);
-            });
 
             const respondidas = Object.keys(testActual.respuestasUsuario || {}).map(Number);
             if (respondidas.length > 0 && respondidas.length < testActual.preguntas.length) {
@@ -6979,6 +7057,8 @@
         function renderizarPregunta() {
             const total = testActual.preguntas.length;
             const q = testActual.preguntas[indiceActual];
+
+            actualizarPasajeActual(q);
 
             document.getElementById('questionCounter').textContent = `Pregunta ${indiceActual + 1} de ${total}`;
             document.getElementById('questionText').textContent = q.pregunta;
@@ -7052,10 +7132,14 @@
                 }
             });
 
+            const tituloResumen = testActual.modo === 'unico'
+                ? testActual.tituloLectura
+                : `Test ${testActual.modo === 'individual' ? 'Individual (10 textos)' : 'Mixto'} • Nivel ${testActual.nivel}`;
+
             const resultadoFinal = {
                 tipo: testActual.tipo,
                 nivel: testActual.nivel,
-                tituloLectura: testActual.tituloLectura,
+                tituloLectura: tituloResumen,
                 aciertos: aciertos,
                 total: total,
                 porcentaje: Math.round((aciertos / total) * 100),
