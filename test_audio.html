@@ -2423,7 +2423,7 @@
 // Guardar en el historial global de estadísticas
             let historial = JSON.parse(localStorage.getItem('webglish_exams')) || [];
             historial.push({
-                tipo: testActual.tipo,       // 'Gramática', 'Lectura' o 'Audio'
+                tipo: testActual.tipo,       // 'Gramática', 'Lectura', 'Audio' o 'Vocabulario'
                 nivel: testActual.nivel,     // 'A1' .. 'C2'
                 score: resultadoFinal.porcentaje,
                 aciertos: aciertos,
