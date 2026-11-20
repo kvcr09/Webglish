@@ -986,7 +986,7 @@
                 fecha: new Date().toLocaleDateString()
             };
 
-            // Guardar resultado para resultado.html y eliminar de pendientes
+            // Guardar resultado para resultadosg.html y eliminar de pendientes
             localStorage.setItem('ultimoResultado', JSON.stringify(resultadoFinal));
 
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
@@ -994,7 +994,7 @@
             localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
             localStorage.removeItem('testActivo');
 
-            window.location.href = 'resultado.html';
+            window.location.href = 'resultadosg.html';
         }
     </script>
 </body>
