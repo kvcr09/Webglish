@@ -25,18 +25,18 @@
         .nav-item.active a { color: #FFFFFF !important; background-color: transparent !important; }
         
         .logout-link { margin-top: auto; color: #DC3C22; text-decoration: none; font-weight: 700; font-size: 14px; }
-        .main-panel { flex-grow: 1; padding: 35px 40px; display: flex; flex-direction: column; gap: 25px; height: 100vh; overflow-y: auto; }
+        .main-panel { flex-grow: 1; padding: 35px 40px; display: flex; flex-direction: column; gap: 22px; height: 100vh; overflow-y: auto; }
         .welcome-title { font-size: 26px; font-weight: 800; color: #03658C; text-transform: uppercase; }
         
         .content-card { 
             background-color: #FBF5DE; 
             border-radius: 20px; 
-            padding: 30px; 
+            padding: 28px; 
             flex-grow: 1; 
             color: #03658C; 
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 22px;
         }
 
         .empty-state {
@@ -49,13 +49,168 @@
 
         .empty-icon { font-size: 48px; margin-bottom: 12px; }
         .empty-title { font-size: 18px; font-weight: 700; color: #03658C; margin-bottom: 8px; }
-        .empty-desc { font-size: 13px; color: #03658C; opacity: 0.8; max-width: 400px; margin: 0 auto 20px auto; }
-        .btn-action { display: inline-block; background-color: #DC3C22; color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 13px; }
+        .empty-desc { font-size: 13px; color: #03658C; opacity: 0.85; max-width: 420px; margin: 0 auto 20px auto; }
+        .btn-action { display: inline-block; background-color: #DC3C22; color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 13px; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .stat-box { background-color: #EAC8A6; border-radius: 16px; padding: 20px; text-align: center; }
-        .stat-number { font-size: 32px; font-weight: 800; color: #DC3C22; margin-top: 5px; }
+        /* Tarjetas superiores */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .stat-box { background-color: #EAC8A6; border-radius: 16px; padding: 18px; text-align: center; }
+        .stat-number { font-size: 32px; font-weight: 800; color: #DC3C22; margin-top: 4px; }
         .stat-title { font-size: 13px; font-weight: 700; color: #03658C; }
+
+        /* Sección de gráficas */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 18px;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .chart-card h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #03658C;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Barras horizontales por habilidad */
+        .skill-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .skill-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            color: #03658C;
+        }
+
+        .skill-track {
+            width: 100%;
+            height: 14px;
+            background-color: #F5DEC2;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        /* Gráfica vertical de columnas por Nivel CEFR (A1 - C2) */
+        .cefr-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            height: 155px;
+            padding-top: 22px;
+            border-bottom: 2px solid #EAC8A6;
+        }
+
+        .cefr-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .cefr-val {
+            font-size: 11px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .cefr-bar {
+            width: 100%;
+            max-width: 36px;
+            background-color: #03658C;
+            border-radius: 8px 8px 0 0;
+            transition: height 0.6s ease;
+            min-height: 4px;
+        }
+
+        .cefr-labels {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 6px;
+        }
+
+        .cefr-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        /* Historial reciente */
+        .history-card {
+            background-color: #FFFFFF;
+            border: 2px solid #EAC8A6;
+            border-radius: 18px;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-card h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #03658C;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FBF5DE;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #03658C;
+        }
+
+        .history-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid, .charts-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -96,7 +251,7 @@
                 </div>
 
                 <!-- Se muestra únicamente si hay exámenes completados -->
-                <div id="statsContainer" style="display: none;">
+                <div id="statsContainer" style="display: none; flex-direction: column; gap: 20px;">
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div class="stat-title">Exámenes Rendidos</div>
@@ -110,6 +265,66 @@
                             <div class="stat-title">Nivel Aprobación</div>
                             <div class="stat-number" id="approvalRate" style="color: #03658C;">0%</div>
                         </div>
+                    </div>
+
+                    <!-- Gráficas de avance -->
+                    <div class="charts-grid">
+                        <!-- Gráfica 1: Rendimiento por Habilidad -->
+                        <div class="chart-card">
+                            <h3>Rendimiento por Habilidad</h3>
+
+                            <div class="skill-row">
+                                <div class="skill-meta">
+                                    <span>📝 Gramática (Grammar)</span>
+                                    <span id="stat-gramatica">Sin datos</span>
+                                </div>
+                                <div class="skill-track">
+                                    <div class="skill-fill" id="bar-gramatica" style="background-color: #03658C;"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-row">
+                                <div class="skill-meta">
+                                    <span>📖 Lectura (Reading)</span>
+                                    <span id="stat-lectura">Sin datos</span>
+                                </div>
+                                <div class="skill-track">
+                                    <div class="skill-fill" id="bar-lectura" style="background-color: #2e8b57;"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-row">
+                                <div class="skill-meta">
+                                    <span>🎧 Audio (Listening)</span>
+                                    <span id="stat-audio">Sin datos</span>
+                                </div>
+                                <div class="skill-track">
+                                    <div class="skill-fill" id="bar-audio" style="background-color: #DC3C22;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfica 2: Promedio por Nivel CEFR -->
+                        <div class="chart-card">
+                            <h3>Avance por Nivel (A1 – C2)</h3>
+                            <div>
+                                <div class="cefr-chart" id="cefrChart"></div>
+                                <div class="cefr-labels">
+                                    <span class="cefr-label">A1</span>
+                                    <span class="cefr-label">A2</span>
+                                    <span class="cefr-label">B1</span>
+                                    <span class="cefr-label">B2</span>
+                                    <span class="cefr-label">C1</span>
+                                    <span class="cefr-label">C2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial reciente -->
+                    <div class="history-card">
+                        <h3>Últimos Tests Completados</h3>
+                        <div class="history-list" id="historyList"></div>
                     </div>
                 </div>
             </div>
@@ -131,11 +346,25 @@
                 }
             }
 
-            const userExams = JSON.parse(localStorage.getItem('webglish_exams')) || JSON.parse(localStorage.getItem('webglish_examResults')) || [];
+            let userExams = JSON.parse(localStorage.getItem('webglish_exams')) || JSON.parse(localStorage.getItem('webglish_examResults')) || [];
+
+            // Respaldo: si ya había un ultimoResultado guardado antes de conectar el historial, lo incluye
+            const ultimo = JSON.parse(localStorage.getItem('ultimoResultado'));
+            if (userExams.length === 0 && ultimo && ultimo.porcentaje !== undefined) {
+                userExams = [{
+                    tipo: ultimo.tipo || 'Test',
+                    nivel: ultimo.nivel || 'A1',
+                    score: ultimo.porcentaje,
+                    aciertos: ultimo.aciertos,
+                    total: ultimo.total,
+                    fecha: ultimo.fecha || new Date().toLocaleDateString()
+                }];
+                localStorage.setItem('webglish_exams', JSON.stringify(userExams));
+            }
 
             if (userExams.length > 0) {
                 document.getElementById('noStatsContainer').style.display = 'none';
-                document.getElementById('statsContainer').style.display = 'block';
+                document.getElementById('statsContainer').style.display = 'flex';
 
                 const totalExams = userExams.length;
                 const totalScore = userExams.reduce((acc, curr) => acc + (curr.score || 0), 0);
@@ -147,12 +376,82 @@
                 document.getElementById('examsCount').textContent = totalExams;
                 document.getElementById('avgGrade').textContent = `${avg}%`;
                 document.getElementById('approvalRate').textContent = `${approvalRatio}%`;
+
+                renderSkillBars(userExams);
+                renderCefrChart(userExams);
+                renderHistory(userExams);
             }
 
             requestAnimationFrame(() => {
                 initNavIndicator();
             });
         });
+
+        function renderSkillBars(exams) {
+            const mapa = [
+                { key: 'gramática', labelId: 'stat-gramatica', barId: 'bar-gramatica' },
+                { key: 'lectura',   labelId: 'stat-lectura',   barId: 'bar-lectura' },
+                { key: 'audio',     labelId: 'stat-audio',     barId: 'bar-audio' }
+            ];
+
+            mapa.forEach(item => {
+                const filtrados = exams.filter(e => (e.tipo || '').toLowerCase().includes(item.key));
+                const labelEl = document.getElementById(item.labelId);
+                const barEl = document.getElementById(item.barId);
+
+                if (filtrados.length > 0) {
+                    const prom = Math.round(filtrados.reduce((s, e) => s + (e.score || 0), 0) / filtrados.length);
+                    labelEl.textContent = `${prom}% (${filtrados.length} ${filtrados.length === 1 ? 'test' : 'tests'})`;
+                    barEl.style.width = `${prom}%`;
+                } else {
+                    labelEl.textContent = '0% (0 tests)';
+                    barEl.style.width = '0%';
+                }
+            });
+        }
+
+        function renderCefrChart(exams) {
+            const niveles = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const container = document.getElementById('cefrChart');
+            container.innerHTML = '';
+
+            niveles.forEach(niv => {
+                const delNivel = exams.filter(e => (e.nivel || '').toUpperCase() === niv);
+                const prom = delNivel.length > 0
+                    ? Math.round(delNivel.reduce((s, e) => s + (e.score || 0), 0) / delNivel.length)
+                    : 0;
+
+                const col = document.createElement('div');
+                col.className = 'cefr-col';
+                col.innerHTML = `
+                    <span class="cefr-val">${prom > 0 ? prom + '%' : '-'}</span>
+                    <div class="cefr-bar" style="height: ${prom > 0 ? Math.max(prom, 10) : 4}%; background-color: ${prom >= 60 ? '#03658C' : (prom > 0 ? '#DC3C22' : '#EAC8A6')};"></div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        function renderHistory(exams) {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+
+            const recientes = [...exams].reverse().slice(0, 6);
+            recientes.forEach(ex => {
+                const aprobado = (ex.score || 0) >= 60;
+                const row = document.createElement('div');
+                row.className = 'history-item';
+                row.innerHTML = `
+                    <div>
+                        <strong>${ex.tipo || 'Evaluación'}</strong> • Nivel <strong>${ex.nivel || '-'}</strong>
+                        <span style="color: #666; font-size: 12px; margin-left: 8px;">${ex.fecha || ''}</span>
+                    </div>
+                    <span class="history-badge" style="background-color: ${aprobado ? '#2e8b57' : '#DC3C22'};">
+                        ${ex.score}% ${ex.aciertos !== undefined ? `(${ex.aciertos}/${ex.total})` : ''}
+                    </span>
+                `;
+                list.appendChild(row);
+            });
+        }
 
         function initNavIndicator() {
             const activeItem = document.querySelector('.nav-item.active');
