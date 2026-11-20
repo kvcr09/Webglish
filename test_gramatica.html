@@ -807,7 +807,7 @@
     ]
     };
 
-        // ==========================================
+       // ==========================================
         // LÓGICA DE CONTROL Y MOTOR DEL TEST
         // ==========================================
         let testActual = null;
@@ -816,12 +816,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const activo = JSON.parse(localStorage.getItem('testActivo'));
 
-            // Si viene desde "Continuar" en Test Pendientes, arranca directo el examen
             if (activo && activo.tipo === 'Gramática') {
                 testActual = activo;
                 iniciarInterfazExamen();
             } else {
-                // Si viene desde "Iniciar test de gramática", abre la ventana emergente de niveles
                 abrirModalNiveles();
             }
         });
@@ -830,12 +828,14 @@
             const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
             ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
                 const tag = document.getElementById(`tag-${nivel}`);
-                if (pendientes[`gramatica_${nivel}`]) {
-                    tag.textContent = 'Continuar';
-                    tag.style.backgroundColor = '#03658C';
-                } else {
-                    tag.textContent = 'Iniciar';
-                    tag.style.backgroundColor = '#DC3C22';
+                if (tag) {
+                    if (pendientes[`gramatica_${nivel}`]) {
+                        tag.textContent = 'Continuar';
+                        tag.style.backgroundColor = '#03658C';
+                    } else {
+                        tag.textContent = 'Iniciar';
+                        tag.style.backgroundColor = '#DC3C22';
+                    }
                 }
             });
             document.getElementById('modalNivel').style.display = 'flex';
@@ -854,7 +854,6 @@
         function seleccionarNivel(nivel) {
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
 
-            // Si ya había uno pendiente de ese nivel, lo reanuda
             if (pendientes[`gramatica_${nivel}`]) {
                 testActual = pendientes[`gramatica_${nivel}`];
             } else {
@@ -882,7 +881,6 @@
             document.getElementById('examWrapper').style.display = 'flex';
             document.getElementById('examSubtitle').textContent = `Nivel ${testActual.nivel} • 10 preguntas`;
             
-            // Ubicar en la primera pregunta sin responder si se reanuda
             const respondidas = Object.keys(testActual.respuestasUsuario || {}).map(Number);
             if (respondidas.length > 0 && respondidas.length < testActual.preguntas.length) {
                 for (let i = 0; i < testActual.preguntas.length; i++) {
@@ -921,7 +919,6 @@
                 opcionesContainer.appendChild(btn);
             });
 
-            // Botones de navegación
             document.getElementById('btnPrev').disabled = (indiceActual === 0);
 
             if (indiceActual === total - 1) {
@@ -936,7 +933,6 @@
         function seleccionarRespuesta(opcionIdx) {
             testActual.respuestasUsuario[indiceActual] = opcionIdx;
 
-            // Guardar progreso automático en localStorage
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
             pendientes[`gramatica_${testActual.nivel}`] = testActual;
             localStorage.setItem('testsPendientes', JSON.stringify(pendientes));
@@ -957,6 +953,11 @@
             window.location.href = 'examenes.html';
         }
 
+        function obtenerIndiceCorrecto(p) {
+            if (typeof p.correcta === 'number') return p.correcta;
+            return p.opciones.indexOf(p.correcta);
+        }
+
         function finalizarExamen() {
             const total = testActual.preguntas.length;
             const respondidas = Object.keys(testActual.respuestasUsuario).length;
@@ -967,12 +968,17 @@
                 }
             }
 
-            // Calcular puntaje
             let aciertos = 0;
-            testActual.preguntas.forEach((p, idx) => {
-                if (testActual.respuestasUsuario[idx] === p.correcta) {
+            const preguntasNormalizadas = testActual.preguntas.map((p, idx) => {
+                const idxCorrecto = obtenerIndiceCorrecto(p);
+                if (testActual.respuestasUsuario[idx] === idxCorrecto) {
                     aciertos++;
                 }
+                return {
+                    ...p,
+                    correcta: idxCorrecto,
+                    explicacion: p.explicacion || `La opción correcta es "${p.opciones[idxCorrecto]}" según la estructura gramatical del nivel ${testActual.nivel}.`
+                };
             });
 
             const resultadoFinal = {
@@ -981,12 +987,11 @@
                 aciertos: aciertos,
                 total: total,
                 porcentaje: Math.round((aciertos / total) * 100),
-                preguntas: testActual.preguntas,
+                preguntas: preguntasNormalizadas,
                 respuestasUsuario: testActual.respuestasUsuario,
                 fecha: new Date().toLocaleDateString()
             };
 
-            // Guardar resultado para resultadosg.html y eliminar de pendientes
             localStorage.setItem('ultimoResultado', JSON.stringify(resultadoFinal));
 
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
