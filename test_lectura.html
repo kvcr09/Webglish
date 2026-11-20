@@ -6799,14 +6799,14 @@
             ]
         };
 
-      // ==========================================
+     // ==========================================
         // LÓGICA DE CONTROL Y MOTOR DEL TEST
         // ==========================================
         let testActual = null;
         let indiceActual = 0;
         let nivelSeleccionadoTemporal = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function inicializarModuloLectura() {
             prepararModalModalidades();
             const activo = JSON.parse(localStorage.getItem('testActivo'));
 
@@ -6816,7 +6816,13 @@
             } else {
                 abrirModalNiveles();
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarModuloLectura);
+        } else {
+            inicializarModuloLectura();
+        }
 
         function prepararModalModalidades() {
             const modalOverlay = document.getElementById('modalNivel');
@@ -6825,7 +6831,6 @@
             const contenedorModal = modalOverlay.firstElementChild;
             if (!contenedorModal) return;
 
-            // Envuelve el contenido actual de niveles en #pasoNivel
             const pasoNivel = document.createElement('div');
             pasoNivel.id = 'pasoNivel';
             while (contenedorModal.firstChild) {
@@ -6833,7 +6838,6 @@
             }
             contenedorModal.appendChild(pasoNivel);
 
-            // Crea e inserta #pasoModalidad automáticamente
             const pasoModalidad = document.createElement('div');
             pasoModalidad.id = 'pasoModalidad';
             pasoModalidad.style.display = 'none';
@@ -6841,20 +6845,20 @@
                 <h2 style="margin-bottom: 8px;">Modalidad del Test • Nivel <span id="nivelModalidadLabel"></span></h2>
                 <p style="margin-bottom: 18px; opacity: 0.85;">¿Cómo deseas realizar las 10 preguntas?</p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button class="nivel-btn" onclick="confirmarModalidad('unico')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('unico')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
                         <strong>📄 1 Texto para las 10 preguntas</strong>
                         <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Un único pasaje completo con sus 10 preguntas.</span>
                     </button>
-                    <button class="nivel-btn" onclick="confirmarModalidad('individual')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('individual')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
                         <strong>📚 1 Texto diferente por cada pregunta</strong>
                         <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">10 textos distintos al azar (1 pregunta de cada uno).</span>
                     </button>
-                    <button class="nivel-btn" onclick="confirmarModalidad('mixto')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
+                    <button type="button" class="nivel-btn" onclick="confirmarModalidad('mixto')" style="text-align: left; padding: 14px 18px; width: 100%; cursor: pointer;">
                         <strong>🔀 Modo Mixto (Variado al azar)</strong>
                         <span style="display:block; font-size:0.85rem; opacity:0.85; margin-top:4px;">Combina bloques de varios textos distintos hasta sumar 10 preguntas.</span>
                     </button>
                 </div>
-                <button onclick="volverPasoNiveles()" style="margin-top: 18px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-weight: 600;">
+                <button type="button" onclick="volverPasoNiveles()" style="margin-top: 18px; background: transparent; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-weight: 600;">
                     ← Volver a elegir nivel
                 </button>
             `;
@@ -6862,6 +6866,7 @@
         }
 
         function abrirModalNiveles() {
+            prepararModalModalidades();
             const pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
             ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(nivel => {
                 const tag = document.getElementById(`tag-${nivel}`);
@@ -6975,6 +6980,7 @@
         }
 
         function seleccionarNivel(nivel) {
+            prepararModalModalidades();
             let pendientes = JSON.parse(localStorage.getItem('testsPendientes')) || {};
 
             if (pendientes[`lectura_${nivel}`]) {
@@ -6986,9 +6992,13 @@
             }
 
             nivelSeleccionadoTemporal = nivel;
-            document.getElementById('nivelModalidadLabel').textContent = nivel;
-            document.getElementById('pasoNivel').style.display = 'none';
-            document.getElementById('pasoModalidad').style.display = 'block';
+            const etiqueta = document.getElementById('nivelModalidadLabel');
+            const pasoNivel = document.getElementById('pasoNivel');
+            const pasoModalidad = document.getElementById('pasoModalidad');
+
+            if (etiqueta) etiqueta.textContent = nivel;
+            if (pasoNivel) pasoNivel.style.display = 'none';
+            if (pasoModalidad) pasoModalidad.style.display = 'block';
         }
 
         function confirmarModalidad(modo) {
