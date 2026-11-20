@@ -304,6 +304,16 @@
                             </div>
                         </div>
 
+                            <div class="skill-row">
+                                <div class="skill-meta">
+                                    <span>🔤 Vocabulario (Vocabulary)</span>
+                                    <span id="stat-vocabulario">Sin datos</span>
+                                </div>
+                                <div class="skill-track">
+                                    <div class="skill-fill" id="bar-vocabulario" style="background-color: #f39c12;"></div>
+                                </div>
+                            </div>
+
                         <!-- Gráfica 2: Promedio por Nivel CEFR -->
                         <div class="chart-card">
                             <h3>Avance por Nivel (A1 – C2)</h3>
@@ -389,10 +399,12 @@
 
         function renderSkillBars(exams) {
             const mapa = [
-                { key: 'gramática', labelId: 'stat-gramatica', barId: 'bar-gramatica' },
-                { key: 'lectura',   labelId: 'stat-lectura',   barId: 'bar-lectura' },
-                { key: 'audio',     labelId: 'stat-audio',     barId: 'bar-audio' }
+                { key: 'gramática',   labelId: 'stat-gramatica',   barId: 'bar-gramatica' },
+                { key: 'lectura',     labelId: 'stat-lectura',     barId: 'bar-lectura' },
+                { key: 'audio',       labelId: 'stat-audio',       barId: 'bar-audio' },
+                { key: 'vocabulario', labelId: 'stat-vocabulario', barId: 'bar-vocabulario' }
             ];
+            
 
             mapa.forEach(item => {
                 const filtrados = exams.filter(e => (e.tipo || '').toLowerCase().includes(item.key));
